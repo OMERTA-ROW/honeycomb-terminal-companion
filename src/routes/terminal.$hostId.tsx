@@ -102,6 +102,7 @@ function Terminal() {
   const sendKey = (key: string) => {
     if (dropped) return;
     if (key === "Left" || key === "Right") {
+      rememberSelection();
       const { start, end } = selectionRef.current;
       const position = moveCursor(input, start, end, key === "Left" ? "left" : "right");
       inputRef.current?.focus();
@@ -155,6 +156,7 @@ function Terminal() {
     } catch { setNotice("Copy was blocked. Allow clipboard access or copy selected text using your device’s menu."); }
   };
   const paste = async () => {
+    rememberSelection();
     try {
       if (!navigator.clipboard) throw new Error("unavailable");
       const text = await navigator.clipboard.readText();
