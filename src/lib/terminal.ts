@@ -29,6 +29,7 @@ export interface Shortcut {
   label: string;
   command: string;
   destructive: boolean;
+  keyCombo?: string;
 }
 
 export const DEFAULT_SHORTCUTS: Shortcut[] = [

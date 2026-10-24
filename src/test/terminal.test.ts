@@ -13,6 +13,7 @@ describe("terminal rules", () => {
     expect(STATUS_INFO.asleep.canOpen).toBe(false);
     expect(STATUS_INFO.offline.canOpen).toBe(false);
     expect(STATUS_INFO.revoked.canOpen).toBe(false);
+    expect(STATUS_INFO.permission.canOpen).toBe(false);
   });
   it("simulator never claims real execution", () => {
     expect(simulate("make deploy")).toContain("not executed");
