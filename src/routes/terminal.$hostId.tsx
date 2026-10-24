@@ -72,8 +72,8 @@ function Terminal() {
   const sendKey = (key: string) => {
     if (key === "Esc") setLines((l) => [...l, "^[ (Escape sent — simulated)"]);
     if (key === "Tab") setInput((v) => (v.startsWith("gi") ? "git status" : v.startsWith("l") ? "ls -la" : v + "\t"));
-    if (key === "Up") { const i = Math.min(hIdx + 1, history.length - 1); if (i >= 0) { setHIdx(i); setInput(history[i]); } }
-    if (key === "Down") { const i = hIdx - 1; setHIdx(i); setInput(i >= 0 ? history[i] : ""); }
+    if (key === "Up") { const i = Math.min(hIdx + 1, history.length - 1); if (i >= 0) { setHIdx(i); setInput(history[i] ?? ""); } }
+    if (key === "Down") { const i = hIdx - 1; setHIdx(i); setInput(i >= 0 ? (history[i] ?? "") : ""); }
     if (key === "Ctrl") { setCtrl((c) => !c); }
     inputRef.current?.focus();
   };

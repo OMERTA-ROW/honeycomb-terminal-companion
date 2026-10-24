@@ -13,11 +13,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           Honeycomb Terminal
         </Link>
         <nav className="flex gap-1 text-sm">
-          {[
+          {([
             ["/", "Computers"],
             ["/pair", "Pair"],
             ["/instructions", "Instructions"],
-          ].map(([to, label]) => (
+          ] as const).map(([to, label]) => (
             <Link key={to} to={to} className="px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground" activeProps={{ className: "bg-secondary text-foreground" }} activeOptions={{ exact: true }}>
               {label}
             </Link>
