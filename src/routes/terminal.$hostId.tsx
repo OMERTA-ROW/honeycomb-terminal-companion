@@ -40,8 +40,11 @@ function Terminal() {
   const outRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const raw = localStorage.getItem(SHORTCUTS_KEY);
-    if (raw) setShortcuts(JSON.parse(raw));
+    try {
+      const raw = localStorage.getItem(SHORTCUTS_KEY);
+      const stored: unknown = raw ? JSON.parse(raw) : null;
+      if (Array.isArray(stored) && stored.every((s) => s && typeof s.id === "string" && typeof s.label === "string" && typeof s.command === "string" && typeof s.destructive === "boolean" && (s.keyCombo === undefined || KEY_COMBINATIONS.some((key) => key === s.keyCombo)))) setShortcuts(stored);
+    } catch { setNotice("Saved shortcuts could not be read. Default shortcuts are shown."); }
   }, []);
   useEffect(() => { outRef.current?.scrollTo(0, 1e9); }, [lines]);
   useEffect(() => {
@@ -51,7 +54,11 @@ function Terminal() {
     return () => window.removeEventListener("offline", off);
   }, []);
 
-  const saveShortcuts = (s: Shortcut[]) => { setShortcuts(s); localStorage.setItem(SHORTCUTS_KEY, JSON.stringify(s)); };
+  const saveShortcuts = (s: Shortcut[]) => {
+    setShortcuts(s);
+    try { localStorage.setItem(SHORTCUTS_KEY, JSON.stringify(s)); }
+    catch { setNotice("Shortcuts work for this visit, but could not be saved on this device."); }
+  };
 
   if (!host || !STATUS_INFO[host.status].canOpen) {
     const info = host ? STATUS_INFO[host.status] : null;
@@ -205,9 +212,10 @@ function Terminal() {
       {pending && (
         <div className="fixed inset-0 bg-background/80 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" onKeyDown={(e) => { if (e.key === "Escape") { setPending(null); setManage(false); } }} aria-label="Command preview">
           <div className="bg-popover rounded-lg border p-5 w-full max-w-md">
-            <h2 className="font-medium">{pending.destructive || isDestructive(pending.command) ? "⚠ Confirm risky command" : "Run command?"}</h2>
+            <h2 className="font-medium">{pending.destructive || isDestructive(pending.command) ? "⚠ Confirm risky command (simulated)" : "Preview shortcut · simulated"}</h2>
             <pre className="whitespace-pre-wrap break-all font-mono text-sm bg-terminal text-terminal-foreground p-3 rounded mt-3">{pending.keyCombo || pending.command}</pre>
             {(pending.destructive || isDestructive(pending.command)) && <p className="text-sm text-destructive mt-2">This may delete or change data on your computer.</p>}
+            <p className="text-xs text-muted-foreground mt-2">Nothing executes on a real computer in this preview.</p>
             <div className="flex gap-2 justify-end mt-4">
               <Button variant="outline" onClick={() => setPending(null)} className="px-4 py-2 rounded-md border text-sm">Cancel</Button>
               <Button variant="outline" disabled={dropped} onClick={confirmShortcut} className={`px-4 py-2 rounded-md text-sm ${pending.destructive || isDestructive(pending.command) ? "bg-destructive text-destructive-foreground" : "bg-primary text-primary-foreground"}`}>Run</Button>
