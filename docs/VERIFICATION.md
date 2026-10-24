@@ -33,6 +33,8 @@ Browser scripts/screenshots/logs are temporary verification evidence under `/tmp
 ## Automated unit/component coverage
 Pure command-entry tests assert interior/boundary/selection/Unicode movement, clipboard selection replacement and history clamps. Terminal rules cover all blocked statuses and simulation-only replies. Component regressions cover destructive confirmation cancellation, drop/reconnect entry gating and selection collapse. Route matching regression retained. See final test-run result below.
 
+Final retained test run at 22:23 UTC: **4 files passed, 13 tests passed**. Component-test setup supplies jsdom's missing scroll API; command behavior is not mocked. Latest automatic preview validation at 22:23:01 UTC reported **build OK** after correcting the safe-example tuple typing. No manual production build/typecheck was run. All four content pages retain unique Honeycomb Terminal titles/descriptions, Open Graph title/description/type and Twitter card metadata; no absolute hero image exists to tag.
+
 ## Not checked / not claimable
 - Physical touch selection, real virtual keyboards, external hardware keyboards, orientation, safe-area behavior, Safari/WebKit, Android browser/native compatibility.
 - Native installation, host OS permissions, actual pairing/key protection/encryption, remote command execution, host session persistence, sleep signaling, real revocation or active-session updates.
