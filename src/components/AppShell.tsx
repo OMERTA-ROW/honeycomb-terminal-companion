@@ -7,7 +7,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="bg-warning/15 text-warning text-center text-xs py-1.5 px-3">
         Prototype preview — sample computers and a simulated terminal. Nothing connects to or runs on a real computer.
       </div>
-      <header className="flex items-center justify-between px-4 sm:px-8 py-4 border-b">
+      <header className="flex items-center justify-between flex-wrap gap-3 px-4 sm:px-8 py-4 border-b">
         <Link to="/" className="flex items-center gap-2 font-semibold">
           <span className="hex-badge bg-primary w-7 h-7 inline-block" />
           Honeycomb Terminal
