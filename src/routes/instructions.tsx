@@ -43,7 +43,7 @@ function Instructions() {
       <section className="border-t mt-4 py-5">
         <h2 className="font-medium text-primary mb-3">Safe command examples · simulated</h2>
         <ul className="space-y-3">
-          {[["pwd", "Show the current folder"], ["ls -la", "List files"], ["whoami", "Show the shell user"], ["git status", "Check project changes"]].map(([command, label]) => (
+          {([["pwd", "Show the current folder"], ["ls -la", "List files"], ["whoami", "Show the shell user"], ["git status", "Check project changes"]] as const).map(([command, label]) => (
             <li key={command} className="flex flex-wrap gap-3 items-center justify-between text-sm">
               <span><code className="font-mono">{command}</code> — {label}</span>
               <Button variant="outline" onClick={() => setExample(command)}>Try {command}</Button>

@@ -9,6 +9,9 @@ vi.mock("@tanstack/react-router", () => ({
 vi.mock("@/hooks/use-hosts", () => ({ useHosts: () => ({ hosts: SAMPLE_HOSTS }) }));
 import { Terminal } from "@/routes/terminal.$hostId";
 
+// jsdom lacks scrolling; stub only that browser API, not command behavior.
+Object.defineProperty(HTMLElement.prototype, "scrollTo", { configurable: true, value: vi.fn() });
+
 afterEach(() => { cleanup(); localStorage.clear(); });
 
 describe("preview terminal controls", () => {
