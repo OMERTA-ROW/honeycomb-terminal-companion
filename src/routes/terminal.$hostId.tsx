@@ -19,7 +19,7 @@ export const Route = createFileRoute("/terminal/$hostId")({
   component: Terminal,
 });
 
-function Terminal() {
+export function Terminal() {
   const { hostId } = Route.useParams();
   const { hosts } = useHosts();
   const host = hosts.find((h) => h.id === hostId);
