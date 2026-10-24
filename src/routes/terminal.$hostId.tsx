@@ -208,7 +208,7 @@ function Terminal() {
         <Button variant="outline" className={keyBtn} aria-label="Arrow left" onMouseDown={(e) => e.preventDefault()} onClick={() => sendKey("Left")}>←</Button>
         <Button variant="outline" className={keyBtn} aria-label="Arrow right" onMouseDown={(e) => e.preventDefault()} onClick={() => sendKey("Right")}>→</Button>
         <Button variant="outline" className={keyBtn} onClick={copySel}>Copy</Button>
-        <Button variant="outline" className={keyBtn} onClick={paste}>Paste</Button>
+        <Button variant="outline" className={keyBtn} onMouseDown={(e) => e.preventDefault()} onClick={paste}>Paste</Button>
       </div>
 
       {pending && (
