@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
 import { useHosts } from "@/hooks/use-hosts";
 import { SAMPLE_HOSTS, STATUS_INFO, type HostStatus } from "@/lib/terminal";
@@ -29,7 +30,7 @@ function Index() {
   const { hosts, save } = useHosts();
   return (
     <AppShell>
-      <div className="flex items-end justify-between mb-6 gap-4">
+      <div className="flex items-end flex-wrap justify-between mb-6 gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold">Your computers</h1>
           <p className="text-muted-foreground text-sm mt-1">Sample computers. Status shown is simulated, not live.</p>
@@ -40,7 +41,7 @@ function Index() {
         {hosts.map((h) => {
           const info = STATUS_INFO[h.status];
           return (
-            <li key={h.id} className="rounded-xl border bg-card p-4" data-testid={`host-${h.id}`}>
+            <li key={h.id} className="rounded-lg border bg-card p-4" data-testid={`host-${h.id}`}>
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium">{h.name}</div>
@@ -56,22 +57,22 @@ function Index() {
                 {info.canOpen ? (
                   <Link to="/terminal/$hostId" params={{ hostId: h.id }} className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm">Open shell</Link>
                 ) : (
-                  <button disabled className="rounded-md bg-secondary text-muted-foreground px-3 py-1.5 text-sm">Unavailable</button>
+                  <Button variant="outline" disabled className="rounded-md bg-secondary text-muted-foreground px-3 py-1.5 text-sm">Unavailable</Button>
                 )}
                 {h.status !== "revoked" && (
-                  <button
+                  <Button variant="outline"
                     onClick={() => confirm(`Revoke this device's access to ${h.name}?`) && save(hosts.map((x) => (x.id === h.id ? { ...x, status: "revoked" } : x)))}
                     className="rounded-md border px-3 py-1.5 text-sm text-destructive"
                   >
                     Revoke
-                  </button>
+                  </Button>
                 )}
               </div>
             </li>
           );
         })}
       </ul>
-      <button onClick={() => save(SAMPLE_HOSTS)} className="mt-6 text-xs text-muted-foreground underline">Reset sample computers</button>
+      <Button variant="outline" onClick={() => save(SAMPLE_HOSTS)} className="mt-6 text-xs text-muted-foreground underline">Reset sample computers</Button>
     </AppShell>
   );
 }
