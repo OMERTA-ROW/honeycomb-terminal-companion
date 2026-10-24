@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InstructionsRouteImport } from './routes/instructions'
+import { Route as PairRouteImport } from './routes/pair'
+import { Route as TerminalHostIdRouteImport } from './routes/terminal.$hostId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InstructionsRoute = InstructionsRouteImport.update({
+  id: '/instructions',
+  path: '/instructions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PairRoute = PairRouteImport.update({
+  id: '/pair',
+  path: '/pair',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerminalHostIdRoute = TerminalHostIdRouteImport.update({
+  id: '/terminal/$hostId',
+  path: '/terminal/$hostId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/instructions': typeof InstructionsRoute
+  '/pair': typeof PairRoute
+  '/terminal/$hostId': typeof TerminalHostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/instructions': typeof InstructionsRoute
+  '/pair': typeof PairRoute
+  '/terminal/$hostId': typeof TerminalHostIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/instructions': typeof InstructionsRoute
+  '/pair': typeof PairRoute
+  '/terminal/$hostId': typeof TerminalHostIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/instructions' | '/pair' | '/terminal/$hostId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/instructions' | '/pair' | '/terminal/$hostId'
+  id: '__root__' | '/' | '/instructions' | '/pair' | '/terminal/$hostId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  InstructionsRoute: typeof InstructionsRoute
+  PairRoute: typeof PairRoute
+  TerminalHostIdRoute: typeof TerminalHostIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/instructions': {
+      id: '/instructions'
+      path: '/instructions'
+      fullPath: '/instructions'
+      preLoaderRoute: typeof InstructionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pair': {
+      id: '/pair'
+      path: '/pair'
+      fullPath: '/pair'
+      preLoaderRoute: typeof PairRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terminal/$hostId': {
+      id: '/terminal/$hostId'
+      path: '/terminal/$hostId'
+      fullPath: '/terminal/$hostId'
+      preLoaderRoute: typeof TerminalHostIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  InstructionsRoute: InstructionsRoute,
+  PairRoute: PairRoute,
+  TerminalHostIdRoute: TerminalHostIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
