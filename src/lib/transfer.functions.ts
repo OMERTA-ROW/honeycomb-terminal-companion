@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { z } from 'zod';
-import { base64ToBytes, bytesToBase64, proofMessage, verifyIntegrity } from './transfer-shared';
+import { base64ToBytes, proofMessage } from './transfer-shared';
 import type { Json } from '@/integrations/supabase/types';
 
 const uuid = z.string().uuid();
@@ -36,6 +36,6 @@ export const guardianAction = createServerFn({ method: 'POST' }).middleware([req
   if (!valid) throw new Error('Device signature invalid.');
   const { data: result, error } = await supabaseAdmin.rpc('hc_action', { p_owner: context.userId, p_device: data.device, p_proof: data.proof, p_op: data.op, p_data: data.payload as Json });
   if (error) { const allowed = ['Device unauthorized or revoked','Proof expired or replayed','Pairing expired or already consumed','Device identity changed or revoked','Device not owned','Recipient offline or revoked','Recipient is not approved','Named recipient approval required','Finish or cancel existing transfers first','File permission denied','Trust revoked','Transfer expired','Upload not permitted','Invalid chunk or replay','Download not permitted','Upload incomplete','Receipt not permitted','Transfer already closed']; throw new Error(allowed.find(s => error.message.includes(s)) ?? 'Guardian denied the request.'); }
-  if (result && typeof result === 'object' && !Array.isArray(result) && typeof result.error === 'string') throw new Error(result.error);
+  if (result && typeof result === 'object' && !Array.isArray(result) && typeof result['error'] === 'string') throw new Error(result['error']);
   return result;
 });
