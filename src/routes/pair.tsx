@@ -1,8 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
 import { useHosts } from "@/hooks/use-hosts";
+import {
+  PAIRING_CODE_TTL_SECONDS,
+  PAIRING_STATE_INFO,
+  pairingCodeExpired,
+  pairingPayload,
+  testConnectionResult,
+  type PairingState,
+  type TestConnectionState,
+} from "@/lib/device-care";
 
 export const Route = createFileRoute("/pair")({
   head: () => ({
@@ -18,33 +27,121 @@ export const Route = createFileRoute("/pair")({
   component: Pair,
 });
 
-function Pair() {
-  const [step, setStep] = useState(0);
-  const code = "482617"; // Fixed demonstration code, never a pairing credential.
-  const { hosts, save } = useHosts();
-  const steps = ["Install the companion", "Sign in on both", "Approve on the computer", "Paired"];
+// Deterministic demo code — never a real pairing credential.
+const CODE = "482617";
 
-  const finish = () => {
+// Decorative QR-style grid derived from the payload. Clearly labelled as a
+// stand-in: it is not scannable and carries no real pairing data.
+function FakeQr({ payload }: { payload: string }) {
+  const cells = useMemo(() => {
+    let h = 7;
+    return Array.from({ length: 121 }, (_, i) => {
+      h = (h * 31 + payload.charCodeAt(i % payload.length)) % 997;
+      return h % 3 !== 0;
+    });
+  }, [payload]);
+  return (
+    <div role="img" aria-label="Decorative QR placeholder — not scannable" className="grid grid-cols-11 gap-0.5 w-36 h-36 p-2 bg-card border rounded-md mx-auto">
+      {cells.map((on, i) => (
+        <span key={i} className={on ? "bg-primary" : "bg-transparent"} />
+      ))}
+    </div>
+  );
+}
+
+function Pair() {
+  const [state, setState] = useState<PairingState>("requested");
+  const [createdAt, setCreatedAt] = useState(() => Date.now());
+  const [now, setNow] = useState(() => Date.now());
+  const [test, setTest] = useState<{ state: TestConnectionState; output: string } | null>(null);
+  const { hosts, save } = useHosts();
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const expired = pairingCodeExpired(createdAt, now);
+  const effective: PairingState = expired && (state === "requested" || state === "pending") ? "expired" : state;
+  const info = PAIRING_STATE_INFO[effective];
+  const secondsLeft = Math.max(0, PAIRING_CODE_TTL_SECONDS - Math.floor((now - createdAt) / 1000));
+
+  const restart = () => {
+    setState("requested");
+    setCreatedAt(Date.now());
+    setTest(null);
+  };
+
+  const confirm = () => {
+    setState("confirmed");
     if (!hosts.find((h) => h.id === "new-host"))
       save([...hosts, { id: "new-host", name: "New Computer (simulated)", os: "macOS", status: "online", lastSeen: "now" }]);
-    setStep(3);
+  };
+
+  const runTest = () => {
+    setTest({ state: "running", output: "[simulated] Sending a harmless command to the computer…" });
+    setTimeout(() => setTest(testConnectionResult("online")), 900);
   };
 
   return (
     <AppShell>
       <h1 className="text-2xl font-semibold">Pair a computer</h1>
-      <p className="text-sm text-warning mt-1">Simulated pairing — no real device keys are created or exchanged.</p>
-      <ol className="grid grid-cols-2 sm:grid-cols-4 gap-2 my-6 text-xs">
-        {steps.map((s, i) => (
-          <li key={s} className={`flex-1 rounded-md px-2 py-2 border ${i <= step ? "border-primary text-foreground" : "text-muted-foreground"}`}>{i + 1}. {s}</li>
-        ))}
-      </ol>
-      <div className="rounded-lg border bg-card p-6 max-w-lg">
-        {step === 0 && (<><p>Install Honeycomb Terminal companion on your Mac, Windows or Linux computer.</p><p className="text-xs text-muted-foreground mt-2">Companion app is planned; not available yet.</p><Button onClick={() => setStep(1)} className="mt-4 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">Next</Button></>)}
-        {step === 1 && (<><p>Sign in with the same account on this device and the computer.</p><Button onClick={() => setStep(2)} className="mt-4 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">I'm signed in (simulated)</Button></>)}
-        {step === 2 && (<><p>Confirm this code appears on your computer, then approve there:</p><div className="font-mono text-4xl  text-primary my-4">{code}</div><Button onClick={finish} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">Simulate owner approval</Button></>)}
-        {step === 3 && (<><p>Simulated pairing saved on this device. No computer has authorized access.</p><Link to="/" className="inline-block mt-4 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">See your computers</Link></>)}
+      <p className="text-sm text-warning mt-1">Simulated pairing — no real device keys are created or exchanged. The QR image is a decorative placeholder, not scannable.</p>
+
+      <div className="rounded-lg border bg-card p-6 max-w-lg mt-6">
+        <p role="status" className="text-sm">
+          <span className="text-primary font-medium">{info.label}</span>
+          {(effective === "requested" || effective === "pending") && <span className="text-muted-foreground"> · {secondsLeft}s left</span>}
+        </p>
+        <p className="text-sm text-muted-foreground mt-1">{info.next}</p>
+
+        {(effective === "requested" || effective === "pending") && (
+          <div className="mt-5 space-y-4">
+            <FakeQr payload={pairingPayload(CODE)} />
+            <p className="text-center text-xs text-muted-foreground">Or confirm this code on the computer:</p>
+            <div className="font-mono text-4xl text-primary text-center">{CODE}</div>
+            {effective === "requested" && (
+              <Button onClick={() => setState("pending")} className="w-full rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">
+                I've shown the code to the computer (simulated)
+              </Button>
+            )}
+            {effective === "pending" && (
+              <div className="flex gap-2">
+                <Button onClick={confirm} className="flex-1 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">Simulate owner approval</Button>
+                <Button variant="outline" onClick={() => setState("failed")} className="rounded-md border px-4 py-2 text-sm text-destructive">Simulate rejection</Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {effective === "confirmed" && (
+          <div className="mt-5 space-y-3">
+            <p className="text-sm">Simulated pairing saved on this device. No computer has authorized access.</p>
+            <Button onClick={runTest} disabled={test?.state === "running"} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm disabled:opacity-50">
+              {test?.state === "running" ? "Testing…" : "Test Connection (simulated)"}
+            </Button>
+            {test && (
+              <pre role="status" className="p-3 bg-terminal text-terminal-foreground whitespace-pre-wrap font-mono text-sm rounded">{test.output}</pre>
+            )}
+            <div>
+              <Link to="/" className="inline-block rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">See your computers</Link>
+            </div>
+          </div>
+        )}
+
+        {(effective === "failed" || effective === "expired") && (
+          <Button onClick={restart} className="mt-5 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">Request a new code</Button>
+        )}
       </div>
+
+      <section className="mt-8 max-w-lg text-sm text-muted-foreground space-y-2">
+        <h2 className="font-medium text-foreground">Install prerequisites (honest status)</h2>
+        <ul className="list-disc pl-4 space-y-1.5">
+          <li><span className="text-foreground">Mac companion:</span> planned; source skeleton in <code className="font-mono text-xs">companion/</code>. No installer exists — any download button would be disabled placeholder. Signing and notarization are not procured.</li>
+          <li><span className="text-foreground">iPhone/iPad and Android apps:</span> not yet available. No store links exist; nothing here fabricates one.</li>
+          <li><span className="text-foreground">Pairing security:</span> real pairing will use short-lived single-use challenges with host-side approval; the fixed code above is a demo only.</li>
+        </ul>
+      </section>
     </AppShell>
   );
 }
