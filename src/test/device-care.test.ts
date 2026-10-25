@@ -28,9 +28,9 @@ describe("pairing", () => {
 });
 
 describe("test connection", () => {
-  it("returns 'Honeycomb connected' only for an online host", () => {
+  it("an online Demo response cannot report a real connected state", () => {
     expect(testConnectionResult("online").output).toContain(TEST_EXPECTED_OUTPUT);
-    expect(testConnectionResult("online").state).toBe("connected");
+    expect(testConnectionResult("online").state).toBe("demo");
   });
   it("denies permission and revoked hosts", () => {
     expect(testConnectionResult("permission").state).toBe("denied");

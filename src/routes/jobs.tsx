@@ -96,6 +96,7 @@ function Jobs() {
       <section className="mt-4 border-b pb-4" aria-label="Demo job notifications">
         <h2 className="text-sm font-medium text-primary">Completion notices · Demo</h2>
         <p className="mt-1 text-xs text-muted-foreground">In-app only while Jobs is open; saved results return here. Background/push notifications require a real host runner and supported mobile delivery.</p>
+        <p className="mt-1 text-xs text-warning">Locking the phone does not keep Demo jobs running. Real locked-phone delivery and secrets-masked host logs are unavailable; do not enter secrets in Demo instructions.</p>
         <ul aria-live="polite" aria-relevant="additions" className="mt-2 space-y-2">
           {jobs.filter(j=>jobCompletionNotice(j)&&!dismissed.includes(j.id)).map(j=><li key={j.id} className="flex flex-wrap items-center gap-2 text-sm"><span className={j.state==='failed'?'text-destructive':'text-success'}>{jobCompletionNotice(j)}</span><Button variant="outline" size="sm" onClick={()=>{setOpen(j.id);document.getElementById(`job-${j.id}`)?.scrollIntoView({block:'nearest'});}}>View logs</Button><Button variant="ghost" size="sm" onClick={()=>setDismissed(ids=>[...ids,j.id])}>Dismiss</Button></li>)}
         </ul>
