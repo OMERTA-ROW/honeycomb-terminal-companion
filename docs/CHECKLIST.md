@@ -76,3 +76,7 @@ Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / 
 - [ ] Revocable read-only live sharing — host enforcement and separate public-sharing access approval required.
 - [~] Mechanical bees app-lock Demo and reduced-motion already retained.
 - [ ] Evolution doctor/build/test/status commands — CLI spellings/version and installed adapter need verification.
+- [x] Reaffirmed Mac/iPhone/iPad-first relay UI prerequisites; explicit Demo-only Test Connection state/output and unavailable real test control.
+- [ ] Actual Mac Test Connection acceptance, tmux app-close/drop resume and locked-phone notification with masked logs/cancel — native runner, relay, delivery and physical hardware required; Demo success cannot pass.
+- [x] Read-only account provider/redirect/count checks: Google/email enabled, signup allowed, confirmation required; zero accounts. Lovable flag not reported; actual OAuth/recovery/session flows unverified.
+- [ ] Account signup/login/recovery polish and future Vault identity contract — owner profile-data answer required; preserve existing Guardian isolation, no Vault edits or claimed SSO.

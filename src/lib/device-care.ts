@@ -25,13 +25,13 @@ export function pairingPayload(code: string): string {
 }
 
 // ---------- Test connection ----------
-export type TestConnectionState = "idle" | "running" | "connected" | "unreachable" | "denied";
+export type TestConnectionState = "idle" | "running" | "demo" | "unreachable" | "denied";
 
 export const TEST_COMMAND = "echo 'Honeycomb connected'";
 export const TEST_EXPECTED_OUTPUT = "Honeycomb connected";
 
 export function testConnectionResult(hostStatus: "online" | "asleep" | "offline" | "permission" | "revoked"): { state: TestConnectionState; output: string } {
-  if (hostStatus === "online") return { state: "connected", output: `[simulated] $ ${TEST_COMMAND}\n${TEST_EXPECTED_OUTPUT}` };
+  if (hostStatus === "online") return { state: "demo", output: `[Demo · simulated] $ ${TEST_COMMAND}\n[Demo · simulated] ${TEST_EXPECTED_OUTPUT}\nNot a real connection test: no command ran on a Mac.` };
   if (hostStatus === "permission") return { state: "denied", output: "[simulated] The computer has not granted terminal access to this device." };
   if (hostStatus === "revoked") return { state: "denied", output: "[simulated] This device's authorization was revoked on the computer." };
   return { state: "unreachable", output: "[simulated] The computer is not reachable. Wake it and make sure the companion is running." };

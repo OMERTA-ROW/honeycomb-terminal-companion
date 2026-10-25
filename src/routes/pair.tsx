@@ -19,7 +19,7 @@ export const Route = createFileRoute("/pair")({
       { title: "Pair a computer — Honeycomb Terminal" },
       { name: "description", content: "Simulated one-time pairing between this device and your computer." },
       { property: "og:title", content: "Pair a computer — Honeycomb Terminal" },
-      { property: "og:description", content: "Approve pairing once, then tap to open your shell." },
+      { property: "og:description", content: "Demo pairing flow; real Mac companion pairing is not yet available." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -88,6 +88,18 @@ function Pair() {
       <h1 className="text-2xl font-semibold">Pair a computer</h1>
       <p className="text-sm text-warning mt-1">Simulated pairing — no real device keys are created or exchanged. The QR image is a decorative placeholder, not scannable.</p>
 
+      <section className="mt-5 border-b pb-4 max-w-lg" aria-label="Mac connection prerequisites">
+        <h2 className="font-medium text-primary">Mac + iPhone / iPad · planned</h2>
+        <ol className="mt-2 list-decimal pl-5 space-y-2 text-sm text-muted-foreground">
+          <li>The Mac companion and phone connect outward to the same encrypted relay. No port forwarding or IP entry.</li>
+          <li>Each device has its own key. On the Mac, create a short-lived one-time QR token; review the named Mac and key fingerprint on the phone.</li>
+          <li>Explicitly approve the named phone or iPad on the Mac, then run the real connection test.</li>
+        </ol>
+        <p className="mt-3 text-xs text-warning">Companion, relay and native mobile connection are unavailable. Browser file-transfer trust does not authorize a shell.</p>
+        <Button variant="outline" disabled className="mt-3">Test Connection · real Mac unavailable</Button>
+        <p className="mt-2 text-xs text-muted-foreground">Acceptance requires the paired Mac to execute echo 'Honeycomb connected' and return its actual output. Demo results do not pass.</p>
+      </section>
+
       <div className="rounded-lg border bg-card p-6 max-w-lg mt-6">
         <p role="status" className="text-sm">
           <span className="text-primary font-medium">{info.label}</span>
@@ -118,7 +130,7 @@ function Pair() {
           <div className="mt-5 space-y-3">
             <p className="text-sm">Simulated pairing saved on this device. No computer has authorized access.</p>
             <Button onClick={runTest} disabled={test?.state === "running"} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm disabled:opacity-50">
-              {test?.state === "running" ? "Testing…" : "Test Connection (simulated)"}
+              {test?.state === "running" ? "Testing Demo…" : "Test Connection · Demo (simulated)"}
             </Button>
             {test && (
               <pre role="status" className="p-3 bg-terminal text-terminal-foreground whitespace-pre-wrap font-mono text-sm rounded">{test.output}</pre>
