@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { EXECUTION_TARGETS, INTEGRATIONS, JOB_STATE_INFO, JOB_TEMPLATES, previewFor, simulatedLog, transition } from "@/lib/jobs";
+import { EXECUTION_TARGETS, INTEGRATIONS, JOB_STATE_INFO, JOB_TEMPLATES, previewFor, simulatedLog, transition, jobCompletionNotice, type Job } from "@/lib/jobs";
 
 describe("job workflow", () => {
+  const fixture: Job = {id:"test-job",templateId:"test-failures",title:"Existing tests",instruction:"test",target:"host",state:"running",createdAt:"2026-10-25",log:[]};
+  it("only finished pass/fail jobs produce Demo completion notices",()=>{
+    expect(jobCompletionNotice({...fixture,state:"completed"})).toBe("Demo · PASS — Existing tests");
+    expect(jobCompletionNotice({...fixture,state:"failed"})).toBe("Demo · FAIL — Existing tests");
+    for(const state of ["queued","running","waiting","cancelled"] as const) expect(jobCompletionNotice({...fixture,state})).toBeNull();
+  });
   it("follows the queued → running → completed path", () => {
     expect(transition("queued", "start")).toBe("running");
     expect(transition("running", "complete")).toBe("completed");

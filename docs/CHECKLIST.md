@@ -65,3 +65,14 @@ Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / 
 - [~] Creative Unity/video/browser task preview with UUID, local persistence, cancellation and proposed scope review; no dispatch or fabricated execution evidence.
 - [x] Omni/Guardian project adapter/checkpoint/idempotency boundary and disposable Unity acceptance documented in TRANSFER_CREATIVE_REQUIREMENTS.md.
 - [ ] Native companion/tool adapters/Omni/GitHub/browser automation — not installed/connected; no installer/artifact available.
+
+## Owner queued Terminal add-ons
+- [~] Hive computer cells with Demo status, gold online glow, dim unavailable state and actionable status details.
+- [x] Combs reuse saved shortcuts, preview first, explicit risky-command confirmation/cancel.
+- [~] Demo job pass/fail completion announcements, logs/dismissal and stored local results; not native/push delivery.
+- [x] Outbound encrypted Mac relay/key QR + host tmux session requirements documented in TERMINAL_ADDONS.md.
+- [ ] Actual outbound companion connection/tmux/host job notification — requires implemented companion/relay and authorized hardware.
+- [ ] Explain This — selected excerpt consent/provider integration pending.
+- [ ] Revocable read-only live sharing — host enforcement and separate public-sharing access approval required.
+- [~] Mechanical bees app-lock Demo and reduced-motion already retained.
+- [ ] Evolution doctor/build/test/status commands — CLI spellings/version and installed adapter need verification.

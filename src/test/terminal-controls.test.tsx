@@ -15,6 +15,15 @@ Object.defineProperty(HTMLElement.prototype, "scrollTo", { configurable: true, v
 afterEach(() => { cleanup(); localStorage.clear(); });
 
 describe("preview terminal controls", () => {
+  it("a saved Comb previews without running and runs only after confirmation",()=>{
+    render(<Terminal/>);
+    const output=screen.getByTestId("output");
+    const before=output.textContent;
+    fireEvent.click(screen.getByRole("button",{name:"Git status",exact:true}));
+    expect(output.textContent).toBe(before);
+    fireEvent.click(screen.getByRole("button",{name:"Run",exact:true}));
+    expect(output.textContent).toContain("$ git status");
+  });
   it("canceling a destructive shortcut never sends the command", () => {
     render(<Terminal />);
     const output = screen.getByTestId("output");

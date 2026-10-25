@@ -10,6 +10,7 @@ import {
   INTEGRATIONS,
   JOB_STATE_INFO,
   JOB_TEMPLATES,
+  jobCompletionNotice,
   previewFor,
   simulatedLog,
   transition,
@@ -48,6 +49,8 @@ function Jobs() {
   const [instruction, setInstruction] = useState("");
   const [target, setTarget] = useState<ExecutionTargetId>("host");
   const [open, setOpen] = useState<string | null>(null);
+  const [demoOutcome, setDemoOutcome] = useState<"pass" | "fail">("pass");
+  const [dismissed, setDismissed] = useState<string[]>([]);
 
   const preview = previewFor(templateId, instruction);
   const template = JOB_TEMPLATES.find((t) => t.id === templateId);
@@ -58,7 +61,7 @@ function Jobs() {
       if (j.state === "queued")
         return [setTimeout(() => update(j.id, { state: transition("queued", "start") ?? "running", log: ["[simulated] Job started on the selected sample computer"] }), 900)];
       if (j.state === "running")
-        return [setTimeout(() => update(j.id, { state: transition("running", "complete") ?? "completed", log: [...j.log, ...simulatedLog(j.templateId)] }), 2400)];
+        return [setTimeout(() => update(j.id, j.demoOutcome === "fail" ? {state:"failed",log:[...j.log,"[Demo · simulated] Test command exited 1 — fixture failure; no real tests ran.","[Demo · simulated] Inspect logs before retry; nothing changed on a host."]} : { state: transition("running", "complete") ?? "completed", log: [...j.log, ...simulatedLog(j.templateId)] }), 2400)];
       return [];
     });
     return () => timers.forEach(clearTimeout);
@@ -74,6 +77,7 @@ function Jobs() {
       state: "queued",
       createdAt: new Date().toISOString(),
       log: ["[simulated] Authorized by you. Queued — no real execution exists in this preview."],
+      demoOutcome,
     };
     save([job, ...jobs]);
     setStep(0);
@@ -88,7 +92,14 @@ function Jobs() {
   return (
     <AppShell>
       <h1 className="text-2xl sm:text-3xl font-semibold">Jobs</h1>
-      <p className="text-muted-foreground text-sm mt-1">Simulated workflow — every job, state and log below is a preview. Nothing runs on a real computer.</p>
+      <p className="text-muted-foreground text-sm mt-1">Demo · simulated workflow. Every job, state and log is a preview; nothing runs on a real computer.</p>
+      <section className="mt-4 border-b pb-4" aria-label="Demo job notifications">
+        <h2 className="text-sm font-medium text-primary">Completion notices · Demo</h2>
+        <p className="mt-1 text-xs text-muted-foreground">In-app only while Jobs is open; saved results return here. Background/push notifications require a real host runner and supported mobile delivery.</p>
+        <ul aria-live="polite" aria-relevant="additions" className="mt-2 space-y-2">
+          {jobs.filter(j=>jobCompletionNotice(j)&&!dismissed.includes(j.id)).map(j=><li key={j.id} className="flex flex-wrap items-center gap-2 text-sm"><span className={j.state==='failed'?'text-destructive':'text-success'}>{jobCompletionNotice(j)}</span><Button variant="outline" size="sm" onClick={()=>{setOpen(j.id);document.getElementById(`job-${j.id}`)?.scrollIntoView({block:'nearest'});}}>View logs</Button><Button variant="ghost" size="sm" onClick={()=>setDismissed(ids=>[...ids,j.id])}>Dismiss</Button></li>)}
+        </ul>
+      </section>
       <CreativeTasks />
       <EditorHandoff />
 
@@ -108,7 +119,7 @@ function Jobs() {
       </section>
 
       <section className="mt-6 rounded-lg border bg-card p-4 max-w-2xl">
-        <h2 className="font-medium mb-3">New job · simulated</h2>
+        <h2 className="font-medium mb-3">New job · Demo (simulated)</h2>
         {step === 0 && (
           <div className="space-y-3">
             <label className="block text-sm">
@@ -118,6 +129,7 @@ function Jobs() {
               </select>
             </label>
             <p className="text-xs text-muted-foreground">{template?.summary}</p>
+            <label className="block text-sm">Demo completion outcome<select aria-label="Demo job outcome" value={demoOutcome} onChange={e=>setDemoOutcome(e.target.value === 'fail' ? 'fail' : 'pass')} className="mt-1 w-full bg-background border rounded px-3 py-2 text-sm"><option value="pass">Pass · simulated</option><option value="fail">Fail · simulated</option></select></label>
             <label className="block text-sm">
               Your instruction
               <textarea aria-label="Job instruction" value={instruction} onChange={(e) => setInstruction(e.target.value)} rows={3} placeholder="e.g. Run the test suite on my project and tell me why anything fails" className="mt-1 w-full bg-input/40 rounded px-3 py-2 text-sm" />
@@ -165,7 +177,7 @@ function Jobs() {
         {jobs.length === 0 && <p className="text-sm text-muted-foreground">No jobs yet. Create one above to see the workflow.</p>}
         <ul className="grid gap-3">
           {jobs.map((j) => (
-            <li key={j.id} className="rounded-lg border bg-card p-4" data-testid={`job-${j.id}`}>
+            <li key={j.id} id={`job-${j.id}`} className="rounded-lg border bg-card p-4" data-testid={`job-${j.id}`}>
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
                   <div className="font-medium text-sm">{j.title}</div>
