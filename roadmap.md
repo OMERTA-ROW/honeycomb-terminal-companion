@@ -7,4 +7,4 @@
 - [x] Preserve private simulated preview; no real access, deployment, paid services or billing.
 - [x] Apply black-and-gold hive theme across all pages.
 - [x] Extended scope: execution targets, jobs workflow, job templates, GitHub/Evolution cards (visibly unconnected), WAN transport + native gap docs.
-- [ ] Run tests/build and mobile checks for extended scope; record evidence in VERIFICATION.md.
+- [x] Run tests/build and mobile checks for extended scope; record evidence in VERIFICATION.md.
