@@ -30,9 +30,9 @@ describe("job workflow", () => {
     expect(preview?.approvals[0] ?? "").toMatch(/destructive/i);
   });
   it("offers the first template as run-tests and the next as isolated worktree", () => {
-    expect(JOB_TEMPLATES[0].id).toBe("test-failures");
-    expect(JOB_TEMPLATES[1].id).toBe("worktree-changes");
-    expect(JOB_TEMPLATES[1].scope).toMatch(/isolated worktree/i);
+    expect(JOB_TEMPLATES[0]?.id).toBe("test-failures");
+    expect(JOB_TEMPLATES[1]?.id).toBe("worktree-changes");
+    expect(JOB_TEMPLATES[1]?.scope ?? "").toMatch(/isolated worktree/i);
   });
   it("keeps device and sandbox targets unavailable until implemented", () => {
     expect(EXECUTION_TARGETS.find((t) => t.id === "device")?.available).toBe(false);

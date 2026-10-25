@@ -42,7 +42,7 @@ const stateStyle: Record<JobState, string> = {
 function Jobs() {
   const { jobs, save, update } = useJobs();
   const [step, setStep] = useState(0);
-  const [templateId, setTemplateId] = useState(JOB_TEMPLATES[0].id);
+  const [templateId, setTemplateId] = useState(JOB_TEMPLATES[0]?.id ?? "test-failures");
   const [instruction, setInstruction] = useState("");
   const [target, setTarget] = useState<ExecutionTargetId>("host");
   const [open, setOpen] = useState<string | null>(null);
