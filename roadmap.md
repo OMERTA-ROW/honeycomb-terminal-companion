@@ -1,5 +1,10 @@
 # Honeycomb Terminal next work
 
+- [ ] Real selected-file transfer: authenticated device registration, expiring single-use pairing, named-device approval and enforced attempt limits.
+- [ ] Guardian enforcement: device-bound access, per-file grants, revocation, secret-free audit events and integrity checks.
+- [ ] Foreground two-client transfer with real progress/cancel/failure; Omni handoff unavailable until a verified enhancement API exists.
+- [ ] Run authorization/integrity tests and authenticated two-client browser checks; document evidence and native/network blockers.
+
 - [x] Reconcile copied canonical plan with specification and requirement-by-requirement gaps.
 - [x] Patch preview cursor, command/history, instructions, shortcut and connection-state gaps.
 - [x] Run automated behavior and phone/tablet checks; record results and physical-device limitations.
