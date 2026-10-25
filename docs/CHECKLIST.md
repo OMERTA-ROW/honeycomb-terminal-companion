@@ -42,3 +42,16 @@ Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / 
 - [ ] Real job runner on authorized host with authenticated result sync
 - [ ] GitHub connection (owner-authorized, verified) and Evolution endpoint definition
 - [ ] Authenticated encrypted WAN transport beyond same LAN
+
+## Install-and-connect scope (2026-10-25)
+
+- [~] QR-style pairing with requested/pending/confirmed/failed/expired states and 120 s expiry (simulated; QR is decorative placeholder)
+- [~] Test Connection returning 'Honeycomb connected' (simulated; honest denied/unreachable for permission/revoked/asleep/offline)
+- [~] Session drop/reconnect (simulated in terminal)
+- [~] Device care page: storage, cellular & battery, security, Bluetooth, app lock (simulated samples; planned items labelled)
+- [~] Bee honeycomb lock animation with reduced-motion mode
+- [x] Trusted-device revocation UI and theft-response guidance (no remote wipe by default)
+- [x] Mac companion source skeleton + packaging/blocker docs (companion/README.md)
+- [ ] Real Mac companion binary/installer — blocked: no physical Mac, no Apple Developer membership, no signing/notarization
+- [ ] Real pairing, transport, persistent sessions — blocked: native implementation not started
+- [ ] Native security/Bluetooth/storage integrations — blocked: require native apps and OS entitlements

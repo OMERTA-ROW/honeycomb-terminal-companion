@@ -75,3 +75,10 @@ These require authorized hardware and implementation described in `IMPLEMENTATIO
 - Final additional browser check: Computers visually active during an online terminal session; Build Box's asleep screen uses the shared frame and has no command entry. Screenshot captured and inspected.
 - Screenshots visually inspected: desktop Computers/Terminal, tablet Computers, phone Terminal/confirmation, final desktop asleep state. Champagne frame and line-icon sidebar readable; shell center remains black, hive cells unfilled, phone controls remain intentionally horizontally scrollable. Evidence under `/tmp/browser/mockup-frame/`.
 - Discrepancies/uncertainty: no original attachment for geometric/logo/font/proportion comparison; wordmark uses the existing font with zero tracking per project authoring constraints rather than literal spaced lettering. Existing navigation/content/simulation notices replace mockup controls; phone sidebar becomes a navigation row. No physical-device, Safari/WebKit or formal contrast testing. Project remains unpublished; no access, billing, deployment or integration changes performed.
+## 2026-10-25 — install-and-connect + device-care scope
+
+Automated: vitest 36/36 passed (6 files), including 14 new device-care tests (pairing TTL expiry, simulated payload labelling, Test Connection results per host status, storage recoverable totals excluding system, Wi-Fi-only and cellular-limit policy, bee fill progress + reduced-motion all-or-nothing). Build checked via dev server; routeTree regenerated for /device-care.
+
+Browser checks (Playwright, Chromium): see results below this section for pairing flow (request → pending → confirm → Test Connection), device-care tabs, app-lock bee animation, phone/tablet/desktop layout.
+
+Not verified: physical Mac/iPhone/Android, real pairing/transport, native OS integrations, Safari/WebKit, formal contrast audit. No real-device test results are claimed anywhere.
