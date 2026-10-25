@@ -2,7 +2,8 @@
 
 - [ ] Real selected-file transfer: authenticated device registration, expiring single-use pairing, named-device approval and enforced attempt limits.
 - [ ] Guardian enforcement: device-bound access, per-file grants, revocation, secret-free audit events and integrity checks.
-- [ ] Foreground two-client transfer with real progress/cancel/failure; Omni handoff unavailable until a verified enhancement API exists.
+- [ ] Foreground two-client transfer with real progress/cancel/failure across supported phone/tablet/laptop/desktop browsers; different-network physical acceptance remains required.
+- [ ] Document Omni enhancement boundary only; no enhancement UI or implementation in this milestone.
 - [ ] Run authorization/integrity tests and authenticated two-client browser checks; document evidence and native/network blockers.
 
 - [x] Reconcile copied canonical plan with specification and requirement-by-requirement gaps.

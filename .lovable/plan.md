@@ -8,11 +8,12 @@ Preserve the black-and-gold Terminal and its existing simulated shell/jobs. Add 
 - Require the sender to select each file and approve its named recipient. Guardian checks account, device possession, pairing, individual-file permission and revocation at every access boundary.
 - Transfer actual bytes through a private HTTPS relay, with observable upload/download progress, cancellation, failure and SHA-256 integrity verification. No public download links, whole-filesystem access or automatic sync.
 - Show an audit trail containing action/time/device/transfer identifiers, never pairing credentials or file contents.
-- Provide the selected-project Omni handoff surface with diff/test evidence and approval/rollback gates, visibly unavailable until a real enhancement API is connected. Do not substitute Omni's analytics connector for a coding API.
+- Document Omni's later selected-project enhancement boundary (diff/test evidence, explicit apply approval and rollback). No enhancement implementation or handoff UI in this milestone; do not substitute Omni's analytics connector for a coding API.
 
 ## Boundaries and assumptions
 - First slice pairs two signed-in browser devices belonging to the **same account**; cross-account sharing is excluded.
 - Both clients must remain open. Browser/device keys are not a claim of hardware-backed native security. iOS/Android background transfer and companion installs remain unavailable.
+- Support both sending and receiving on capable phone/tablet/laptop/desktop browsers. The owner's acceptance gate requires actual approved clients on different internet networks; same-machine browser checks will be reported separately, not as that result.
 - HTTPS relay protection is **not** an end-to-end encryption claim. Cloud infrastructure can process transferred bytes.
 - Use a conservative small-file cap and temporary relay retention, displayed explicitly; no paid relay service or unattended cleanup schedule will be enabled.
 
