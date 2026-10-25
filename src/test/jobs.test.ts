@@ -20,8 +20,9 @@ describe("job workflow", () => {
   });
   it("previews template commands and scope before authorization", () => {
     const preview = previewFor("test-failures", "run the tests");
-    expect(preview?.commands.length).toBeGreaterThan(0);
-    expect(preview?.scope).toContain("Read-only");
+    expect(preview).not.toBeNull();
+    expect(preview?.commands.length ?? 0).toBeGreaterThan(0);
+    expect(preview?.scope ?? "").toContain("Read-only");
     expect(previewFor("nope", "x")).toBeNull();
   });
   it("flags destructive instructions for explicit run-time confirmation", () => {
