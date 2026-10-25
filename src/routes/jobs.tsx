@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
 import { useJobs } from "@/hooks/use-jobs";
 import { CreativeTasks } from "@/components/CreativeTasks";
+import { EditorHandoff } from "@/components/EditorHandoff";
 import {
   EXECUTION_TARGETS,
   INTEGRATIONS,
@@ -89,6 +90,7 @@ function Jobs() {
       <h1 className="text-2xl sm:text-3xl font-semibold">Jobs</h1>
       <p className="text-muted-foreground text-sm mt-1">Simulated workflow — every job, state and log below is a preview. Nothing runs on a real computer.</p>
       <CreativeTasks />
+      <EditorHandoff />
 
       <section className="mt-6 rounded-lg border bg-card p-4">
         <h2 className="font-medium">Integrations</h2>
