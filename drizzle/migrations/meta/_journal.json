@@ -29,6 +29,13 @@
       "when": 1792956878592,
       "tag": "0003_guardian_atomic_limits_and_wallclock",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792957007835,
+      "tag": "0004_guardian_explicit_client_revokes",
+      "breakpoints": true
     }
   ]
 }
