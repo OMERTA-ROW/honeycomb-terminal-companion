@@ -1,5 +1,6 @@
 # Honeycomb Terminal next work
 
+- [ ] Staged creative package preview after current work: audio/video/book/game requests, selected files and originals-preserved output, disconnected provider/model/agent selectors and credential-free reusable handoff contract; document per-package acceptance and test unavailable execution. Preserve transfer-first and pending account-profile answer.
 - [ ] Approved follow-up: polish signup/login/logout/recovery, session/device revocation and secret-free audit while reusing Guardian. Blocked for authentication implementation: owner profile-data decision. Provider inspection and future Vault shared-identity contract documented; no SSO or Vault modification claimed.
 - [x] Read-only account inspection: Google/email enabled, signup allowed, email confirmation on; Lovable button exists but provider flag not reported. Zero accounts; OAuth return/two-client evidence absent. No auth settings changed.
 - [x] Reconcile the 21:14 add-on queue, Mac/iPhone/iPad priority, locked-phone notification/log masking requirements and real-only Test Connection acceptance; strengthen existing Demo pairing/test notices without changing transport. 36 relevant tests and three-size browser checks passed.
