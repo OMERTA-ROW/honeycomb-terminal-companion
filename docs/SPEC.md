@@ -47,6 +47,9 @@ Source: https://app.notion.com/p/404c1161030681eba2bed0a29e1af38d (scope text su
 - Private, unpublished. No deployment, no public sharing, no subscriptions, no paid services.
 - No real customer passwords, no remote host access. All hosts, pairing, terminal output labelled sample/simulated.
 
+## Approved visual direction
+Deep black background with substantial outline-only metallic gold hive cells on both edges, dimensional highlights and restrained outline glow, fading into a quiet dark center. Cell interiors remain empty black, never yellow. Fine gold panel edging and readable white text preserve existing layouts, functionality and simulation disclosures. Original reference image was not recovered from available project files, upload mounts or searchable project history during the 2026-10-25 polish; fidelity follows the owner's written direction, not a verified exact-image match.
+
 ## Native acceptance tests (to run once companion + transport exist)
 - New user pairs an iPad or phone with a supported computer without shell setup commands or IP addresses.
 - Pair new device: approve on host once; second launch opens without re-approval.
