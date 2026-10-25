@@ -20,3 +20,4 @@
 - Editor handoff contracts stay client-safe and separate from transport; UI uses no simulated hosts as authorization and cannot launch host/editor links until a verified adapter exists, preventing preview capabilities from becoming access grants.
 - Combs reuse the terminal's existing preview/confirmation and local shortcut storage; Demo job notices derive from terminal job states only, keeping UI completion separate from real host execution or push delivery.
 - Demo connection helpers must return a Demo-specific state, never a connected state; native acceptance requires independent authenticated host evidence.
+- Creative package previews and allowlisted handoff envelopes stay in browser-safe pure modules with account-keyed metadata-only drafts; they carry no credentials or grants and never dispatch, so recipient authorization cannot be inferred from preview selections.
