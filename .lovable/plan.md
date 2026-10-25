@@ -28,3 +28,11 @@ Preserve the black-and-gold Terminal and its existing simulated shell/jobs. Add 
 - Exercise registration → pairing → named approval → selected-file transfer → verified download in two isolated browser clients, where account access permits.
 - Check phone/tablet/desktop presentation and existing Terminal tests; inspect the automatic build result.
 - Record exact commands/results, changed files and what remains untested, including real cross-network devices. Keep everything unpublished.
+
+## Follow-up within this request: creative-task preview
+After transfer checks, add a clearly labeled preview for typed creative tasks targeting an approved desktop/laptop project. Unity and video editing remain disconnected: no companion/tool adapter is installed and no execution success will be simulated as real.
+- Record unique task IDs and preview queue/cancel/review states without executing commands or modifying projects.
+- Keep tests/build/render, output retrieval, apply and rollback unavailable until an authorized adapter and checkpoint evidence exist.
+- Document Omni orchestration, Guardian project/command scopes, capability detection, idempotent reconnect, disposable versioned workspaces and review-before-apply.
+- Specify a first Unity acceptance test using an approved small change in a disposable project copy with build/test evidence, artifact retrieval and revoked-device denial. Video adapter awaits editor selection.
+- Real creative enhancement follows verified pairing/transfers; this follow-up supplies requirements and honest preview only, not a real enhancement integration.
