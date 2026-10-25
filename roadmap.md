@@ -1,8 +1,8 @@
 # Honeycomb Terminal next work
 
-- [ ] Compact Device Care category cards on desktop/tablet, narrow-phone stacking; preserve all cleanup behavior.
-- [ ] Verify Microsoft documentation; add unavailable VS Code host/workspace handoff entry and reusable Omni adapter contract.
-- [ ] Run relevant tests and three-size browser checks; record prerequisites without installation/publication.
+- [x] Compact Device Care category cards on desktop/tablet, narrow-phone stacking; preserve all cleanup behavior.
+- [x] Verify Microsoft documentation; add unavailable VS Code host/workspace handoff entry and reusable Omni adapter contract.
+- [x] Run relevant tests and three-size browser checks; record prerequisites without installation/publication.
 
 - [x] Implement real selected-file transfer source: authenticated registration, expiring single-use pairing, named-device approval and attempt limits.
 - [x] Guardian enforcement source: device-bound access, per-file grants, revocation, secret-free audit and integrity; isolated PostgreSQL logic/grants tests passed.
