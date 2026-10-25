@@ -1,5 +1,6 @@
 # Honeycomb Terminal next work
 
+- [ ] Reconcile the 21:14 add-on queue, Mac/iPhone/iPad priority, locked-phone notification/log masking requirements and real-only Test Connection acceptance; strengthen existing Demo pairing/test notices without changing transport.
 - [x] Add Demo hive computers, saved Combs command cards and Demo job pass/fail completion notices.
 - [x] Record outbound relay/key pairing + tmux requirements; queue Explain This, revocable sharing and verified Evolution commands. Keep existing bee lock.
 - [x] Test hive, Combs confirmation/cancel and job completion across three screen sizes.
