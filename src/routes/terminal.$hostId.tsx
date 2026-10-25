@@ -76,8 +76,17 @@ export function Terminal() {
     );
   }
 
+  const pickTarget = (id: ExecutionTargetId) => {
+    const t = EXECUTION_TARGETS.find((x) => x.id === id);
+    if (!t) return;
+    if (!t.available) { setNotice(`${t.label}: ${t.note}`); return; }
+    setTarget(id);
+    setNotice("");
+  };
+
   const run = (cmd: string) => {
     if (dropped) { setNotice("Reconnect before entering commands. This session is simulated."); return; }
+    if (target !== "host") { setNotice("Only the paired computer target is available in this preview, and it is simulated."); return; }
     if (cmd.trim() === "clear") { setLines([]); setInput(""); return; }
     const out = simulate(cmd);
     setLines((l) => [...l, `$ ${cmd}`, ...(out ? out.split("\n") : [])]);
@@ -188,6 +197,21 @@ export function Terminal() {
           <Button variant="outline" onClick={() => { if (!navigator.onLine) { setNotice("This device is offline. Restore its network, then reconnect."); return; } setDropped(false); setNotice(""); setLines((l) => [...l, "[reconnected — session resumed (simulated)]"]); }} className="underline">Reconnect</Button>
         </div>
       )}
+
+      <div className="relative z-10 flex gap-1.5 overflow-x-auto px-3 py-1.5 bg-background border-b text-xs items-center" role="group" aria-label="Execution target">
+        <span className="text-muted-foreground shrink-0">Run on:</span>
+        {EXECUTION_TARGETS.map((t) => (
+          <Button
+            variant="outline"
+            key={t.id}
+            onClick={() => pickTarget(t.id)}
+            aria-pressed={target === t.id}
+            className={`shrink-0 h-7 px-2.5 rounded-full border text-xs ${target === t.id ? "border-primary text-primary" : ""} ${!t.available ? "opacity-50" : ""}`}
+          >
+            {t.label}{!t.available && " · soon"}
+          </Button>
+        ))}
+      </div>
 
       {notice && <p role="status" className="relative z-10 bg-secondary px-3 py-2 text-sm">{notice}</p>}
       <div ref={outRef} onClick={() => !window.getSelection()?.toString() && inputRef.current?.focus()} className="relative z-10 flex-1 overflow-auto p-3 font-mono text-sm text-terminal-foreground whitespace-pre-wrap select-text" data-testid="output">
