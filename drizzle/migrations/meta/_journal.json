@@ -8,6 +8,13 @@
       "when": 1792956655463,
       "tag": "0000_guardian_file_transfer",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792956667196,
+      "tag": "0001_fix_guardian_read_json",
+      "breakpoints": true
     }
   ]
 }
