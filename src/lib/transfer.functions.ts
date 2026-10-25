@@ -1,11 +1,11 @@
 import { createServerFn } from '@tanstack/react-start';
-import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
+import { requireActiveAccount } from './account.functions';
 import { z } from 'zod';
 import { base64ToBytes, proofMessage } from './transfer-shared';
 import type { Json } from '@/integrations/supabase/types';
 
 const uuid = z.string().uuid();
-export const registerDevice = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).inputValidator(z.object({ name: z.string().trim().min(1).max(60), key: z.object({ kty: z.literal('EC'), crv: z.literal('P-256'), x: z.string().max(100), y: z.string().max(100) }) })).handler(async ({ data, context }) => {
+export const registerDevice = createServerFn({ method: 'POST' }).middleware([requireActiveAccount]).inputValidator(z.object({ name: z.string().trim().min(1).max(60), key: z.object({ kty: z.literal('EC'), crv: z.literal('P-256'), x: z.string().max(100), y: z.string().max(100) }) })).handler(async ({ data, context }) => {
   await crypto.subtle.importKey('jwk', data.key, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
   const { count } = await supabaseAdmin.from('hc_devices').select('id', { count: 'exact', head: true }).eq('owner_id', context.userId).is('revoked_at', null);
@@ -15,7 +15,7 @@ export const registerDevice = createServerFn({ method: 'POST' }).middleware([req
   await supabaseAdmin.from('hc_audit').insert({ owner_id: context.userId, device_id: device.id, event: 'register' });
   return { id: device.id };
 });
-export const deviceChallenge = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).inputValidator(z.object({ device: uuid })).handler(async ({ data, context }) => {
+export const deviceChallenge = createServerFn({ method: 'POST' }).middleware([requireActiveAccount]).inputValidator(z.object({ device: uuid })).handler(async ({ data, context }) => {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
   const { data: device } = await supabaseAdmin.from('hc_devices').select('id,revoked_at').eq('id', data.device).eq('owner_id', context.userId).single();
   if (!device || device.revoked_at) throw new Error('Device unauthorized or revoked.');
@@ -27,7 +27,7 @@ export const deviceChallenge = createServerFn({ method: 'POST' }).middleware([re
   return { proof: proof.id };
 });
 const operation = z.enum(['list','issue','claim','approve','reject','revoke','offer','chunk','read','finish','complete','cancel','fail']);
-export const guardianAction = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).inputValidator(z.object({ device: uuid, proof: uuid, signature: z.string().max(200), op: operation, payload: z.record(z.unknown()) })).handler(async ({ data, context }) => {
+export const guardianAction = createServerFn({ method: 'POST' }).middleware([requireActiveAccount]).inputValidator(z.object({ device: uuid, proof: uuid, signature: z.string().max(200), op: operation, payload: z.record(z.unknown()) })).handler(async ({ data, context }) => {
   if (JSON.stringify(data.payload).length > 90000) throw new Error('Request too large.');
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
   const { data: device } = await supabaseAdmin.from('hc_devices').select('public_key,revoked_at').eq('id', data.device).eq('owner_id', context.userId).single();
