@@ -11,4 +11,5 @@
 - [x] Refine metallic hive edges and panel edging without changing functionality; reference not recovered, phone/tablet/desktop browser checks recorded.
 - [x] Apply original-mockup written direction to Terminal's window frame, brand, inset navigation and hive; three-size rendering checked.
 - [ ] Compare directly against original mockup — blocked: claimed attachment is not accessible in either upload mount or project assets; owner reattachment needed.
-- [ ] Install-and-connect scope (2026-10-25): QR pairing states, Test Connection, session reconnect, revocation, Mac companion source skeleton + blockers, device-care pages (storage/security/battery/Bluetooth/lock), docs + tests. In progress.
+- [x] Install-and-connect scope (2026-10-25): QR pairing states, Test Connection, session reconnect, revocation, Mac companion source skeleton + blockers, device-care pages (storage/security/battery/Bluetooth/lock), docs + tests; 36/36 tests and three-size browser checks pass.
+- [ ] Real Mac companion build/signing and real-device pairing — blocked: no physical Mac, no Apple Developer Program membership (paid), no signing/notarization credentials, no native mobile apps.
