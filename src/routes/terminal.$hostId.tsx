@@ -240,7 +240,7 @@ export function Terminal() {
       </div>
 
       {pending && (
-        <div className="fixed inset-0 bg-background/80 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" onKeyDown={(e) => { if (e.key === "Escape") { setPending(null); setManage(false); } }} aria-label="Command preview">
+        <div className="fixed inset-0 z-20 bg-background/80 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" onKeyDown={(e) => { if (e.key === "Escape") { setPending(null); setManage(false); } }} aria-label="Command preview">
           <div className="bg-popover rounded-lg border p-5 w-full max-w-md">
             <h2 className="font-medium">{pending.destructive || isDestructive(pending.command) ? "⚠ Confirm risky command (simulated)" : "Preview shortcut · simulated"}</h2>
             <pre className="whitespace-pre-wrap break-all font-mono text-sm bg-terminal text-terminal-foreground p-3 rounded mt-3">{pending.keyCombo || pending.command}</pre>
@@ -255,7 +255,7 @@ export function Terminal() {
       )}
 
       {manage && (
-        <div className="fixed inset-0 bg-background/80 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" onKeyDown={(e) => { if (e.key === "Escape") { setPending(null); setManage(false); } }} aria-label="Manage shortcuts">
+        <div className="fixed inset-0 z-20 bg-background/80 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" onKeyDown={(e) => { if (e.key === "Escape") { setPending(null); setManage(false); } }} aria-label="Manage shortcuts">
           <div className="bg-popover rounded-lg border p-5 w-full max-w-md max-h-[80vh] overflow-auto">
             <h2 className="font-medium mb-3">Shortcuts</h2>
             <ul className="space-y-2">
