@@ -21,3 +21,5 @@
 - Combs reuse the terminal's existing preview/confirmation and local shortcut storage; Demo job notices derive from terminal job states only, keeping UI completion separate from real host execution or push delivery.
 - Demo connection helpers must return a Demo-specific state, never a connected state; native acceptance requires independent authenticated host evidence.
 - Creative package previews and allowlisted handoff envelopes stay in browser-safe pure modules with account-keyed metadata-only drafts; they carry no credentials or grants and never dispatch, so recipient authorization cannot be inferred from preview selections.
+- Basic profiles use owner/session RLS and signup triggers; all account and Guardian server functions compose requireActiveAccount so subsequent requests reject explicitly revoked sessions independently of provider token expiry.
+- Workspace selected-file copies use account-keyed IndexedDB records, never native paths or automatic capture; header entries preserve the existing navigation destinations.
