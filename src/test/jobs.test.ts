@@ -26,7 +26,7 @@ describe("job workflow", () => {
   });
   it("flags destructive instructions for explicit run-time confirmation", () => {
     const preview = previewFor("worktree-changes", "rm -rf the old build");
-    expect(preview?.approvals[0]).toMatch(/destructive/i);
+    expect(preview?.approvals[0] ?? "").toMatch(/destructive/i);
   });
   it("offers the first template as run-tests and the next as isolated worktree", () => {
     expect(JOB_TEMPLATES[0].id).toBe("test-failures");
