@@ -9,3 +9,4 @@
 - [x] Extended scope: execution targets, jobs workflow, job templates, GitHub/Evolution cards (visibly unconnected), WAN transport + native gap docs.
 - [x] Run tests/build and mobile checks for extended scope; record evidence in VERIFICATION.md.
 - [x] Refine metallic hive edges and panel edging without changing functionality; reference not recovered, phone/tablet/desktop browser checks recorded.
+- [ ] Apply original-mockup visual direction to Terminal's window frame, brand, inset navigation and hive; verify attachment availability and three-size rendering.
