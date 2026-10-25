@@ -1,5 +1,9 @@
 # Honeycomb Terminal next work
 
+- [ ] Add Demo hive computers, saved Combs command cards and Demo job pass/fail completion notices.
+- [ ] Record outbound relay/key pairing + tmux requirements; queue Explain This, revocable sharing and verified Evolution commands. Keep existing bee lock.
+- [ ] Test hive, Combs confirmation/cancel and job completion across three screen sizes.
+
 - [x] Compact Device Care category cards on desktop/tablet, narrow-phone stacking; preserve all cleanup behavior.
 - [x] Verify Microsoft documentation; add unavailable VS Code host/workspace handoff entry and reusable Omni adapter contract.
 - [x] Run relevant tests and three-size browser checks; record prerequisites without installation/publication.

@@ -1,8 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { Monitor, Moon, WifiOff, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
 import { useHosts } from "@/hooks/use-hosts";
-import { SAMPLE_HOSTS, STATUS_INFO, type HostStatus } from "@/lib/terminal";
+import { SAMPLE_HOSTS, STATUS_INFO } from "@/lib/terminal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,61 +20,48 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const dot: Record<HostStatus, string> = {
-  online: "bg-success",
-  asleep: "bg-warning",
-  offline: "bg-muted-foreground",
-  permission: "bg-warning",
-  revoked: "bg-destructive",
-};
-
 function Index() {
   const { hosts, save } = useHosts();
+  const navigate = useNavigate();
+  const [selectedId, setSelectedId] = useState("studio-mac");
+  const selected = hosts.find((h) => h.id === selectedId) ?? hosts[0];
   return (
     <AppShell>
       <div className="flex items-end flex-wrap justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold">Your computers</h1>
-          <p className="text-muted-foreground text-sm mt-1">Sample computers. Status shown is simulated, not live.</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold">Your hive</h1>
+          <p className="text-muted-foreground text-sm mt-1">Demo computers · simulated availability. No real companion is connected.</p>
         </div>
-        <Link to="/pair" className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium">Pair a computer</Link>
+        <Button asChild><Link to="/pair">Pair a computer · Demo</Link></Button>
       </div>
-      <ul className="grid gap-3 sm:grid-cols-2">
+      <ul className="computer-hive" aria-label="Demo paired computers">
         {hosts.map((h) => {
           const info = STATUS_INFO[h.status];
           return (
-            <li key={h.id} className="rounded-lg border bg-card p-4" data-testid={`host-${h.id}`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">{h.name}</div>
-                  <div className="text-xs text-muted-foreground">{h.os} · last seen {h.lastSeen}</div>
-                </div>
-                <span className="flex items-center gap-2 text-xs">
-                  <span className={`w-2 h-2 rounded-full ${dot[h.status]}`} />
-                  {info.label}
+            <li key={h.id} data-testid={`host-${h.id}`}>
+              <Button variant="ghost" className={`computer-cell ${h.status === "online" ? "computer-cell-online" : "computer-cell-dim"}`} aria-label={`${h.name} · ${info.label} · Demo${info.canOpen ? " · Open shell" : " · View status"}`} onClick={() => { setSelectedId(h.id); if (info.canOpen) void navigate({to:"/terminal/$hostId",params:{hostId:h.id}}); }}>
+                <svg viewBox="0 0 200 174" aria-hidden="true" className="computer-cell-outline"><polygon points="50,3 150,3 197,87 150,171 50,171 3,87" /></svg>
+                <span className="computer-cell-content">
+                  {h.status === "asleep" ? <Moon aria-hidden="true"/> : h.status === "offline" ? <WifiOff aria-hidden="true"/> : h.status === "permission" || h.status === "revoked" ? <ShieldAlert aria-hidden="true"/> : <Monitor aria-hidden="true"/>}
+                  <span className="text-sm font-medium">{h.name.replace(/ \((sample|simulated)\)$/, "")}</span>
+                  <span className="text-xs">{info.label}</span>
+                  <span className="text-xs text-muted-foreground">{h.os} · Demo</span>
                 </span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-3">{info.next}</p>
-              <div className="flex gap-2 mt-4">
-                {info.canOpen ? (
-                  <Link to="/terminal/$hostId" params={{ hostId: h.id }} className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm">Open shell</Link>
-                ) : (
-                  <Button variant="outline" disabled className="rounded-md bg-secondary text-muted-foreground px-3 py-1.5 text-sm">Unavailable</Button>
-                )}
-                {h.status !== "revoked" && (
-                  <Button variant="outline"
-                    onClick={() => confirm(`Revoke this device's access to ${h.name}?`) && save(hosts.map((x) => (x.id === h.id ? { ...x, status: "revoked" } : x)))}
-                    className="rounded-md border px-3 py-1.5 text-sm text-destructive"
-                  >
-                    Revoke
-                  </Button>
-                )}
-              </div>
+              </Button>
             </li>
           );
         })}
       </ul>
-      <Button variant="outline" onClick={() => save(SAMPLE_HOSTS)} className="mt-6 text-xs text-muted-foreground underline">Reset sample computers</Button>
+      {selected && <section aria-label="Selected Demo computer details" className="mt-6 border-t pt-4">
+        <h2 className="font-medium">{selected.name} · Demo</h2>
+        <p className="text-xs text-muted-foreground mt-1">{selected.os} · last seen {selected.lastSeen} · {STATUS_INFO[selected.status].label} (simulated)</p>
+        <p className="text-sm text-muted-foreground mt-2">{STATUS_INFO[selected.status].next}</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {STATUS_INFO[selected.status].canOpen ? <Button asChild><Link to="/terminal/$hostId" params={{hostId:selected.id}}>Open shell · Demo</Link></Button> : <Button variant="outline" disabled>Unavailable</Button>}
+          {selected.status !== "revoked" && <Button variant="outline" className="text-destructive" onClick={() => confirm(`Revoke Demo access to ${selected.name}? Real transfer devices are unaffected.`) && save(hosts.map(h => h.id === selected.id ? {...h,status:"revoked"} : h))}>Revoke Demo host</Button>}
+        </div>
+      </section>}
+      <Button variant="outline" onClick={() => save(SAMPLE_HOSTS)} className="mt-6 text-xs text-muted-foreground">Reset sample computers · Demo</Button>
     </AppShell>
   );
 }
