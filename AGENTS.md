@@ -19,3 +19,4 @@
 - Browser device identity uses non-exportable IndexedDB WebCrypto keys, and relay chunks are private database bytes; this enables revocation checks on every chunk without public or signed download URLs, but is not hardware-backed or end-to-end encryption.
 - Editor handoff contracts stay client-safe and separate from transport; UI uses no simulated hosts as authorization and cannot launch host/editor links until a verified adapter exists, preventing preview capabilities from becoming access grants.
 - Combs reuse the terminal's existing preview/confirmation and local shortcut storage; Demo job notices derive from terminal job states only, keeping UI completion separate from real host execution or push delivery.
+- Demo connection helpers must return a Demo-specific state, never a connected state; native acceptance requires independent authenticated host evidence.
