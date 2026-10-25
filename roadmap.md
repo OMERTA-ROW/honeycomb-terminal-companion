@@ -1,8 +1,10 @@
 # Honeycomb Terminal next work
 
-- [ ] Add Demo hive computers, saved Combs command cards and Demo job pass/fail completion notices.
-- [ ] Record outbound relay/key pairing + tmux requirements; queue Explain This, revocable sharing and verified Evolution commands. Keep existing bee lock.
-- [ ] Test hive, Combs confirmation/cancel and job completion across three screen sizes.
+- [x] Add Demo hive computers, saved Combs command cards and Demo job pass/fail completion notices.
+- [x] Record outbound relay/key pairing + tmux requirements; queue Explain This, revocable sharing and verified Evolution commands. Keep existing bee lock.
+- [x] Test hive, Combs confirmation/cancel and job completion across three screen sizes.
+- [ ] Outbound Mac companion/tmux/push delivery — blocked: native host implementation, relay and authorized hardware.
+- [ ] Explain This/live share/Evolution CLI — blocked: provider consent, separate sharing approval/host enforcement, verified CLI respectively.
 
 - [x] Compact Device Care category cards on desktop/tablet, narrow-phone stacking; preserve all cleanup behavior.
 - [x] Verify Microsoft documentation; add unavailable VS Code host/workspace handoff entry and reusable Omni adapter contract.
