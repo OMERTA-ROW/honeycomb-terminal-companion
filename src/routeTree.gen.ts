@@ -14,6 +14,7 @@ import { Route as DeviceCareRouteImport } from './routes/device-care'
 import { Route as InstructionsRouteImport } from './routes/instructions'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as PairRouteImport } from './routes/pair'
+import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as TerminalHostIdRouteImport } from './routes/terminal.$hostId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const PairRoute = PairRouteImport.update({
   path: '/pair',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TransferRoute = TransferRouteImport.update({
+  id: '/transfer',
+  path: '/transfer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TerminalHostIdRoute = TerminalHostIdRouteImport.update({
   id: '/terminal/$hostId',
   path: '/terminal/$hostId',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/instructions': typeof InstructionsRoute
   '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
+  '/transfer': typeof TransferRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/instructions': typeof InstructionsRoute
   '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
+  '/transfer': typeof TransferRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/instructions': typeof InstructionsRoute
   '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
+  '/transfer': typeof TransferRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
 }
 export interface FileRouteTypes {
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
     | '/instructions'
     | '/jobs'
     | '/pair'
+    | '/transfer'
     | '/terminal/$hostId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,6 +98,7 @@ export interface FileRouteTypes {
     | '/instructions'
     | '/jobs'
     | '/pair'
+    | '/transfer'
     | '/terminal/$hostId'
   id:
     | '__root__'
@@ -96,6 +107,7 @@ export interface FileRouteTypes {
     | '/instructions'
     | '/jobs'
     | '/pair'
+    | '/transfer'
     | '/terminal/$hostId'
   fileRoutesById: FileRoutesById
 }
@@ -105,6 +117,7 @@ export interface RootRouteChildren {
   InstructionsRoute: typeof InstructionsRoute
   JobsRoute: typeof JobsRoute
   PairRoute: typeof PairRoute
+  TransferRoute: typeof TransferRoute
   TerminalHostIdRoute: typeof TerminalHostIdRoute
 }
 
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PairRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/transfer': {
+      id: '/transfer'
+      path: '/transfer'
+      fullPath: '/transfer'
+      preLoaderRoute: typeof TransferRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terminal/$hostId': {
       id: '/terminal/$hostId'
       path: '/terminal/$hostId'
@@ -161,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   InstructionsRoute: InstructionsRoute,
   JobsRoute: JobsRoute,
   PairRoute: PairRoute,
+  TransferRoute: TransferRoute,
   TerminalHostIdRoute: TerminalHostIdRoute,
 }
 export const routeTree = rootRouteImport

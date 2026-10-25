@@ -14,13 +14,289 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      hc_audit: {
+        Row: {
+          created_at: string
+          device_id: string
+          event: string
+          id: string
+          owner_id: string
+          resource_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          event: string
+          id?: string
+          owner_id: string
+          resource_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          event?: string
+          id?: string
+          owner_id?: string
+          resource_id?: string | null
+        }
+        Relationships: []
+      }
+      hc_chunks: {
+        Row: {
+          bytes: string
+          position: number
+          transfer_id: string
+        }
+        Insert: {
+          bytes: string
+          position: number
+          transfer_id: string
+        }
+        Update: {
+          bytes?: string
+          position?: number
+          transfer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hc_chunks_transfer_id_fkey"
+            columns: ["transfer_id"]
+            isOneToOne: false
+            referencedRelation: "hc_transfers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hc_devices: {
+        Row: {
+          attempt_window: string
+          attempts: number
+          created_at: string
+          id: string
+          last_seen: string
+          name: string
+          owner_id: string
+          public_key: Json
+          revoked_at: string | null
+        }
+        Insert: {
+          attempt_window?: string
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_seen?: string
+          name: string
+          owner_id: string
+          public_key: Json
+          revoked_at?: string | null
+        }
+        Update: {
+          attempt_window?: string
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_seen?: string
+          name?: string
+          owner_id?: string
+          public_key?: Json
+          revoked_at?: string | null
+        }
+        Relationships: []
+      }
+      hc_pair_requests: {
+        Row: {
+          claimant: string | null
+          code_hash: string
+          created_at: string
+          expires_at: string
+          id: string
+          issuer: string
+          owner_id: string
+          state: string
+        }
+        Insert: {
+          claimant?: string | null
+          code_hash: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          issuer: string
+          owner_id: string
+          state?: string
+        }
+        Update: {
+          claimant?: string | null
+          code_hash?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          issuer?: string
+          owner_id?: string
+          state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hc_pair_requests_claimant_fkey"
+            columns: ["claimant"]
+            isOneToOne: false
+            referencedRelation: "hc_devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hc_pair_requests_issuer_fkey"
+            columns: ["issuer"]
+            isOneToOne: false
+            referencedRelation: "hc_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hc_proofs: {
+        Row: {
+          device_id: string
+          expires_at: string
+          id: string
+          owner_id: string
+          used: boolean
+        }
+        Insert: {
+          device_id: string
+          expires_at?: string
+          id?: string
+          owner_id: string
+          used?: boolean
+        }
+        Update: {
+          device_id?: string
+          expires_at?: string
+          id?: string
+          owner_id?: string
+          used?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hc_proofs_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "hc_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hc_transfers: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          name: string
+          owner_id: string
+          received_bytes: number
+          recipient: string
+          sender: string
+          sha256: string
+          size: number
+          state: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          name: string
+          owner_id: string
+          received_bytes?: number
+          recipient: string
+          sender: string
+          sha256: string
+          size: number
+          state?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          received_bytes?: number
+          recipient?: string
+          sender?: string
+          sha256?: string
+          size?: number
+          state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hc_transfers_recipient_fkey"
+            columns: ["recipient"]
+            isOneToOne: false
+            referencedRelation: "hc_devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hc_transfers_sender_fkey"
+            columns: ["sender"]
+            isOneToOne: false
+            referencedRelation: "hc_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hc_trust: {
+        Row: {
+          created_at: string
+          device_a: string
+          device_b: string
+          id: string
+          owner_id: string
+          revoked_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_a: string
+          device_b: string
+          id?: string
+          owner_id: string
+          revoked_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_a?: string
+          device_b?: string
+          id?: string
+          owner_id?: string
+          revoked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hc_trust_device_a_fkey"
+            columns: ["device_a"]
+            isOneToOne: false
+            referencedRelation: "hc_devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hc_trust_device_b_fkey"
+            columns: ["device_b"]
+            isOneToOne: false
+            referencedRelation: "hc_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      hc_action: {
+        Args: {
+          p_data: Json
+          p_device: string
+          p_op: string
+          p_owner: string
+          p_proof: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

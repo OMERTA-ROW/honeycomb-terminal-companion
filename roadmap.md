@@ -1,12 +1,13 @@
 # Honeycomb Terminal next work
 
-- [ ] Real selected-file transfer: authenticated device registration, expiring single-use pairing, named-device approval and enforced attempt limits.
-- [ ] Guardian enforcement: device-bound access, per-file grants, revocation, secret-free audit events and integrity checks.
-- [ ] Foreground two-client transfer with real progress/cancel/failure across supported phone/tablet/laptop/desktop browsers; different-network physical acceptance remains required.
-- [ ] Document Omni enhancement boundary only; no enhancement UI or implementation in this milestone.
-- [ ] After transfer checks: document Unity/video creative-task requirements and add explicitly disconnected preview task submission/review states without real host execution.
-- [ ] Document disposable-project Unity acceptance, adapter prerequisites, idempotent jobs, checkpoint/review/rollback and revoked-device rejection.
-- [ ] Run authorization/integrity tests and authenticated two-client browser checks; document evidence and native/network blockers.
+- [x] Implement real selected-file transfer source: authenticated registration, expiring single-use pairing, named-device approval and attempt limits.
+- [x] Guardian enforcement source: device-bound access, per-file grants, revocation, secret-free audit and integrity; isolated PostgreSQL logic/grants tests passed.
+- [ ] Authenticated two-client UI verification — blocked: zero auth users; owner first sign-in needed.
+- [ ] Different-network physical acceptance across supported devices — blocked: authorized physical clients and network evidence needed.
+- [x] Document Omni enhancement boundary only; no real enhancement integration.
+- [x] After transfer logic checks: Unity/video/browser creative-task requirements and explicitly disconnected local preview/review/cancellation.
+- [x] Disposable-project Unity acceptance, adapters, idempotency, checkpoint/review/rollback and revocation boundary documented.
+- [x] Run retained unit/SQL logic tests and public three-size browser checks; record unverified authenticated flow.
 
 - [x] Reconcile copied canonical plan with specification and requirement-by-requirement gaps.
 - [x] Patch preview cursor, command/history, instructions, shortcut and connection-state gaps.

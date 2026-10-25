@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Monitor, Link2, ListChecks, BookOpen, ShieldCheck } from "lucide-react";
+import { Monitor, Link2, ListChecks, BookOpen, ShieldCheck, Files } from "lucide-react";
 import { TerminalBrand } from "./TerminalBrand";
 import { HiveBackdrop } from "./HiveBackdrop";
 
@@ -12,7 +12,7 @@ export function AppShell({ children, terminal = false }: { children: ReactNode; 
         <TerminalBrand />
       </header>
       <div className="preview-disclosure relative z-10 text-warning text-center text-xs py-2 px-3">
-        Prototype preview — sample computers and a simulated terminal. Nothing connects to or runs on a real computer.
+        Terminal, host pairing and jobs are simulated. File transfer uses actual selected bytes between authenticated browser devices; no remote shell executes.
       </div>
       <div className="window-body relative z-10">
         <nav className="window-sidebar" aria-label="Main navigation">
@@ -20,6 +20,7 @@ export function AppShell({ children, terminal = false }: { children: ReactNode; 
             ["/", "Computers", Monitor],
             ["/pair", "Pair", Link2],
             ["/jobs", "Jobs", ListChecks],
+            ["/transfer", "File transfer", Files],
             ["/device-care", "Device care", ShieldCheck],
             ["/instructions", "Instructions", BookOpen],
           ] as const).map(([to, label, Icon]) => (
