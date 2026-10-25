@@ -52,6 +52,30 @@ Planning only, 2026-10-24. No companion, native package, account service, transp
 - Run native acceptance from `SPEC.md` on each declared platform; physical devices and actual keyboards required, not viewport emulation alone.
 - Cost worksheet: $20/user/year proposed revenue less payment fees, taxes as applicable, measured direct/relay use, storage, support, updates and sustainable margin. Validate device limits and abuse caps. Hosted compute and heavy relay are separately costed, not bundled assumptions. No subscription or billing activation without further owner authorization.
 
+## WAN transport options (remote execution beyond same LAN — no blanket same-Wi-Fi constraint)
+
+| Option | How it works | Strengths | Dependencies / risks |
+|---|---|---|---|
+| End-to-end encrypted relay | Companion and mobile both dial out to an opaque relay; E2E keys negotiated device-to-device (e.g. reviewed Noise), relay forwards ciphertext only | Works through NAT/CGNAT/firewalls; no router changes; consistent mobile experience | Relay infrastructure cost (separately costed); must prove relay cannot read content; bandwidth measurement before purchase |
+| Overlay network (WireGuard/Tailscale-style) | Devices join a private encrypted overlay; terminal rides over it | Mature NAT traversal and encryption | Third-party coordination dependence; identity still needs binding to owner authorization; per-platform tunnel entitlements (iOS NetworkExtension) |
+| Direct TLS/QUIC with certificates | Direct connection using host-issued certs, with STUN/hole-punching or port forwarding | No relay cost when it works | Fails on CGNAT/restrictive networks; dynamic DNS/IP discovery needed; fallback still required |
+
+Selection gate: threat model, then spike direct vs relay success rates on real networks. All options still require the owner-authorized pairing and protected device keys from phases 2–4; transport never grants access by itself.
+
+## Native platform gaps (honest constraints)
+
+- **iOS/iPadOS:** no unrestricted local shell or access to other apps' data; no guaranteed background runtime — persistent work must live on the authorized host. Device-local tools are limited to what the app sandbox and Apple APIs permit (e.g. in-app editors, Shortcuts-style actions). NetworkExtension entitlements needed for overlay transports.
+- **Android:** device-local tools are more feasible (app-private sandbox, Termux-style bundled environment) but still scoped to the app; background execution is limited by Doze/OEM killers — foreground service or host-side persistence required.
+- **Desktop companion:** per-OS PTY, keystore, sleep and permission signals as detailed in phases 1–2.
+- Declare unsupported capabilities per platform rather than implying parity.
+
+## Jobs and integrations implementation gates (extended scope)
+
+- Job runner lives on the authorized host companion: queue, scoped execution, bounded logs, cancellation signals, result sync over the encrypted transport. Mobile is a controller/viewer, never the persistent executor.
+- Authorization scopes are per repository and per job; destructive actions, publishing/deployment, spending and external messages each need explicit approval unless separately preauthorized by the owner.
+- GitHub: owner-authorized connection (OAuth or GitHub App) with minimal repo scopes, verified before any "connected" claim. Evolution: endpoint and contract must be defined and verified first; nothing is configured today.
+- Hosted sandbox: separate product decision with its own costing; not provisioned.
+
 ## Inputs needed before actual implementation
 - Owner's first authorized test OS/version/hardware and physical iPad/phone availability.
 - Explicit authorization for local companion execution, then for any real-device network test; the current no-real-access constraint remains until changed.

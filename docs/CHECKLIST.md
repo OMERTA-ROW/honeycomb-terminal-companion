@@ -20,6 +20,11 @@ Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / 
 - [x] Copied canonical plan reconciled requirement by requirement in GAP_CHECKLIST.md
 - [x] Concrete gated companion/security/persistence plan in IMPLEMENTATION_PLAN.md; planning only
 - [x] Actual checks and limitations recorded in VERIFICATION.md
+- [x] Black-and-gold hive theme: near-black background, thin gold hexagon outlines on both edges fading inward, gold accents, white text
+- [~] Execution target selector (This device / Paired computer / Hosted sandbox) — device and sandbox honestly unavailable; host simulated
+- [~] Jobs workflow — instruction → command/scope preview → authorize → queued/running/waiting/failed/completed/cancelled, logs, cancellation, device-local result retrieval; all simulated
+- [~] Job templates — "run existing tests and explain failures" (read-only scope), "prepare code changes in isolated worktree for review"
+- [~] GitHub and Evolution integration cards — visibly Not connected; no endpoints invented, no credentials requested
 
 ## Blocked / not started (native & backend)
 - [ ] Host companion (macOS/Windows/Linux) — first-host feasibility decision pending
@@ -30,3 +35,8 @@ Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / 
 - [ ] Update staging / rollback (no automation activated)
 - [ ] Billing ($20/user/year proposed; costs unvalidated; not activated)
 - [ ] Physical iPad/iPhone/Android and hardware keyboard testing — authorized test hardware needed
+- [ ] Device-local tool execution (platform-limited) — iOS/Android capability spikes needed
+- [ ] Hosted sandbox — not provisioned; separate costing and authorization required
+- [ ] Real job runner on authorized host with authenticated result sync
+- [ ] GitHub connection (owner-authorized, verified) and Evolution endpoint definition
+- [ ] Authenticated encrypted WAN transport beyond same LAN
