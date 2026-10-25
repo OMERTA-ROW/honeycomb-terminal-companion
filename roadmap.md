@@ -4,6 +4,8 @@
 - [ ] Guardian enforcement: device-bound access, per-file grants, revocation, secret-free audit events and integrity checks.
 - [ ] Foreground two-client transfer with real progress/cancel/failure across supported phone/tablet/laptop/desktop browsers; different-network physical acceptance remains required.
 - [ ] Document Omni enhancement boundary only; no enhancement UI or implementation in this milestone.
+- [ ] After transfer checks: document Unity/video creative-task requirements and add explicitly disconnected preview task submission/review states without real host execution.
+- [ ] Document disposable-project Unity acceptance, adapter prerequisites, idempotent jobs, checkpoint/review/rollback and revoked-device rejection.
 - [ ] Run authorization/integrity tests and authenticated two-client browser checks; document evidence and native/network blockers.
 
 - [x] Reconcile copied canonical plan with specification and requirement-by-requirement gaps.
