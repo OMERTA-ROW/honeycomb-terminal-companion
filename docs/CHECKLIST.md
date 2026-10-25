@@ -80,3 +80,8 @@ Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / 
 - [ ] Actual Mac Test Connection acceptance, tmux app-close/drop resume and locked-phone notification with masked logs/cancel — native runner, relay, delivery and physical hardware required; Demo success cannot pass.
 - [x] Read-only account provider/redirect/count checks: Google/email enabled, signup allowed, confirmation required; zero accounts. Lovable flag not reported; actual OAuth/recovery/session flows unverified.
 - [ ] Account signup/login/recovery polish and future Vault identity contract — owner profile-data answer required; preserve existing Guardian isolation, no Vault edits or claimed SSO.
+
+## Staged creative packages
+- [~] Audio/video/book/game previews, selected file metadata, original media playback, proposed operations, book owner-supplied ISBN checksum/consent and disconnected provider/model/agent choices; local save/cancel only.
+- [x] Credential-free inert versioned handoff contract, originals-preserved/separate-output policy and package/AI/handoff acceptance requirements recorded in CREATIVE_PACKAGES.md.
+- [ ] Real processing/export/before-after, provider connection, recipient enforcement/durable handoff/checkpoints/rollback — authorized available tools/providers/hosts plus transfer-first acceptance required; no actual processing verified.

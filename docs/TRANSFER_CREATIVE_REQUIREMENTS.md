@@ -62,3 +62,6 @@ Commands/tests/builds require scoped explicit approval, isolated worktree/copy/c
 
 ### Smallest editor acceptance (pending)
 After actual different-network selected-file acceptance: install/authorize companion and VS Code adapter on a disposable workspace host through separate approved work. From phone/tablet choose exact paired host and approved workspace; reject alternate/unapproved paths. Request desktop handoff and verify editor opened correct isolated copy on host. For browser mode verify supported provider sign-in, remote workspace, extension/tool limitations and explicit isolation. Disconnect/reconnect yields one request result. Revoke device and confirm subsequent handoff/commands plus managed session access are denied. No actual integration is verified until these tests run.
+
+## Staged audio/video/book/game and direct AI connections
+Owner extension at 21:54 UTC preserves transfer-first and all prior gates. Requirements, per-package/AI/handoff acceptance, inert preview contract and remaining adapters/API/host prerequisites are in CREATIVE_PACKAGES.md. No creative execution in Vault password/recovery flows; original files preserved and all execution unsupported/unavailable until authorized real adapters/providers exist.
