@@ -19,9 +19,9 @@ describe("preview terminal controls", () => {
     render(<Terminal/>);
     const output=screen.getByTestId("output");
     const before=output.textContent;
-    fireEvent.click(screen.getByRole("button",{name:"Git status",exact:true}));
+    fireEvent.click(screen.getByRole("button",{name:"Git status"}));
     expect(output.textContent).toBe(before);
-    fireEvent.click(screen.getByRole("button",{name:"Run",exact:true}));
+    fireEvent.click(screen.getByRole("button",{name:"Run"}));
     expect(output.textContent).toContain("$ git status");
   });
   it("canceling a destructive shortcut never sends the command", () => {
