@@ -15,6 +15,13 @@
       "when": 1792956667196,
       "tag": "0001_fix_guardian_read_json",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792956739228,
+      "tag": "0002_guardian_server_integrity",
+      "breakpoints": true
     }
   ]
 }
