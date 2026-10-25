@@ -163,7 +163,8 @@
   .window-header { min-height: 80px; padding: 16px; }
   .brand-wordmark { font-size: 17px; }
   .window-body { display: flex; flex-direction: column; gap: 16px; padding: 12px; }
-  .window-sidebar { min-height: 0; width: 100%; padding: 5px; flex-direction: row; gap: 3px; }
+  .window-sidebar { min-height: 0; width: 100%; padding: 5px; flex-direction: row; flex-wrap: wrap; gap: 3px; }
+  .window-sidebar .sidebar-link { flex-basis: 28%; }
   .sidebar-link { flex: 1; min-width: 0; flex-direction: column; gap: 6px; padding: 9px 2px; font-size: 10px; }
   .window-main-session { flex: 1; }
   .preview-disclosure { font-size: 10px; }

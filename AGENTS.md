@@ -15,3 +15,5 @@
 
 - Keep decorative hive geometry in the shared HiveBackdrop and its metallic colors in global semantic tokens; use instance-unique SVG IDs so overlapping route backdrops cannot resolve each other’s definitions.
 - Keep the branded window frame and existing four-destination navigation in AppShell, including active terminal sessions; adapt the inset sidebar into a compact navigation row on phones without changing destinations.
+- Selected-file transfer uses authenticated server functions plus service-only atomic Guardian database operations; ordinary clients have no direct data permissions, so device signatures, one-use proofs and scoped grants cannot be bypassed through the Data API.
+- Browser device identity uses non-exportable IndexedDB WebCrypto keys, and relay chunks are private database bytes; this enables revocation checks on every chunk without public or signed download URLs, but is not hardware-backed or end-to-end encryption.
