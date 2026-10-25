@@ -5,6 +5,7 @@ import { HiveBackdrop } from "@/components/HiveBackdrop";
 import { historyIndex, insertAtSelection, KEY_COMBINATIONS, moveCursor } from "@/lib/command-entry";
 import { useHosts } from "@/hooks/use-hosts";
 import { DEFAULT_SHORTCUTS, SHORTCUTS_KEY, STATUS_INFO, isDestructive, simulate, type Shortcut } from "@/lib/terminal";
+import { EXECUTION_TARGETS, type ExecutionTargetId } from "@/lib/jobs";
 
 export const Route = createFileRoute("/terminal/$hostId")({
   head: () => ({
@@ -37,6 +38,7 @@ export function Terminal() {
   const [manage, setManage] = useState(false);
   const [dropped, setDropped] = useState(false);
   const [draft, setDraft] = useState({ label: "", command: "", keyCombo: "" });
+  const [target, setTarget] = useState<ExecutionTargetId>("host");
   const inputRef = useRef<HTMLInputElement>(null);
   const outRef = useRef<HTMLDivElement>(null);
 

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as InstructionsRouteImport } from './routes/instructions'
+import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as PairRouteImport } from './routes/pair'
 import { Route as TerminalHostIdRouteImport } from './routes/terminal.$hostId'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const InstructionsRoute = InstructionsRouteImport.update({
   id: '/instructions',
   path: '/instructions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobsRoute = JobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PairRoute = PairRouteImport.update({
@@ -38,12 +44,14 @@ const TerminalHostIdRoute = TerminalHostIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/instructions': typeof InstructionsRoute
+  '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/instructions': typeof InstructionsRoute
+  '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
 }
@@ -51,20 +59,23 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/instructions': typeof InstructionsRoute
+  '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/instructions' | '/pair' | '/terminal/$hostId'
+  fullPaths: '/' | '/instructions' | '/jobs' | '/pair' | '/terminal/$hostId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/instructions' | '/pair' | '/terminal/$hostId'
-  id: '__root__' | '/' | '/instructions' | '/pair' | '/terminal/$hostId'
+  to: '/' | '/instructions' | '/jobs' | '/pair' | '/terminal/$hostId'
+  id:
+    '__root__' | '/' | '/instructions' | '/jobs' | '/pair' | '/terminal/$hostId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   InstructionsRoute: typeof InstructionsRoute
+  JobsRoute: typeof JobsRoute
   PairRoute: typeof PairRoute
   TerminalHostIdRoute: typeof TerminalHostIdRoute
 }
@@ -83,6 +94,13 @@ declare module '@tanstack/react-router' {
       path: '/instructions'
       fullPath: '/instructions'
       preLoaderRoute: typeof InstructionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jobs': {
+      id: '/jobs'
+      path: '/jobs'
+      fullPath: '/jobs'
+      preLoaderRoute: typeof JobsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pair': {
@@ -105,6 +123,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   InstructionsRoute: InstructionsRoute,
+  JobsRoute: JobsRoute,
   PairRoute: PairRoute,
   TerminalHostIdRoute: TerminalHostIdRoute,
 }
