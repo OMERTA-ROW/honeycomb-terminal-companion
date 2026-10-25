@@ -42,7 +42,7 @@ function DeviceCare() {
       <h1 className="text-2xl font-semibold">Device care</h1>
       <p className="text-sm text-warning mt-1">Preview: all figures are simulated samples. Native OS access cannot be supplied by a web preview — capabilities marked “planned” need the native app.</p>
 
-      <div className="flex gap-1.5 overflow-x-auto mt-5 mb-6" role="tablist" aria-label="Device care sections">
+      <div className="flex flex-wrap gap-1.5 mt-5 mb-6" role="tablist" aria-label="Device care sections">
         {TABS.map((t) => (
           <Button key={t} variant="outline" role="tab" aria-selected={tab === t} onClick={() => setTab(t)}
             className={`shrink-0 h-8 px-3 rounded-full border text-xs ${tab === t ? "border-primary text-primary" : ""}`}>
@@ -65,21 +65,21 @@ function StoragePanel() {
   const [cleaned, setCleaned] = useState<number | null>(null);
   const total = recoverableBytes(SAMPLE_STORAGE);
   return (
-    <section className="max-w-2xl">
+    <section>
       <h2 className="font-medium text-primary mb-1">Storage analysis · simulated sample</h2>
       <p className="text-sm text-muted-foreground mb-4">Authorized analysis only. Exact duplicates are byte-identical files — similar photos are a separate, manual review and are never auto-grouped here.</p>
-      <ul className="grid gap-3">
+      <ul className="grid grid-cols-1 min-[700px]:grid-cols-2 xl:grid-cols-3 gap-3">
         {SAMPLE_STORAGE.map((c) => (
-          <li key={c.id} className="rounded-lg border bg-card p-4">
-            <div className="flex justify-between items-baseline gap-3">
-              <span className="font-medium text-sm">{c.label}</span>
-              <span className="text-sm text-primary font-mono">{formatBytes(c.bytes)}</span>
+          <li key={c.id} className="min-w-0 rounded-lg border bg-card p-3">
+            <div className="flex flex-wrap justify-between items-baseline gap-x-3 gap-y-1">
+              <h3 className="font-medium text-sm">{c.label}</h3>
+              <span className="text-sm text-primary font-mono whitespace-nowrap">{formatBytes(c.bytes)}</span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">{c.note}</p>
           </li>
         ))}
       </ul>
-      <div className="rounded-lg border bg-card p-4 mt-4">
+      <div className="border-t pt-4 mt-4">
         <p className="text-sm">Recoverable with your consent: <span className="text-primary font-mono">{formatBytes(total)}</span> (simulated)</p>
         <p className="text-xs text-muted-foreground mt-1">Originals are preserved until you confirm each category. If a file only exists in cloud storage, deleting it there propagates to every synced device — the review list calls this out per item.</p>
         {cleaned === null ? (
@@ -135,13 +135,13 @@ function CellularPanel() {
 
 function SecurityPanel() {
   return (
-    <section className="max-w-2xl">
+    <section>
       <h2 className="font-medium text-primary mb-1">Security · planned capabilities</h2>
       <p className="text-sm text-muted-foreground mb-4">No security feature is active in this preview, and no scan metrics are shown — there is nothing real to measure yet. Each item lists its honest coverage and limits.</p>
-      <ul className="grid gap-3">
+      <ul className="grid grid-cols-1 min-[700px]:grid-cols-2 xl:grid-cols-3 gap-3">
         {SECURITY_FEATURES.map((f) => (
           <li key={f.id} className="rounded-lg border bg-card p-4">
-            <div className="flex justify-between items-baseline gap-3">
+            <div className="flex flex-wrap justify-between items-baseline gap-2">
               <span className="font-medium text-sm">{f.label}</span>
               <span className="text-xs text-warning shrink-0">{f.status === "planned" ? "Planned — not active" : f.status}</span>
             </div>
@@ -155,13 +155,13 @@ function SecurityPanel() {
 
 function BluetoothPanel() {
   return (
-    <section className="max-w-2xl">
+    <section>
       <h2 className="font-medium text-primary mb-1">Bluetooth · capability guide</h2>
       <p className="text-sm text-muted-foreground mb-4">What the platforms support, checked per device — Honeycomb does not override OS Bluetooth behavior.</p>
-      <ul className="grid gap-3">
+      <ul className="grid grid-cols-1 min-[700px]:grid-cols-2 xl:grid-cols-3 gap-3">
         {Object.entries(BLUETOOTH_CAPABILITIES).map(([id, c]) => (
           <li key={id} className="rounded-lg border bg-card p-4">
-            <div className="flex justify-between items-baseline gap-3">
+            <div className="flex flex-wrap justify-between items-baseline gap-2">
               <span className="font-medium text-sm">{c.label}</span>
               <span className={`text-xs shrink-0 ${c.supported === "widely-supported" ? "text-success" : "text-warning"}`}>
                 {c.supported === "widely-supported" ? "Widely supported" : "Platform-dependent"}
