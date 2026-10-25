@@ -12,7 +12,7 @@ export function AppShell({ children, terminal = false }: { children: ReactNode; 
         <TerminalBrand />
       </header>
       <div className="preview-disclosure relative z-10 text-warning text-center text-xs py-2 px-3">
-        Terminal, host pairing and jobs are simulated. File transfer uses actual selected bytes between authenticated browser devices; no remote shell executes.
+        Demo: terminal, host pairing and jobs are simulated until a real companion connects. File transfer uses selected bytes between authenticated browser devices; no remote shell executes.
       </div>
       <div className="window-body relative z-10">
         <nav className="window-sidebar" aria-label="Main navigation">

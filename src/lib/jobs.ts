@@ -91,6 +91,13 @@ export interface Job {
   state: JobState;
   createdAt: string;
   log: string[];
+  demoOutcome?: "pass" | "fail";
+}
+
+export function jobCompletionNotice(job: Job): string | null {
+  if (job.state === "completed") return `Demo · PASS — ${job.title}`;
+  if (job.state === "failed") return `Demo · FAIL — ${job.title}`;
+  return null;
 }
 
 export function simulatedLog(templateId: string): string[] {

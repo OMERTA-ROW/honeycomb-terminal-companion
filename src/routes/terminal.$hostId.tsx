@@ -25,7 +25,7 @@ export function Terminal() {
   const { hostId } = Route.useParams();
   const { hosts } = useHosts();
   const host = hosts.find((h) => h.id === hostId);
-  const [lines, setLines] = useState<string[]>(["[simulated session] Connected to sample host. Type 'help'."]);
+  const [lines, setLines] = useState<string[]>(["[Demo · simulated session] No real companion connected. Type 'help'."]);
   const [input, setInput] = useState("");
   const [ctrl, setCtrl] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
@@ -186,7 +186,7 @@ export function Terminal() {
     <div className="terminal-session flex flex-col relative">
       <header className="relative z-10 flex items-center justify-between flex-wrap px-3 py-2 border-b bg-background text-sm gap-2">
         <Link to="/" className="text-muted-foreground">← Computers</Link>
-        <span className="truncate">{host.name} <span className="text-warning text-xs">· simulated</span></span>
+        <span className="truncate">{host.name} <span className="text-warning text-xs">· Demo (simulated)</span></span>
         <div className="flex gap-1">
           <Button variant="outline" onClick={() => { setLines((l) => [...l, "[simulated] $ echo 'Honeycomb connected'", "Honeycomb connected"]); setNotice("Test Connection is simulated — no command ran on a real computer."); }} className="text-xs border rounded px-2 py-1">Test Connection</Button>
           <Button variant="outline" onClick={() => setDropped(true)} className="text-xs border rounded px-2 py-1">Simulate drop</Button>
@@ -225,11 +225,14 @@ export function Terminal() {
         </div>
       </div>
 
-      <div className="relative z-10 flex gap-1.5 overflow-x-auto px-2 pt-2 bg-background">
+      <section className="relative z-10 px-2 pt-2 bg-background border-t" aria-label="Combs · saved Demo commands">
+        <div className="flex items-center justify-between mb-1"><h2 className="text-xs font-medium text-primary">Combs · Demo</h2><span className="text-xs text-muted-foreground">Preview before run</span></div>
+        <div className="combs-grid">
         {shortcuts.map((s) => (
-          <Button variant="outline" key={s.id} onClick={() => triggerShortcut(s)} className={`shrink-0 h-9 px-3 rounded-md border text-xs ${s.destructive ? "border-destructive text-destructive" : ""}`}>{s.label}</Button>
+          <Button variant="outline" aria-label={s.label} key={s.id} onClick={() => triggerShortcut(s)} className={`min-w-0 h-auto min-h-12 p-2 items-start flex-col gap-1 rounded-md border text-xs ${s.destructive || isDestructive(s.command) ? "border-destructive text-destructive" : ""}`}><span className="truncate max-w-full">{s.label}</span><code aria-hidden="true" className="block text-muted-foreground font-mono text-xs truncate max-w-full">{s.keyCombo || s.command}</code></Button>
         ))}
-      </div>
+        </div>
+      </section>
       <div className="relative z-10 flex gap-1.5 overflow-x-auto p-2 bg-background" role="toolbar" aria-label="Keyboard accessory">
         <Button variant="outline" className={keyBtn} onClick={() => sendKey("Esc")}>Esc</Button>
         <Button variant="outline" className={`${keyBtn} ${ctrl ? "bg-primary text-primary-foreground" : ""}`} aria-pressed={ctrl} onClick={() => sendKey("Ctrl")}>Ctrl</Button>
@@ -245,7 +248,7 @@ export function Terminal() {
       {pending && (
         <div className="fixed inset-0 z-20 bg-background/80 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" onKeyDown={(e) => { if (e.key === "Escape") { setPending(null); setManage(false); } }} aria-label="Command preview">
           <div className="bg-popover rounded-lg border p-5 w-full max-w-md">
-            <h2 className="font-medium">{pending.destructive || isDestructive(pending.command) ? "⚠ Confirm risky command (simulated)" : "Preview shortcut · simulated"}</h2>
+            <h2 className="font-medium">{pending.destructive || isDestructive(pending.command) ? "⚠ Confirm risky command · Demo (simulated)" : "Preview Comb · Demo (simulated)"}</h2>
             <pre className="whitespace-pre-wrap break-all font-mono text-sm bg-terminal text-terminal-foreground p-3 rounded mt-3">{pending.keyCombo || pending.command}</pre>
             {(pending.destructive || isDestructive(pending.command)) && <p className="text-sm text-destructive mt-2">This may delete or change data on your computer.</p>}
             <p className="text-xs text-muted-foreground mt-2">Nothing executes on a real computer in this preview.</p>
@@ -260,7 +263,7 @@ export function Terminal() {
       {manage && (
         <div className="fixed inset-0 z-20 bg-background/80 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" onKeyDown={(e) => { if (e.key === "Escape") { setPending(null); setManage(false); } }} aria-label="Manage shortcuts">
           <div className="bg-popover rounded-lg border p-5 w-full max-w-md max-h-[80vh] overflow-auto">
-            <h2 className="font-medium mb-3">Shortcuts</h2>
+            <h2 className="font-medium mb-3">Saved Combs · Demo shortcuts</h2>
             <ul className="space-y-2">
               {shortcuts.map((s) => (
                 <li key={s.id} className="flex justify-between items-center text-sm gap-2">
