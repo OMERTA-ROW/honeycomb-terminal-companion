@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { HiveBackdrop } from "@/components/HiveBackdrop";
+import { AppShell } from "@/components/AppShell";
 import { historyIndex, insertAtSelection, KEY_COMBINATIONS, moveCursor } from "@/lib/command-entry";
 import { useHosts } from "@/hooks/use-hosts";
 import { DEFAULT_SHORTCUTS, SHORTCUTS_KEY, STATUS_INFO, isDestructive, simulate, type Shortcut } from "@/lib/terminal";
@@ -180,8 +180,8 @@ export function Terminal() {
   const keyBtn = "min-w-11 h-11 px-3 rounded-md bg-secondary text-sm font-mono active:bg-accent";
 
   return (
-    <div className="h-dvh flex flex-col bg-terminal relative">
-      <HiveBackdrop className="z-0" />
+    <AppShell terminal>
+    <div className="terminal-session flex flex-col relative">
       <header className="relative z-10 flex items-center justify-between flex-wrap px-3 py-2 border-b bg-background text-sm gap-2">
         <Link to="/" className="text-muted-foreground">← Computers</Link>
         <span className="truncate">{host.name} <span className="text-warning text-xs">· simulated</span></span>
@@ -278,5 +278,6 @@ export function Terminal() {
         </div>
       )}
     </div>
+    </AppShell>
   );
 }
