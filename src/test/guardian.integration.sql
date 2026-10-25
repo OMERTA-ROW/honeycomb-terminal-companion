@@ -1,9 +1,17 @@
 -- Rollback-only integration tests against the installed Guardian boundary.
 -- Does not create auth accounts; random application-only fixture UUIDs.
 BEGIN;
--- Sandbox SQL role cannot invoke service-only RPC. Execute its byte-identical
--- installed body in a transaction-local pg_temp function, never widen live grants.
-DO $$ DECLARE definition text; BEGIN SELECT pg_get_functiondef('public.hc_action(uuid,uuid,uuid,text,jsonb)'::regprocedure) INTO definition; definition:=replace(definition,'FUNCTION public.hc_action','FUNCTION pg_temp.hc_action'); EXECUTE definition; END $$;
+-- Sandbox role cannot invoke service-only RPC or lock live protected rows.
+-- Clone installed table definitions into temp tables and replace only schema
+-- qualifiers in the installed function body; never widen live grants.
+CREATE TEMP TABLE hc_devices (LIKE public.hc_devices INCLUDING ALL);
+CREATE TEMP TABLE hc_proofs (LIKE public.hc_proofs INCLUDING ALL);
+CREATE TEMP TABLE hc_pair_requests (LIKE public.hc_pair_requests INCLUDING ALL);
+CREATE TEMP TABLE hc_trust (LIKE public.hc_trust INCLUDING ALL);
+CREATE TEMP TABLE hc_transfers (LIKE public.hc_transfers INCLUDING ALL);
+CREATE TEMP TABLE hc_chunks (LIKE public.hc_chunks INCLUDING ALL);
+CREATE TEMP TABLE hc_audit (LIKE public.hc_audit INCLUDING ALL);
+DO $$ DECLARE definition text; BEGIN SELECT pg_get_functiondef('public.hc_action(uuid,uuid,uuid,text,jsonb)'::regprocedure) INTO definition; definition:=replace(definition,'public.hc_', 'pg_temp.hc_'); EXECUTE definition; END $$;
 CREATE FUNCTION pg_temp.act(o uuid,d uuid,op text,p jsonb DEFAULT '{}') RETURNS jsonb LANGUAGE plpgsql AS $$ DECLARE proof uuid; BEGIN INSERT INTO public.hc_proofs(owner_id,device_id) VALUES(o,d) RETURNING id INTO proof; RETURN pg_temp.hc_action(o,d,proof,op,p); END $$;
 CREATE FUNCTION pg_temp.denied(o uuid,d uuid,op text,p jsonb,expected text) RETURNS void LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_temp.act(o,d,op,p); RAISE EXCEPTION 'TEST unexpectedly allowed %',op; EXCEPTION WHEN OTHERS THEN IF position(expected IN SQLERRM)=0 THEN RAISE; END IF; END $$;
 DO $$
