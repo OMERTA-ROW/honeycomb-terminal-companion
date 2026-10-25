@@ -19,6 +19,7 @@ export const deviceChallenge = createServerFn({ method: 'POST' }).middleware([re
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
   const { data: device } = await supabaseAdmin.from('hc_devices').select('id,revoked_at').eq('id', data.device).eq('owner_id', context.userId).single();
   if (!device || device.revoked_at) throw new Error('Device unauthorized or revoked.');
+  await supabaseAdmin.from('hc_proofs').delete().eq('device_id', data.device).lt('expires_at', new Date().toISOString());
   const { count } = await supabaseAdmin.from('hc_proofs').select('id', { count: 'exact', head: true }).eq('device_id', data.device).eq('used', false).gt('expires_at', new Date().toISOString());
   if ((count ?? 0) > 100) throw new Error('Too many requests. Wait a minute.');
   const { data: proof, error } = await supabaseAdmin.from('hc_proofs').insert({ device_id: data.device, owner_id: context.userId }).select('id').single();
@@ -35,7 +36,11 @@ export const guardianAction = createServerFn({ method: 'POST' }).middleware([req
   const valid = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, new Uint8Array(base64ToBytes(data.signature)).buffer, new Uint8Array(proofMessage(data.proof, data.op, data.payload)).buffer);
   if (!valid) throw new Error('Device signature invalid.');
   const { data: result, error } = await supabaseAdmin.rpc('hc_action', { p_owner: context.userId, p_device: data.device, p_proof: data.proof, p_op: data.op, p_data: data.payload as Json });
-  if (error) { const allowed = ['Device unauthorized or revoked','Proof expired or replayed','Pairing expired or already consumed','Device identity changed or revoked','Device not owned','Recipient offline or revoked','Recipient is not approved','Named recipient approval required','Finish or cancel existing transfers first','File permission denied','Trust revoked','Transfer expired','Upload not permitted','Invalid chunk or replay','Download not permitted','Upload incomplete','Receipt not permitted','Transfer already closed']; throw new Error(allowed.find(s => error.message.includes(s)) ?? 'Guardian denied the request.'); }
+  if (error) {
+    await supabaseAdmin.from('hc_audit').insert({ owner_id: context.userId, device_id: data.device, event: 'guardian_denied' });
+    const allowed = ['Device unauthorized or revoked','Proof expired or replayed','Pairing expired or already consumed','Device identity changed or revoked','Device not owned','Recipient offline or revoked','Recipient is not approved','Named recipient approval required','Finish or cancel existing transfers first','File permission denied','Trust revoked','Transfer expired','Upload not permitted','Invalid chunk or replay','Download not permitted','Upload incomplete','Receipt not permitted','Transfer already closed','File integrity mismatch'];
+    throw new Error(allowed.find(s => error.message.includes(s)) ?? 'Guardian denied the request.');
+  }
   if (result && typeof result === 'object' && !Array.isArray(result) && typeof result['error'] === 'string') throw new Error(result['error']);
   return result;
 });
