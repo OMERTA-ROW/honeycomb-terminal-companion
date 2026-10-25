@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      hc_account_audit: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          owner_id?: string
+        }
+        Relationships: []
+      }
+      hc_account_security: {
+        Row: {
+          owner_id: string
+          revoked_through: number
+        }
+        Insert: {
+          owner_id: string
+          revoked_through?: number
+        }
+        Update: {
+          owner_id?: string
+          revoked_through?: number
+        }
+        Relationships: []
+      }
       hc_audit: {
         Row: {
           created_at: string
@@ -183,6 +219,21 @@ export type Database = {
           },
         ]
       }
+      hc_revoked_sessions: {
+        Row: {
+          owner_id: string
+          session_id: string
+        }
+        Insert: {
+          owner_id: string
+          session_id: string
+        }
+        Update: {
+          owner_id?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
       hc_transfers: {
         Row: {
           created_at: string
@@ -282,6 +333,24 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          display_name: string
+          id: string
+          preferences: Json
+        }
+        Insert: {
+          display_name?: string
+          id: string
+          preferences?: Json
+        }
+        Update: {
+          display_name?: string
+          id?: string
+          preferences?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -297,6 +366,8 @@ export type Database = {
         }
         Returns: Json
       }
+      hc_revoke_sessions: { Args: { p_all: boolean }; Returns: undefined }
+      hc_session_allowed: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
