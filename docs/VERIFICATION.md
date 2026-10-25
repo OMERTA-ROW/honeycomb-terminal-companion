@@ -56,3 +56,13 @@ Unit coverage added: job state transitions (including terminal-state rejection a
 - Hosted preview access settings were not inspected; no deployment/public-sharing/billing/paid-service action was taken. Existing unpublished state preserved.
 
 These require authorized hardware and implementation described in `IMPLEMENTATION_PLAN.md`.
+
+## Metallic hive polish — 2026-10-25
+- Reference search: no original image or asset pointer found in project media listings, public/src assets, available upload mounts, saved documentation/configuration references or searchable project chat history. The written owner direction guided the polish; exact original-image fidelity is unverified.
+- Changed presentation: `src/components/HiveBackdrop.tsx` (larger outline geometry, metallic gradients, layered stroke glow, instance-unique SVG definitions); `src/styles.css` (deep black tokens, shared panel rim/shadow, edge widths/fade styling); `src/routes/terminal.$hostId.tsx` (confirmation/shortcut dialogs above content layers). No transport, job or command logic changed.
+- Retained suite at 11:02 UTC: **5 files passed, 22 tests passed**. Automatic preview build at **2026-10-25T11:02:19Z: build OK**. No manual production build/typecheck run.
+- Automated Chromium: all five content pages at desktop **1280×1800**, phone **390×844**, tablet **768×1024** (15 page/viewport checks); no document-width overflow or page runtime errors. Hive edge SVGs sized 384px/112px/230.39px respectively on both sides; terminal retains its additional foreground backdrop over its opaque base.
+- On each size: entered `pwd`, observed the simulated `/Users/sample` result, opened the risky Clean build preview and cancelled it successfully. Dialog screenshots captured above terminal controls.
+- Visually inspected desktop Computers/Jobs, phone Computers/risky confirmation, and tablet Terminal screenshots: clearly visible mirrored gold outlines, black empty cells, inward fade, readable content, fine panel edging and unobstructed confirmation. Evidence script, results and screenshots: `/tmp/browser/hive-polish/` (temporary sandbox evidence).
+- Content-route metadata review: all five pages retain unique Honeycomb Terminal titles, descriptions, OG titles/descriptions/type and Twitter card; no absolute hero image to tag.
+- Remaining uncertainty: no original reference to compare exactly; no physical devices, Safari/WebKit, formal contrast audit or native rendering tested. No publishing, access-setting changes, paid services or real connections were performed.

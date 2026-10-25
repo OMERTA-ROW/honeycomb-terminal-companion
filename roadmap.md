@@ -8,3 +8,4 @@
 - [x] Apply black-and-gold hive theme across all pages.
 - [x] Extended scope: execution targets, jobs workflow, job templates, GitHub/Evolution cards (visibly unconnected), WAN transport + native gap docs.
 - [x] Run tests/build and mobile checks for extended scope; record evidence in VERIFICATION.md.
+- [x] Refine metallic hive edges and panel edging without changing functionality; reference not recovered, phone/tablet/desktop browser checks recorded.

@@ -12,3 +12,5 @@
 - Keep command cursor/selection editing in a browser-safe pure module shared by the terminal and behavioral tests, so touch editing is testable without a transport.
 - Preview command and key shortcuts share a confirmation path; simulated host data remains device-local and must not be interpreted as authorization or live connectivity.
 - Keep canonical requirements, requirement gaps, verification evidence and future native implementation gates in docs; proposed native choices are not implemented architecture.
+
+- Keep decorative hive geometry in the shared HiveBackdrop and its metallic colors in global semantic tokens; use instance-unique SVG IDs so overlapping route backdrops cannot resolve each other’s definitions.
