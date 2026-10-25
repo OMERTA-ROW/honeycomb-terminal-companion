@@ -14,3 +14,4 @@
 - Keep canonical requirements, requirement gaps, verification evidence and future native implementation gates in docs; proposed native choices are not implemented architecture.
 
 - Keep decorative hive geometry in the shared HiveBackdrop and its metallic colors in global semantic tokens; use instance-unique SVG IDs so overlapping route backdrops cannot resolve each other’s definitions.
+- Keep the branded window frame and existing four-destination navigation in AppShell, including active terminal sessions; adapt the inset sidebar into a compact navigation row on phones without changing destinations.

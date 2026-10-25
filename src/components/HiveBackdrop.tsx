@@ -1,10 +1,10 @@
 import { useId } from "react";
 
 /** Decorative outline-only metallic hive edges; cell interiors stay empty. */
-export function HiveBackdrop({ className = "-z-10" }: { className?: string }) {
+export function HiveBackdrop({ className = "-z-10", contained = false }: { className?: string; contained?: boolean }) {
   const id = useId().replace(/:/g, "");
   return (
-    <div aria-hidden="true" className={`hive-backdrop pointer-events-none fixed inset-0 overflow-hidden ${className}`}>
+    <div aria-hidden="true" className={`hive-backdrop pointer-events-none ${contained ? "absolute" : "fixed"} inset-0 overflow-hidden ${className}`}>
       {(["l", "r"] as const).map((side) => {
         const prefix = `${id}-${side}`;
         return (
@@ -24,6 +24,7 @@ export function HiveBackdrop({ className = "-z-10" }: { className?: string }) {
                 <use href={`#${prefix}-cells`} className="hive-outline-depth" strokeWidth="3" />
                 <use href={`#${prefix}-cells`} stroke={`url(#${prefix}-metal)`} strokeWidth="1.4" />
                 <use href={`#${prefix}-cells`} className="hive-outline-highlight" strokeWidth="0.45" transform="translate(0 -0.8)" />
+                <path d="M23 0h6M75 0h6M101 45h6M26 87v3h3M78 87v3h-3" className="hive-junction" strokeWidth="1.8" />
               </pattern>
               <linearGradient id={`${prefix}-fade`} x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0" className="hive-mask" stopOpacity="0.95" />

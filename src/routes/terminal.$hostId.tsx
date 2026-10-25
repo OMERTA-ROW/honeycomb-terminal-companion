@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { HiveBackdrop } from "@/components/HiveBackdrop";
+import { AppShell } from "@/components/AppShell";
 import { historyIndex, insertAtSelection, KEY_COMBINATIONS, moveCursor } from "@/lib/command-entry";
 import { useHosts } from "@/hooks/use-hosts";
 import { DEFAULT_SHORTCUTS, SHORTCUTS_KEY, STATUS_INFO, isDestructive, simulate, type Shortcut } from "@/lib/terminal";
@@ -66,13 +66,15 @@ export function Terminal() {
   if (!host || !STATUS_INFO[host.status].canOpen) {
     const info = host ? STATUS_INFO[host.status] : null;
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <AppShell>
+      <div className="flex items-center justify-center py-12">
         <div className="rounded-lg border bg-card p-6 max-w-md text-center">
           <h1 className="text-xl font-semibold">{host ? `${host.name}: ${info?.label}` : "Computer not found"}</h1>
           <p className="text-muted-foreground mt-2 text-sm">{info?.next ?? "It may have been removed."}</p>
           <Link to="/" className="inline-block mt-4 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">Back to computers</Link>
         </div>
       </div>
+      </AppShell>
     );
   }
 
@@ -180,8 +182,8 @@ export function Terminal() {
   const keyBtn = "min-w-11 h-11 px-3 rounded-md bg-secondary text-sm font-mono active:bg-accent";
 
   return (
-    <div className="h-dvh flex flex-col bg-terminal relative">
-      <HiveBackdrop className="z-0" />
+    <AppShell terminal>
+    <div className="terminal-session flex flex-col relative">
       <header className="relative z-10 flex items-center justify-between flex-wrap px-3 py-2 border-b bg-background text-sm gap-2">
         <Link to="/" className="text-muted-foreground">← Computers</Link>
         <span className="truncate">{host.name} <span className="text-warning text-xs">· simulated</span></span>
@@ -278,5 +280,6 @@ export function Terminal() {
         </div>
       )}
     </div>
+    </AppShell>
   );
 }

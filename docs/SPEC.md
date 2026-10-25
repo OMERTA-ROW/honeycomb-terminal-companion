@@ -50,6 +50,8 @@ Source: https://app.notion.com/p/404c1161030681eba2bed0a29e1af38d (scope text su
 ## Approved visual direction
 Deep black background with substantial outline-only metallic gold hive cells on both edges, dimensional highlights and restrained outline glow, fading into a quiet dark center. Cell interiors remain empty black, never yellow. Fine gold panel edging and readable white text preserve existing layouts, functionality and simulation disclosures. Original reference image was not recovered from available project files, upload mounts or searchable project history during the 2026-10-25 polish; fidelity follows the owner's written direction, not a verified exact-image match.
 
+Owner's subsequent original-mockup description specifies Terminal's left half: thin luminous rounded champagne-gold outer frame, outlined geometric honeycomb mark and wordmark/header, inset dark sidebar with gold line icons and outlined active destination, substantial interlocking outlined hive cells and selective bright junctions behind the shell/sidebar. The described refinement is implemented using real SVG/CSS UI; the claimed attachment remains absent from available upload mounts/project assets, so direct image comparison is not verified. Existing Computers, Pair, Jobs and Instructions destinations and simulated execution remain intact; no Vault functionality or encryption claims are introduced.
+
 ## Native acceptance tests (to run once companion + transport exist)
 - New user pairs an iPad or phone with a supported computer without shell setup commands or IP addresses.
 - Pair new device: approve on host once; second launch opens without re-approval.

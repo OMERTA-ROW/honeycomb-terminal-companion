@@ -22,6 +22,7 @@ Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / 
 - [x] Actual checks and limitations recorded in VERIFICATION.md
 - [x] Black-and-gold hive theme: near-black background, thin gold hexagon outlines on both edges fading inward, gold accents, white text
 - [x] Metallic hive refinement: larger visible outline-only cells, layered gold highlights/glow, quiet black center and shared fine panel edging; automated three-size checks (original reference unavailable)
+- [x] Original-mockup written direction: champagne rounded window frame, outlined brand mark, inset gold-icon navigation and bright hive junctions; phone navigation adapts to a compact row. Attachment remains unavailable for direct comparison.
 - [~] Execution target selector (This device / Paired computer / Hosted sandbox) — device and sandbox honestly unavailable; host simulated
 - [~] Jobs workflow — instruction → command/scope preview → authorize → queued/running/waiting/failed/completed/cancelled, logs, cancellation, device-local result retrieval; all simulated
 - [~] Job templates — "run existing tests and explain failures" (read-only scope), "prepare code changes in isolated worktree for review"
