@@ -22,6 +22,13 @@
       "when": 1792956739228,
       "tag": "0002_guardian_server_integrity",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792956878592,
+      "tag": "0003_guardian_atomic_limits_and_wallclock",
+      "breakpoints": true
     }
   ]
 }
