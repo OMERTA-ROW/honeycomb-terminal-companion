@@ -35,10 +35,24 @@ Pure command-entry tests assert interior/boundary/selection/Unicode movement, cl
 
 Final retained test run at 22:23 UTC: **4 files passed, 13 tests passed**. Component-test setup supplies jsdom's missing scroll API; command behavior is not mocked. Latest automatic preview validation at 22:23:01 UTC reported **build OK** after correcting the safe-example tuple typing. No manual production build/typecheck was run. All four content pages retain unique Honeycomb Terminal titles/descriptions, Open Graph title/description/type and Twitter card metadata; no absolute hero image exists to tag.
 
+## Extended scope checks — 2026-10-25
+Automated Chromium, phone 390×844 and desktop 1440×900, fresh contexts. All simulated.
+| Check | Observed result |
+|---|---|
+| Jobs page renders with hive theme | Integrations, new-job form, job list visible; no overflow at either size |
+| GitHub and Evolution cards | Both show "Not connected" with honest notes; no endpoints or credentials present |
+| Create job: instruction → preview | Preview shows template commands, read-only scope, and approval warnings before authorization |
+| Authorize → progression | Job went queued → running → Completed with simulated log lines; log viewable |
+| Execution targets on terminal | "This device" and "Hosted sandbox" taps show honest unavailable notices; only Paired computer active (simulated) |
+| Page errors | None on jobs or terminal at either size |
+
+Unit coverage added: job state transitions (including terminal-state rejection and cancellation), template preview/scope honesty, destructive-instruction flagging, target availability, integrations not connected, simulated logs never claiming real execution. Final test run: **5 files, 22 tests passed**. Build reported OK after edits.
+
 ## Not checked / not claimable
 - Physical touch selection, real virtual keyboards, external hardware keyboards, orientation, safe-area behavior, Safari/WebKit, Android browser/native compatibility.
 - Native installation, host OS permissions, actual pairing/key protection/encryption, remote command execution, host session persistence, sleep signaling, real revocation or active-session updates.
 - Proposed subscription sustainability or device/relay limits.
+- Real job execution, device-local tool capability, hosted sandbox, GitHub/Evolution authentication, and WAN transport — all documented as unimplemented; the jobs/timelines shown are timers and canned text, not real work.
 - Hosted preview access settings were not inspected; no deployment/public-sharing/billing/paid-service action was taken. Existing unpublished state preserved.
 
 These require authorized hardware and implementation described in `IMPLEMENTATION_PLAN.md`.

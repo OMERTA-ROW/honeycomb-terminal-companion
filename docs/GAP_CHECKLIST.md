@@ -41,6 +41,15 @@ Legend: **Working preview** = real browser interaction only; **Simulation** = UI
 | R33 | Source status: no app, companion, deployment, subscription or automatic update schedule activated | Source captured as historical status; current work is only simulated web preview | Never conflate preview with a native release |
 | R34 | Owner constraints: private, unpublished; no real remote access/customer passwords/unrelated features | Preserved; no deployment/public sharing/paid services/billing enabled by this work | Any future real-host test requires explicit owner authorization |
 
+| R35 | Distinguished execution targets: this device / paired computer / hosted sandbox | Working preview: target selector on terminal and jobs; device and sandbox honestly unavailable with reasons; host simulated | Implement platform-limited device-local tools; provision sandbox only with separate authorization |
+| R36 | No implied unrestricted iOS shell/other-app access or guaranteed background runtime | Documented in SPEC and target notes; preview claims neither | Native capability spikes per platform |
+| R37 | Jobs: typed instruction → preview commands/scope → authorize → queued/running/waiting/failed/completed, logs, cancellation, reconnect/result retrieval | Working preview: full simulated flow with all states, cancellation, device-local result retrieval; no real execution | Real job runner on authorized host with authenticated result sync |
+| R38 | First template: run existing tests and explain failures | Working preview template with read-only scope and canned simulated log | Real test-runner execution on host |
+| R39 | Next template: prepare code changes in isolated worktree/container for review | Working preview template scoped to isolated worktree | Real worktree/container isolation on host |
+| R40 | GitHub and Evolution coding workflows | Visibly "Not connected" integration cards; no endpoints invented, no credentials requested, nothing provisioned | Owner-authorized OAuth/app connection, then verification before any claim |
+| R41 | Per-repo/per-job scoped permissions; explicit approval for destructive, publishing, spending, external messages | Preview shows scope and approval notes per job; destructive instructions flagged | Real authorization scopes enforced host-side |
+| R42 | Remote execution beyond same LAN; authenticated encrypted WAN transport; no blanket same-Wi-Fi constraint | Documented options in IMPLEMENTATION_PLAN.md; not implemented | Threat model, protocol selection, WAN feasibility tests |
+
 ## Preview patches delivered
 - Real left/right input caret movement, selection collapse, Unicode grapheme boundaries and empty-input limits.
 - History index clamps and draft restoration; paste replaces selected input instead of always appending.

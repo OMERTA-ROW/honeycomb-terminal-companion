@@ -28,6 +28,16 @@ Install host companion + mobile app, sign in, approve pairing once, then tap a p
 10. Advanced settings kept out of ordinary setup.
 11. Updates: regular tested bug fixes and prompt security patches, staged at safe times, preserving active sessions; rollback/recovery where supported by platform distribution. No recurring automation activated.
 
+## Extended scope (owner-authorized 2026-10-25, second Notion proposal)
+Source: https://app.notion.com/p/404c1161030681eba2bed0a29e1af38d (scope text supplied by owner; private link not fetched). All 2026-10-24 canonical requirements remain applicable.
+
+12. Execution targets are explicitly distinguished: **This device** (platform-limited local tools where the OS supports them; unavailable until implemented), **Paired computer** (authorized remote execution, beyond same-LAN use), **Hosted sandbox** (future, not provisioned, separately costed). Never imply unrestricted iOS shell/other-app access or guaranteed mobile background runtime. Persistent work belongs on the authorized execution host, not on mobile background execution.
+13. Jobs workflow: typed instruction → preview of commands and scope → explicit authorization → states queued/running/waiting/failed/completed (plus cancelled) → logs, cancellation, and reconnect/result retrieval.
+14. Job templates: first "run existing tests and explain failures"; next "prepare code changes in an isolated worktree/container for review".
+15. GitHub coding workflows and Honeycomb Evolution code generation/editing/testing are goals. Both integrations must remain visibly unconnected until actually authenticated and verified. No Evolution endpoint may be invented; no secrets requested in chat; no paid services provisioned.
+16. Permissions are scoped per repository and per job. Destructive actions, publishing/deployment, spending, and external messages each require explicit approval unless separately preauthorized.
+17. Remote execution must work beyond the same LAN/Wi-Fi (authenticated, encrypted WAN transport); no blanket same-Wi-Fi constraint. Transport options and native platform gaps are documented in `IMPLEMENTATION_PLAN.md`.
+
 ## Commercial (unvalidated — no billing activated)
 - Proposed $20/user/year across devices.
 - Unvalidated: device limits, relay costs, payment fees, support costs, margins.
