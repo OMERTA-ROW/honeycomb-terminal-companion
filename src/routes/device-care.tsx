@@ -216,7 +216,7 @@ function LockPanel() {
         )}
         {lockState === "locked" && (
           <>
-            <BeeLock locking={false} reducedMotion onDone={() => {}} />
+            <BeeLock locking={false} filled reducedMotion onDone={() => {}} />
             <p className="text-sm font-medium">Honeycomb is locked</p>
             <p className="text-xs text-muted-foreground mt-1 mb-3">Unlock would require device biometrics or your passcode (simulated). Your phone itself is not locked.</p>
             <Button onClick={() => setLockState("unlocked")} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">Simulate unlock</Button>

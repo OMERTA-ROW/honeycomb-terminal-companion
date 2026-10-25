@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Monitor, Link2, ListChecks, BookOpen } from "lucide-react";
+import { Monitor, Link2, ListChecks, BookOpen, ShieldCheck } from "lucide-react";
 import { TerminalBrand } from "./TerminalBrand";
 import { HiveBackdrop } from "./HiveBackdrop";
 
@@ -20,6 +20,7 @@ export function AppShell({ children, terminal = false }: { children: ReactNode; 
             ["/", "Computers", Monitor],
             ["/pair", "Pair", Link2],
             ["/jobs", "Jobs", ListChecks],
+            ["/device-care", "Device care", ShieldCheck],
             ["/instructions", "Instructions", BookOpen],
           ] as const).map(([to, label, Icon]) => (
             <Link key={to} to={to} className={`sidebar-link ${terminal && to === "/" ? "sidebar-link-active" : ""}`} activeProps={{ className: "sidebar-link-active" }} activeOptions={{ exact: true }}>

@@ -3,7 +3,7 @@ import { BEE_COUNT, beesForProgress } from "@/lib/device-care";
 
 // Mechanical bees filling a honeycomb while the app locks.
 // Purely decorative; honors prefers-reduced-motion and a manual toggle.
-export function BeeLock({ locking, reducedMotion, onDone }: { locking: boolean; reducedMotion: boolean; onDone: () => void }) {
+export function BeeLock({ locking, filled = false, reducedMotion, onDone }: { locking: boolean; filled?: boolean; reducedMotion: boolean; onDone: () => void }) {
   const [progress, setProgress] = useState(0);
   const doneRef = useRef(onDone);
   doneRef.current = onDone;
@@ -23,7 +23,7 @@ export function BeeLock({ locking, reducedMotion, onDone }: { locking: boolean; 
     return () => cancelAnimationFrame(raf);
   }, [locking, reducedMotion]);
 
-  const bees = beesForProgress(progress, reducedMotion);
+  const bees = filled ? BEE_COUNT : beesForProgress(progress, reducedMotion);
 
   return (
     <div aria-hidden="true" className="relative grid grid-cols-4 gap-1.5 w-40 mx-auto my-4">
