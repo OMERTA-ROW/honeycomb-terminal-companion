@@ -83,3 +83,6 @@ Selection gate: threat model, then spike direct vs relay success rates on real n
 - Later approval for identity/rendezvous/relay infrastructure and associated costs. No paid accounts/services or public rollout implied.
 
 **Definition of done:** a chosen supported host and a physical mobile device meet owner-authorized pairing, actual user-shell, E2E verification, persistent reconnect, revoke and session-safe update tests with recorded evidence. Until then label every remote capability unimplemented or simulated.
+## 2026-10-25 addendum — install-and-connect priority
+
+Owner priority: Mac host + iPhone/iPad first, Android next. The `companion/` directory now holds the macOS source skeleton layout, packaging instructions and explicit blockers (no physical Mac, no Apple Developer Program membership, no signing/notarization, no distribution hosting — no download link may be fabricated). Smallest real-device acceptance test is defined in companion/README.md: local PTY match with Terminal.app, short-lived pairing with expiry/wrong-code rejection, `echo 'Honeycomb connected'` round trip, 30 s airplane-mode resume, revoke-denies-reconnect. Device-care scope (storage, cellular/battery, security, Bluetooth, app lock) is preview-only; every native capability requires the native apps and OS entitlements listed in SPEC.md.

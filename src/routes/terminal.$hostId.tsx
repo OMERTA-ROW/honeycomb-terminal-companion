@@ -188,6 +188,7 @@ export function Terminal() {
         <Link to="/" className="text-muted-foreground">← Computers</Link>
         <span className="truncate">{host.name} <span className="text-warning text-xs">· simulated</span></span>
         <div className="flex gap-1">
+          <Button variant="outline" onClick={() => { setLines((l) => [...l, "[simulated] $ echo 'Honeycomb connected'", "Honeycomb connected"]); setNotice("Test Connection is simulated — no command ran on a real computer."); }} className="text-xs border rounded px-2 py-1">Test Connection</Button>
           <Button variant="outline" onClick={() => setDropped(true)} className="text-xs border rounded px-2 py-1">Simulate drop</Button>
           <Button variant="outline" onClick={() => setManage(true)} aria-label="Manage shortcuts" className="text-xs border rounded px-2 py-1">★</Button>
         </div>
