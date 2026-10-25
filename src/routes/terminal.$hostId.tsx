@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { HiveBackdrop } from "@/components/HiveBackdrop";
 import { historyIndex, insertAtSelection, KEY_COMBINATIONS, moveCursor } from "@/lib/command-entry";
 import { useHosts } from "@/hooks/use-hosts";
 import { DEFAULT_SHORTCUTS, SHORTCUTS_KEY, STATUS_INFO, isDestructive, simulate, type Shortcut } from "@/lib/terminal";
@@ -168,8 +169,9 @@ export function Terminal() {
   const keyBtn = "min-w-11 h-11 px-3 rounded-md bg-secondary text-sm font-mono active:bg-accent";
 
   return (
-    <div className="h-dvh flex flex-col bg-terminal">
-      <header className="flex items-center justify-between flex-wrap px-3 py-2 border-b bg-background text-sm gap-2">
+    <div className="h-dvh flex flex-col bg-terminal relative">
+      <HiveBackdrop className="z-0" />
+      <header className="relative z-10 flex items-center justify-between flex-wrap px-3 py-2 border-b bg-background text-sm gap-2">
         <Link to="/" className="text-muted-foreground">← Computers</Link>
         <span className="truncate">{host.name} <span className="text-warning text-xs">· simulated</span></span>
         <div className="flex gap-1">
@@ -179,14 +181,14 @@ export function Terminal() {
       </header>
 
       {dropped && (
-        <div className="bg-warning/15 text-warning text-sm px-3 py-2 flex justify-between items-center">
+        <div className="relative z-10 bg-warning/15 text-warning text-sm px-3 py-2 flex justify-between items-center">
           Connection lost (simulated). Check this device’s network, then reconnect; no real host session exists.
           <Button variant="outline" onClick={() => { if (!navigator.onLine) { setNotice("This device is offline. Restore its network, then reconnect."); return; } setDropped(false); setNotice(""); setLines((l) => [...l, "[reconnected — session resumed (simulated)]"]); }} className="underline">Reconnect</Button>
         </div>
       )}
 
-      {notice && <p role="status" className="bg-secondary px-3 py-2 text-sm">{notice}</p>}
-      <div ref={outRef} onClick={() => !window.getSelection()?.toString() && inputRef.current?.focus()} className="flex-1 overflow-auto p-3 font-mono text-sm text-terminal-foreground whitespace-pre-wrap select-text" data-testid="output">
+      {notice && <p role="status" className="relative z-10 bg-secondary px-3 py-2 text-sm">{notice}</p>}
+      <div ref={outRef} onClick={() => !window.getSelection()?.toString() && inputRef.current?.focus()} className="relative z-10 flex-1 overflow-auto p-3 font-mono text-sm text-terminal-foreground whitespace-pre-wrap select-text" data-testid="output">
         {lines.map((l, i) => <div key={i}>{l}</div>)}
         <div className="flex">
           <span className="text-primary">$&nbsp;</span>
@@ -194,12 +196,12 @@ export function Terminal() {
         </div>
       </div>
 
-      <div className="flex gap-1.5 overflow-x-auto px-2 pt-2 bg-background">
+      <div className="relative z-10 flex gap-1.5 overflow-x-auto px-2 pt-2 bg-background">
         {shortcuts.map((s) => (
           <Button variant="outline" key={s.id} onClick={() => triggerShortcut(s)} className={`shrink-0 h-9 px-3 rounded-md border text-xs ${s.destructive ? "border-destructive text-destructive" : ""}`}>{s.label}</Button>
         ))}
       </div>
-      <div className="flex gap-1.5 overflow-x-auto p-2 bg-background" role="toolbar" aria-label="Keyboard accessory">
+      <div className="relative z-10 flex gap-1.5 overflow-x-auto p-2 bg-background" role="toolbar" aria-label="Keyboard accessory">
         <Button variant="outline" className={keyBtn} onClick={() => sendKey("Esc")}>Esc</Button>
         <Button variant="outline" className={`${keyBtn} ${ctrl ? "bg-primary text-primary-foreground" : ""}`} aria-pressed={ctrl} onClick={() => sendKey("Ctrl")}>Ctrl</Button>
         <Button variant="outline" className={keyBtn} onClick={() => sendKey("Tab")}>Tab</Button>
