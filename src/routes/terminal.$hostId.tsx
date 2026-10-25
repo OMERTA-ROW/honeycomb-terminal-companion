@@ -66,13 +66,15 @@ export function Terminal() {
   if (!host || !STATUS_INFO[host.status].canOpen) {
     const info = host ? STATUS_INFO[host.status] : null;
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <AppShell>
+      <div className="flex items-center justify-center py-12">
         <div className="rounded-lg border bg-card p-6 max-w-md text-center">
           <h1 className="text-xl font-semibold">{host ? `${host.name}: ${info?.label}` : "Computer not found"}</h1>
           <p className="text-muted-foreground mt-2 text-sm">{info?.next ?? "It may have been removed."}</p>
           <Link to="/" className="inline-block mt-4 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm">Back to computers</Link>
         </div>
       </div>
+      </AppShell>
     );
   }
 
