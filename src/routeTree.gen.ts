@@ -10,16 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as DeviceCareRouteImport } from './routes/device-care'
 import { Route as InstructionsRouteImport } from './routes/instructions'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as PairRouteImport } from './routes/pair'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as TerminalHostIdRouteImport } from './routes/terminal.$hostId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DeviceCareRoute = DeviceCareRouteImport.update({
@@ -42,6 +49,11 @@ const PairRoute = PairRouteImport.update({
   path: '/pair',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TransferRoute = TransferRouteImport.update({
   id: '/transfer',
   path: '/transfer',
@@ -55,29 +67,35 @@ const TerminalHostIdRoute = TerminalHostIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/device-care': typeof DeviceCareRoute
   '/instructions': typeof InstructionsRoute
   '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/device-care': typeof DeviceCareRoute
   '/instructions': typeof InstructionsRoute
   '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/device-care': typeof DeviceCareRoute
   '/instructions': typeof InstructionsRoute
   '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
 }
@@ -85,38 +103,46 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
     | '/device-care'
     | '/instructions'
     | '/jobs'
     | '/pair'
+    | '/reset-password'
     | '/transfer'
     | '/terminal/$hostId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
     | '/device-care'
     | '/instructions'
     | '/jobs'
     | '/pair'
+    | '/reset-password'
     | '/transfer'
     | '/terminal/$hostId'
   id:
     | '__root__'
     | '/'
+    | '/account'
     | '/device-care'
     | '/instructions'
     | '/jobs'
     | '/pair'
+    | '/reset-password'
     | '/transfer'
     | '/terminal/$hostId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
   DeviceCareRoute: typeof DeviceCareRoute
   InstructionsRoute: typeof InstructionsRoute
   JobsRoute: typeof JobsRoute
   PairRoute: typeof PairRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   TransferRoute: typeof TransferRoute
   TerminalHostIdRoute: typeof TerminalHostIdRoute
 }
@@ -128,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/device-care': {
@@ -158,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PairRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/transfer': {
       id: '/transfer'
       path: '/transfer'
@@ -177,10 +217,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
   DeviceCareRoute: DeviceCareRoute,
   InstructionsRoute: InstructionsRoute,
   JobsRoute: JobsRoute,
   PairRoute: PairRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   TransferRoute: TransferRoute,
   TerminalHostIdRoute: TerminalHostIdRoute,
 }
