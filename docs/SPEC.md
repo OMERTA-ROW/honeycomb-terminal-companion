@@ -3,7 +3,7 @@
 Source: owner brief and complete owner-copied canonical Notion plan, supplied Oct 24 2026 (fetch timestamp 2026-10-24T19:26:56.132Z). Canonical reference: https://app.notion.com/p/403c1161030681c98771c23caa433198. Reconciliation uses the supplied text, not access to the private link. Requirement-by-requirement comparison: `GAP_CHECKLIST.md`; next native work: `IMPLEMENTATION_PLAN.md`; actual preview checks: `VERIFICATION.md`.
 
 ## Product identity
-- Separate product from Honeycomb Vault, Omni and Evolution.
+- Separate product from Honeycomb Vault. Omni is now owner-authorized parent/orchestrator and future enhancement provider; Guardian enforces deterministic selected-file authorization. Evolution remains unconnected.
 - Working name: Honeycomb Terminal, a simple remote terminal for iPads and phones that feels like the user's desktop terminal. Vault remains a separate, paused concept.
 - No Honeycomb Vault advertising inside Terminal. Promotion is one-way (Vault → Terminal).
 
@@ -78,3 +78,8 @@ Priority order: Mac host + iPhone/iPad first, Android phone/tablet next.
 - **Security (all planned, none active, no fake metrics):** vetted malware scan integration with explicit coverage; unsafe Wi-Fi/hotspot alerts; malicious-link protection; optional VPN with honest limits (not anonymity); spam call ID/blocking via platform call-directory extensions; SMS filtering and user-initiated suspicious-message analysis. No access to end-to-end encrypted chats; no automatic replies to suspicious senders.
 - **Bluetooth:** remembered pairings, multiple active connections, output switching widely supported; simultaneous dual-audio platform-dependent. Car+headphones and two-accessory tests documented for physical hardware. Honeycomb never interrupts an active call.
 - **App lock:** inactivity/background lock of the Honeycomb app only — never implied to lock the whole phone; system lock-screen animation needs separate OS integration. Mechanical bees fill a honeycomb during lock, with reduced-motion mode (all-or-nothing, no animation). Trusted-device session revocation and theft response (revoke + password change); no remote wipe by default; secure recovery via re-pairing with owner approval.
+
+## Current selected-file and creative scope supersedes simulation-only restrictions
+Owner now authorizes real authenticated selected-file transfer, but not real remote terminal/creative execution or desktop installation. `/transfer` source and Guardian schema are implemented; authenticated two-client acceptance remains blocked pending first account sign-in. Historical simulation-only statements above continue to apply to terminal/host pairing/device-care, not this selected-file path. Full requirements, actual limits, architecture, acceptance and prerequisites: `TRANSFER_CREATIVE_REQUIREMENTS.md`.
+
+Creative Unity/video and desktop-browser document-submission controls are local preview drafts only. No companion, adapter, repository access, detected tools, real diff/test/render output or execution is claimed. Transfer-first gate precedes real enhancement. No public deployment.

@@ -1,7 +1,10 @@
 -- Rollback-only integration tests against the installed Guardian boundary.
 -- Does not create auth accounts; random application-only fixture UUIDs.
 BEGIN;
-CREATE FUNCTION pg_temp.act(o uuid,d uuid,op text,p jsonb DEFAULT '{}') RETURNS jsonb LANGUAGE plpgsql AS $$ DECLARE proof uuid; BEGIN INSERT INTO public.hc_proofs(owner_id,device_id) VALUES(o,d) RETURNING id INTO proof; RETURN public.hc_action(o,d,proof,op,p); END $$;
+-- Sandbox SQL role cannot invoke service-only RPC. Execute its byte-identical
+-- installed body in a transaction-local pg_temp function, never widen live grants.
+DO $$ DECLARE definition text; BEGIN SELECT pg_get_functiondef('public.hc_action(uuid,uuid,uuid,text,jsonb)'::regprocedure) INTO definition; definition:=replace(definition,'FUNCTION public.hc_action','FUNCTION pg_temp.hc_action'); EXECUTE definition; END $$;
+CREATE FUNCTION pg_temp.act(o uuid,d uuid,op text,p jsonb DEFAULT '{}') RETURNS jsonb LANGUAGE plpgsql AS $$ DECLARE proof uuid; BEGIN INSERT INTO public.hc_proofs(owner_id,device_id) VALUES(o,d) RETURNING id INTO proof; RETURN pg_temp.hc_action(o,d,proof,op,p); END $$;
 CREATE FUNCTION pg_temp.denied(o uuid,d uuid,op text,p jsonb,expected text) RETURNS void LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_temp.act(o,d,op,p); RAISE EXCEPTION 'TEST unexpectedly allowed %',op; EXCEPTION WHEN OTHERS THEN IF position(expected IN SQLERRM)=0 THEN RAISE; END IF; END $$;
 DO $$
 DECLARE o uuid:=gen_random_uuid(); other_owner uuid:=gen_random_uuid(); a uuid; b uuid; c uuid; proof uuid; request uuid; tid uuid; bad uuid; result jsonb; key jsonb:='{"kty":"EC","crv":"P-256","x":"fixture","y":"fixture"}'; bytes bytea:=decode('000102feff','hex'); hash text:=encode(sha256(bytes),'hex');
@@ -12,11 +15,11 @@ BEGIN
  PERFORM pg_temp.denied(other_owner,a,'list','{}','Device unauthorized or revoked');
  RAISE NOTICE 'PASS wrong account denied';
  INSERT INTO public.hc_proofs(owner_id,device_id,expires_at) VALUES(o,a,clock_timestamp()-interval '1 second') RETURNING id INTO proof;
- BEGIN PERFORM public.hc_action(o,a,proof,'list','{}');RAISE EXCEPTION 'TEST expired proof allowed'; EXCEPTION WHEN OTHERS THEN IF position('Proof expired or replayed' IN SQLERRM)=0 THEN RAISE;END IF;END;
+ BEGIN PERFORM pg_temp.hc_action(o,a,proof,'list','{}');RAISE EXCEPTION 'TEST expired proof allowed'; EXCEPTION WHEN OTHERS THEN IF position('Proof expired or replayed' IN SQLERRM)=0 THEN RAISE;END IF;END;
  RAISE NOTICE 'PASS expired device proof denied';
  INSERT INTO public.hc_proofs(owner_id,device_id) VALUES(o,a) RETURNING id INTO proof;
- PERFORM public.hc_action(o,a,proof,'list','{}');
- BEGIN PERFORM public.hc_action(o,a,proof,'list','{}');RAISE EXCEPTION 'TEST replay allowed'; EXCEPTION WHEN OTHERS THEN IF position('Proof expired or replayed' IN SQLERRM)=0 THEN RAISE;END IF;END;
+ PERFORM pg_temp.hc_action(o,a,proof,'list','{}');
+ BEGIN PERFORM pg_temp.hc_action(o,a,proof,'list','{}');RAISE EXCEPTION 'TEST replay allowed'; EXCEPTION WHEN OTHERS THEN IF position('Proof expired or replayed' IN SQLERRM)=0 THEN RAISE;END IF;END;
  RAISE NOTICE 'PASS device proof replay denied';
  INSERT INTO public.hc_pair_requests(owner_id,issuer,code_hash,expires_at) VALUES(o,a,'expired-fixture',clock_timestamp()-interval '1 second');
  result:=pg_temp.act(o,b,'claim','{"code_hash":"expired-fixture"}');IF result->>'error' IS NULL THEN RAISE EXCEPTION 'TEST expired pairing allowed';END IF;

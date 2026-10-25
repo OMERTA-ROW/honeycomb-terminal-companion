@@ -31,7 +31,7 @@ Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / 
 ## Blocked / not started (native & backend)
 - [ ] Host companion (macOS/Windows/Linux) — first-host feasibility decision pending
 - [ ] Mobile packaging iOS/iPadOS/Android
-- [ ] Accounts & sign-in
+- [x] Account sign-in source and Google/Lovable provider configuration for selected-file transfer (end-to-end sign-in pending owner account)
 - [ ] Authenticated pairing, device key storage, encrypted transport, relay
 - [ ] Real availability signal, persistent host sessions
 - [ ] Update staging / rollback (no automation activated)
@@ -55,3 +55,13 @@ Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / 
 - [ ] Real Mac companion binary/installer — blocked: no physical Mac, no Apple Developer membership, no signing/notarization
 - [ ] Real pairing, transport, persistent sessions — blocked: native implementation not started
 - [ ] Native security/Bluetooth/storage integrations — blocked: require native apps and OS entitlements
+
+## Real selected-file milestone and creative follow-up
+- [x] Implemented authenticated browser registration with device-held signing key, one-use device proofs and atomic Guardian authorization; schema/grants verified.
+- [x] Implemented 120-second single-claim QR/manual code, five attempts/ten minutes, named-device approval and remembered trust.
+- [x] Implemented individual file grants, private byte relay, server/browser SHA-256 checks, progress, cancel/fail/receipt and real revocation source.
+- [ ] Authenticated two-client UI transfer verification — blocked: no auth user exists; owner first sign-in needed. Do not mark source as end-to-end verified.
+- [ ] Two physical clients on different internet networks — blocked: authorized devices/network test required.
+- [~] Creative Unity/video/browser task preview with UUID, local persistence, cancellation and proposed scope review; no dispatch or fabricated execution evidence.
+- [x] Omni/Guardian project adapter/checkpoint/idempotency boundary and disposable Unity acceptance documented in TRANSFER_CREATIVE_REQUIREMENTS.md.
+- [ ] Native companion/tool adapters/Omni/GitHub/browser automation — not installed/connected; no installer/artifact available.
