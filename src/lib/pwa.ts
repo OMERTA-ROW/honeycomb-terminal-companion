@@ -10,7 +10,7 @@ export function swRefusalReason(host: string, search: string, prod: boolean, inI
   if (!prod) return "development build";
   if (inIframe) return "running inside the editor frame";
   if (new URLSearchParams(search).get("sw") === "off") return "?sw=off kill switch";
-  const label = h.split(".")[0];
+  const label = h.split(".")[0] ?? "";
   if (PREVIEW_DOMAINS.some((d) => h.endsWith(d)) && (PREVIEW_LABEL.test(label) || /^project--.+-dev$/.test(label))) return "Lovable preview address";
   if (/(^|\.)lovableproject(-dev)?\.com$/.test(h) || /(^|\.)beta\.lovable\.dev$/.test(h)) return "Lovable preview address";
   return null;
