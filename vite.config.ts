@@ -22,9 +22,11 @@ export default defineConfig({
         injectRegister: null,
         devOptions: { enabled: false },
         filename: "sw.js",
+        outDir: "dist/client",
         manifest: false, // static public/manifest.webmanifest is the single source
         workbox: {
           // Shell only: hashed same-origin JS/CSS/fonts/icons. No HTML, no API, no server functions.
+          globDirectory: "dist/client",
           globPatterns: ["**/*.{js,css,woff2,png,ico,svg}"],
           navigateFallback: null,
           skipWaiting: false,
