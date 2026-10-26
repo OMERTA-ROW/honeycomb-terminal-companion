@@ -52,7 +52,7 @@ function Install() {
       <h1 className="text-2xl font-semibold mb-2">Install & updates</h1>
       <p className="text-sm text-muted-foreground mb-6">This installs the web preview only. It is not a native app or companion, and it does not give your phone a real shell or pairing — hosts and commands stay Demo.</p>
       <div className="grid gap-4 md:grid-cols-2">
-        <section className="panel p-4 space-y-2">
+        <section className="rounded-md border border-border bg-card p-4 space-y-2">
           <h2 className="font-medium text-primary">Status</h2>
           <dl className="text-sm grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
             <dt className="text-muted-foreground">Build</dt><dd className="font-mono break-all">{BUILD_ID}</dd>
@@ -67,7 +67,7 @@ function Install() {
             </div>
           ) : <p className="text-xs text-muted-foreground">No update waiting. Updates never reload on their own.</p>}
         </section>
-        <section className="panel p-4 space-y-2 text-sm">
+        <section className="rounded-md border border-border bg-card p-4 space-y-2 text-sm">
           <h2 className="font-medium text-primary">Add to Home Screen</h2>
           {plat === "ios" && <ol className="list-decimal pl-4 space-y-1 text-muted-foreground"><li>Open this page in Safari.</li><li>Tap Share, then “Add to Home Screen”.</li><li>Tap Add. iOS will not group or arrange icons into folders for you.</li></ol>}
           {plat !== "ios" && (prompt ? (
@@ -75,7 +75,7 @@ function Install() {
           ) : <p className="text-muted-foreground">{standalone ? "Already installed." : "Your browser hasn't offered installation here. In Chrome or Edge use the install icon in the address bar or menu → Install app. Installation needs the published address; the editor preview can't install."}</p>)}
           {outcome && <p className="text-xs">Install prompt result: {outcome}</p>}
         </section>
-        <section className="panel p-4 space-y-2 text-sm md:col-span-2">
+        <section className="rounded-md border border-border bg-card p-4 space-y-2 text-sm md:col-span-2">
           <h2 className="font-medium text-primary">Native downloads</h2>
           <p className="text-muted-foreground">None exist. There is no macOS, Windows or Linux companion, no iPhone/iPad or Android app, and no signed release. The Mac companion is a plan only, so real terminal use is not possible yet.</p>
         </section>
