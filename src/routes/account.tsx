@@ -34,7 +34,7 @@ function Account() {
   }
   async function signout(all: boolean) {
     if (all && !window.confirm('Sign out every Honeycomb Terminal account session? Device trust remains separate.')) return;
-    await revoke({ data: { all } }); await query.cancelQueries(); query.clear();
+    try { await revoke({ data: { all } }); } catch { /* non-member or already revoked: still clear this browser */ } await query.cancelQueries(); query.clear();
     const r = await supabase.auth.signOut({ scope: all ? 'global' : 'local' });
     if (r.error) setNote('Application access revoked. Provider sign-out could not be confirmed; retry signing out.');
     await navigate({ to: '/account', replace: true });
