@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Monitor, Link2, ListChecks, BookOpen, ShieldCheck, Files, Folder, UserRound } from "lucide-react";
+import { Monitor, Link2, ListChecks, BookOpen, ShieldCheck, Files, Folder, UserRound, Download } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { TerminalBrand } from "./TerminalBrand";
 import { HiveBackdrop } from "./HiveBackdrop";
@@ -11,7 +11,7 @@ export function AppShell({ children, terminal = false }: { children: ReactNode; 
       <HiveBackdrop contained className="z-0" />
       <header className="window-header flex flex-wrap items-center justify-between gap-3">
         <TerminalBrand />
-        <div className="flex gap-2"><Button asChild variant="outline" size="icon"><Link to="/workspace" aria-label="Honeycomb workspace" title="Honeycomb workspace"><Folder className="h-4 w-4"/></Link></Button><Button asChild variant="outline" size="icon"><Link to="/account" aria-label="Your account" title="Your account"><UserRound className="h-4 w-4"/></Link></Button></div>
+        <div className="flex gap-2"><Button asChild variant="outline" size="icon"><Link to="/install" aria-label="Install & updates" title="Install & updates"><Download className="h-4 w-4"/></Link></Button><Button asChild variant="outline" size="icon"><Link to="/workspace" aria-label="Honeycomb workspace" title="Honeycomb workspace"><Folder className="h-4 w-4"/></Link></Button><Button asChild variant="outline" size="icon"><Link to="/account" aria-label="Your account" title="Your account"><UserRound className="h-4 w-4"/></Link></Button></div>
       </header>
       <div className="preview-disclosure relative z-10 text-warning text-center text-xs py-2 px-3">
         Demo: terminal, host pairing and jobs are simulated until a real companion connects. File transfer uses selected bytes between authenticated browser devices; no remote shell executes.

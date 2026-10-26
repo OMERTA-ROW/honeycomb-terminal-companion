@@ -39,3 +39,7 @@
 - [ ] Compare directly against original mockup — blocked: claimed attachment is not accessible in either upload mount or project assets; owner reattachment needed.
 - [x] Install-and-connect scope (2026-10-25): QR pairing states, Test Connection, session reconnect, revocation, Mac companion source skeleton + blockers, device-care pages (storage/security/battery/Bluetooth/lock), docs + tests; 36/36 tests and three-size browser checks pass.
 - [ ] Real Mac companion build/signing and real-device pairing — blocked: no physical Mac, no Apple Developer Program membership (paid), no signing/notarization credentials, no native mobile apps.
+
+- [x] Installable web app: manifest, icons, guarded offline worker (app frame only), Install & updates screen with build, online state and consent-only update reload. 78 tests, production build emits sw.js + manifest.
+- [ ] Real install/offline test on a device — blocked: needs the private published address (editor preview refuses the worker by design); owner forbids publishing so far.
+- [ ] Native installers (macOS/Windows/Linux companion, iOS/Android apps) — none exist; blocked on companion implementation, Mac hardware and paid signing accounts.

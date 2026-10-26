@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as DeviceCareRouteImport } from './routes/device-care'
+import { Route as InstallRouteImport } from './routes/install'
 import { Route as InstructionsRouteImport } from './routes/instructions'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as PairRouteImport } from './routes/pair'
@@ -33,6 +34,11 @@ const AccountRoute = AccountRouteImport.update({
 const DeviceCareRoute = DeviceCareRouteImport.update({
   id: '/device-care',
   path: '/device-care',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallRoute = InstallRouteImport.update({
+  id: '/install',
+  path: '/install',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InstructionsRoute = InstructionsRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/device-care': typeof DeviceCareRoute
+  '/install': typeof InstallRoute
   '/instructions': typeof InstructionsRoute
   '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/device-care': typeof DeviceCareRoute
+  '/install': typeof InstallRoute
   '/instructions': typeof InstructionsRoute
   '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/device-care': typeof DeviceCareRoute
+  '/install': typeof InstallRoute
   '/instructions': typeof InstructionsRoute
   '/jobs': typeof JobsRoute
   '/pair': typeof PairRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/device-care'
+    | '/install'
     | '/instructions'
     | '/jobs'
     | '/pair'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/device-care'
+    | '/install'
     | '/instructions'
     | '/jobs'
     | '/pair'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/device-care'
+    | '/install'
     | '/instructions'
     | '/jobs'
     | '/pair'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   DeviceCareRoute: typeof DeviceCareRoute
+  InstallRoute: typeof InstallRoute
   InstructionsRoute: typeof InstructionsRoute
   JobsRoute: typeof JobsRoute
   PairRoute: typeof PairRoute
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/device-care'
       fullPath: '/device-care'
       preLoaderRoute: typeof DeviceCareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/install': {
+      id: '/install'
+      path: '/install'
+      fullPath: '/install'
+      preLoaderRoute: typeof InstallRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/instructions': {
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   DeviceCareRoute: DeviceCareRoute,
+  InstallRoute: InstallRoute,
   InstructionsRoute: InstructionsRoute,
   JobsRoute: JobsRoute,
   PairRoute: PairRoute,

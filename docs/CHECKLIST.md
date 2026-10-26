@@ -85,3 +85,8 @@ Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / 
 - [~] Audio/video/book/game previews, selected file metadata, original media playback, proposed operations, book owner-supplied ISBN checksum/consent and disconnected provider/model/agent choices; local save/cancel only.
 - [x] Credential-free inert versioned handoff contract, originals-preserved/separate-output policy and package/AI/handoff acceptance requirements recorded in CREATIVE_PACKAGES.md.
 - [ ] Real processing/export/before-after, provider connection, recipient enforcement/durable handoff/checkpoints/rollback — authorized available tools/providers/hosts plus transfer-first acceptance required; no actual processing verified.
+
+## Install & updates (2026-10-26)
+- Done: web manifest, icons, guarded service worker, /install screen (build ID, online/offline, update-with-consent, iOS Add to Home Screen steps, desktop/Android install prompt). Production build verified sw.js precaches only hashed assets/icons.
+- Untested: actual install, offline launch and update flow — require a published (private) address; the editor preview intentionally refuses the worker.
+- No native installers, companion binary, authenticated host transport or signed releases exist. Real terminal use is blocked.
