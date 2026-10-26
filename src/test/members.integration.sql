@@ -1,4 +1,5 @@
 -- Rollback-only runtime checks for invite-only roles. Fixture users exist only inside this transaction.
+-- BLOCKED in sandbox: the available database login cannot write auth.users fixtures (permission denied for schema auth). Run with a privileged rollback-only session.
 \set ON_ERROR_STOP on
 BEGIN;
 INSERT INTO auth.users(id,email,aud,role,instance_id) VALUES

@@ -43,3 +43,6 @@
 - [x] Installable web app: manifest, icons, guarded offline worker (app frame only), Install & updates screen with build, online state and consent-only update reload. 78 tests, production build emits sw.js + manifest.
 - [ ] Real install/offline test on a device — blocked: needs the private published address (editor preview refuses the worker by design); owner forbids publishing so far.
 - [ ] Native installers (macOS/Windows/Linux companion, iOS/Android apps) — none exist; blocked on companion implementation, Mac hardware and paid signing accounts.
+- [x] Invite-only accounts: public sign-up off, owner/admin/member roles, single-use email-bound expiring revocable invitations, owner setup gated on HC_OWNER_EMAIL, Members page, invite page, empty real computers list.
+- [ ] Runtime role/invite SQL tests (src/test/members.integration.sql) — blocked: sandbox database login lacks permission to create temporary test users.
+- [ ] Owner setup — blocked: owner must add HC_OWNER_EMAIL secret.
