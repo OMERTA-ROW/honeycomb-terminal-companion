@@ -139,6 +139,78 @@ export type Database = {
         }
         Relationships: []
       }
+      hc_hosts: {
+        Row: {
+          created_at: string
+          id: string
+          last_seen: string | null
+          name: string
+          os: string
+          owner_id: string
+          public_key: Json
+          revoked_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_seen?: string | null
+          name: string
+          os: string
+          owner_id: string
+          public_key: Json
+          revoked_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_seen?: string | null
+          name?: string
+          os?: string
+          owner_id?: string
+          public_key?: Json
+          revoked_at?: string | null
+        }
+        Relationships: []
+      }
+      hc_invitations: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          revoked_at: string | null
+          role: Database["public"]["Enums"]["hc_role"]
+          token_hash: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          invited_by: string
+          revoked_at?: string | null
+          role: Database["public"]["Enums"]["hc_role"]
+          token_hash: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          revoked_at?: string | null
+          role?: Database["public"]["Enums"]["hc_role"]
+          token_hash?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       hc_pair_requests: {
         Row: {
           claimant: string | null
@@ -351,6 +423,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          role: Database["public"]["Enums"]["hc_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          role: Database["public"]["Enums"]["hc_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          role?: Database["public"]["Enums"]["hc_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -366,11 +456,45 @@ export type Database = {
         }
         Returns: Json
       }
+      hc_admin_overview: { Args: never; Returns: Json }
+      hc_bootstrap_owner: { Args: { p_user: string }; Returns: undefined }
+      hc_consume_invite: {
+        Args: { p_email: string; p_token_hash: string }
+        Returns: Json
+      }
+      hc_create_invite: {
+        Args: {
+          p_email: string
+          p_hours: number
+          p_role: Database["public"]["Enums"]["hc_role"]
+          p_token_hash: string
+        }
+        Returns: string
+      }
+      hc_finish_invite: {
+        Args: {
+          p_invite: string
+          p_role: Database["public"]["Enums"]["hc_role"]
+          p_user: string
+        }
+        Returns: undefined
+      }
+      hc_my_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["hc_role"]
+      }
+      hc_owner_exists: { Args: never; Returns: boolean }
+      hc_remove_member: { Args: { p_user: string }; Returns: undefined }
+      hc_revoke_invite: { Args: { p_id: string }; Returns: undefined }
       hc_revoke_sessions: { Args: { p_all: boolean }; Returns: undefined }
       hc_session_allowed: { Args: never; Returns: boolean }
+      hc_set_role: {
+        Args: { p_role: Database["public"]["Enums"]["hc_role"]; p_user: string }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      hc_role: "owner" | "admin" | "member"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -497,6 +621,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      hc_role: ["owner", "admin", "member"],
+    },
   },
 } as const

@@ -43,6 +43,13 @@
       "when": 1792971562850,
       "tag": "0005_terminal_basic_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793033496095,
+      "tag": "0006_0006_invite_only_roles",
+      "breakpoints": true
     }
   ]
 }
