@@ -4,6 +4,7 @@ import { Monitor, Moon, WifiOff, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
 import { useHosts } from "@/hooks/use-hosts";
+import { RealComputers } from "@/components/RealComputers";
 import { SAMPLE_HOSTS, STATUS_INFO } from "@/lib/terminal";
 
 export const Route = createFileRoute("/")({
@@ -27,6 +28,7 @@ function Index() {
   const selected = hosts.find((h) => h.id === selectedId) ?? hosts[0];
   return (
     <AppShell>
+      <RealComputers />
       <div className="flex items-end flex-wrap justify-between mb-6 gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold">Your hive</h1>

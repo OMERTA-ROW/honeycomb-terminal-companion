@@ -14,7 +14,9 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as DeviceCareRouteImport } from './routes/device-care'
 import { Route as InstallRouteImport } from './routes/install'
 import { Route as InstructionsRouteImport } from './routes/instructions'
+import { Route as InviteRouteImport } from './routes/invite'
 import { Route as JobsRouteImport } from './routes/jobs'
+import { Route as MembersRouteImport } from './routes/members'
 import { Route as PairRouteImport } from './routes/pair'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TransferRouteImport } from './routes/transfer'
@@ -46,9 +48,19 @@ const InstructionsRoute = InstructionsRouteImport.update({
   path: '/instructions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InviteRoute = InviteRouteImport.update({
+  id: '/invite',
+  path: '/invite',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JobsRoute = JobsRouteImport.update({
   id: '/jobs',
   path: '/jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembersRoute = MembersRouteImport.update({
+  id: '/members',
+  path: '/members',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PairRoute = PairRouteImport.update({
@@ -83,7 +95,9 @@ export interface FileRoutesByFullPath {
   '/device-care': typeof DeviceCareRoute
   '/install': typeof InstallRoute
   '/instructions': typeof InstructionsRoute
+  '/invite': typeof InviteRoute
   '/jobs': typeof JobsRoute
+  '/members': typeof MembersRoute
   '/pair': typeof PairRoute
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
@@ -96,7 +110,9 @@ export interface FileRoutesByTo {
   '/device-care': typeof DeviceCareRoute
   '/install': typeof InstallRoute
   '/instructions': typeof InstructionsRoute
+  '/invite': typeof InviteRoute
   '/jobs': typeof JobsRoute
+  '/members': typeof MembersRoute
   '/pair': typeof PairRoute
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
@@ -110,7 +126,9 @@ export interface FileRoutesById {
   '/device-care': typeof DeviceCareRoute
   '/install': typeof InstallRoute
   '/instructions': typeof InstructionsRoute
+  '/invite': typeof InviteRoute
   '/jobs': typeof JobsRoute
+  '/members': typeof MembersRoute
   '/pair': typeof PairRoute
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
@@ -125,7 +143,9 @@ export interface FileRouteTypes {
     | '/device-care'
     | '/install'
     | '/instructions'
+    | '/invite'
     | '/jobs'
+    | '/members'
     | '/pair'
     | '/reset-password'
     | '/transfer'
@@ -138,7 +158,9 @@ export interface FileRouteTypes {
     | '/device-care'
     | '/install'
     | '/instructions'
+    | '/invite'
     | '/jobs'
+    | '/members'
     | '/pair'
     | '/reset-password'
     | '/transfer'
@@ -151,7 +173,9 @@ export interface FileRouteTypes {
     | '/device-care'
     | '/install'
     | '/instructions'
+    | '/invite'
     | '/jobs'
+    | '/members'
     | '/pair'
     | '/reset-password'
     | '/transfer'
@@ -165,7 +189,9 @@ export interface RootRouteChildren {
   DeviceCareRoute: typeof DeviceCareRoute
   InstallRoute: typeof InstallRoute
   InstructionsRoute: typeof InstructionsRoute
+  InviteRoute: typeof InviteRoute
   JobsRoute: typeof JobsRoute
+  MembersRoute: typeof MembersRoute
   PairRoute: typeof PairRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   TransferRoute: typeof TransferRoute
@@ -210,11 +236,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InstructionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/invite': {
+      id: '/invite'
+      path: '/invite'
+      fullPath: '/invite'
+      preLoaderRoute: typeof InviteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/jobs': {
       id: '/jobs'
       path: '/jobs'
       fullPath: '/jobs'
       preLoaderRoute: typeof JobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/members': {
+      id: '/members'
+      path: '/members'
+      fullPath: '/members'
+      preLoaderRoute: typeof MembersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pair': {
@@ -261,7 +301,9 @@ const rootRouteChildren: RootRouteChildren = {
   DeviceCareRoute: DeviceCareRoute,
   InstallRoute: InstallRoute,
   InstructionsRoute: InstructionsRoute,
+  InviteRoute: InviteRoute,
   JobsRoute: JobsRoute,
+  MembersRoute: MembersRoute,
   PairRoute: PairRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   TransferRoute: TransferRoute,

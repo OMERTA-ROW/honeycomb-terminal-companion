@@ -70,7 +70,7 @@ export const acceptInvite = createServerFn({ method: 'POST' }).inputValidator(to
 
 /** Public: only the email configured by the project owner in the HC_OWNER_EMAIL backend secret can become owner, once. */
 export const requestOwnerSetup = createServerFn({ method: 'POST' }).inputValidator(z.object({ email: z.string().trim().toLowerCase().email().max(254) }).strict()).handler(async ({ data }) => {
-  const configured = process.env.HC_OWNER_EMAIL?.trim().toLowerCase();
+  const configured = process.env['HC_OWNER_EMAIL']?.trim().toLowerCase();
   if (!configured) return { status: 'not_configured' as const };
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
   const exists = await supabaseAdmin.rpc('hc_owner_exists');
@@ -85,7 +85,7 @@ export const requestOwnerSetup = createServerFn({ method: 'POST' }).inputValidat
 });
 
 export const ownerSetupStatus = createServerFn({ method: 'GET' }).handler(async () => {
-  if (!process.env.HC_OWNER_EMAIL?.trim()) return { configured: false, ownerExists: false };
+  if (!process.env['HC_OWNER_EMAIL']?.trim()) return { configured: false, ownerExists: false };
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
   const r = await supabaseAdmin.rpc('hc_owner_exists');
   return { configured: true, ownerExists: r.data === true };
