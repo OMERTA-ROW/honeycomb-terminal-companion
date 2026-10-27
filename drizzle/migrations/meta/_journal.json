@@ -50,6 +50,13 @@
       "when": 1793033496095,
       "tag": "0006_0006_invite_only_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793066664581,
+      "tag": "0007_allow_membership_audit_events",
+      "breakpoints": true
     }
   ]
 }
