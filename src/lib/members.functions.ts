@@ -3,6 +3,8 @@ import { getRequest } from '@tanstack/react-start/server';
 import { z } from 'zod';
 import { requireActiveAccount } from './account.functions';
 import { inviteSchema, tokenSchema } from './members-schema';
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
+import { membershipState, ownerClaimAllowed, type MembershipState } from './owner-claim';
 
 async function sha256Hex(s: string) {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
@@ -68,27 +70,31 @@ export const acceptInvite = createServerFn({ method: 'POST' }).inputValidator(to
   return { sent: true };
 });
 
-/** Public: only the email configured by the project owner in the HC_OWNER_EMAIL backend secret can become owner, once. */
-export const requestOwnerSetup = createServerFn({ method: 'POST' }).inputValidator(z.object({ email: z.string().trim().toLowerCase().email().max(254) }).strict()).handler(async ({ data }) => {
-  const configured = process.env['HC_OWNER_EMAIL']?.trim().toLowerCase();
-  if (!configured) return { status: 'not_configured' as const };
+async function ownerEligibility(userId: string) {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-  const exists = await supabaseAdmin.rpc('hc_owner_exists');
-  if (exists.error) return { status: 'error' as const, message: GENERIC };
-  if (exists.data) return { status: 'owner_exists' as const };
-  if (data.email !== configured) return { status: 'sent' as const }; // same reply: no address probing
-  const sent = await supabaseAdmin.auth.admin.inviteUserByEmail(configured, { redirectTo: `${origin()}/reset-password` });
-  if (sent.error || !sent.data.user) return { status: 'error' as const, message: 'Setup email could not be sent. Try again later.' };
-  const boot = await supabaseAdmin.rpc('hc_bootstrap_owner', { p_user: sent.data.user.id });
-  if (boot.error) return { status: 'error' as const, message: GENERIC };
-  return { status: 'sent' as const };
+  const [u, exists] = await Promise.all([supabaseAdmin.auth.admin.getUserById(userId), supabaseAdmin.rpc('hc_owner_exists')]);
+  const user = u.data.user;
+  return { supabaseAdmin, allowed: !u.error && !exists.error && ownerClaimAllowed({ configured: process.env['HC_OWNER_EMAIL'], email: user?.email, emailVerified: Boolean(user?.email_confirmed_at), ownerExists: exists.data === true, hasRole: false }) };
+}
+
+/** Signed-in only: tells the caller whether they are a member, revoked, or have no membership. Owner eligibility is only ever true for the verified configured owner address. */
+export const accountStatus = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).handler(async ({ context }): Promise<MembershipState> => {
+  const [role, allowed] = await Promise.all([context.supabase.rpc('hc_my_role'), context.supabase.rpc('hc_session_allowed')]);
+  if (role.error || allowed.error) throw new Error(GENERIC);
+  if (role.data) return membershipState(role.data, allowed.data === true, false);
+  const { allowed: claimable } = await ownerEligibility(context.userId);
+  return membershipState(null, false, claimable);
 });
 
-export const ownerSetupStatus = createServerFn({ method: 'GET' }).handler(async () => {
-  if (!process.env['HC_OWNER_EMAIL']?.trim()) return { configured: false, ownerExists: false };
-  const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-  const r = await supabaseAdmin.rpc('hc_owner_exists');
-  return { configured: true, ownerExists: r.data === true };
+/** Signed-in only: one-time owner bootstrap for the verified configured owner identity. Others get a generic denial. */
+export const claimOwner = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
+  const mine = await context.supabase.rpc('hc_my_role');
+  if (mine.data === 'owner') return { ok: true as const };
+  if (mine.error || mine.data) return { ok: false as const, message: GENERIC };
+  const { supabaseAdmin, allowed } = await ownerEligibility(context.userId);
+  if (!allowed) return { ok: false as const, message: GENERIC };
+  const boot = await supabaseAdmin.rpc('hc_bootstrap_owner', { p_user: context.userId });
+  return boot.error ? { ok: false as const, message: GENERIC } : { ok: true as const };
 });
 
 export const myHosts = createServerFn({ method: 'POST' }).middleware([requireActiveAccount]).handler(async ({ context }) => {

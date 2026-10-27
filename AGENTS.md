@@ -24,3 +24,4 @@
 - Basic profiles use owner/session RLS and signup triggers; all account and Guardian server functions compose requireActiveAccount so subsequent requests reject explicitly revoked sessions independently of provider token expiry.
 - Workspace selected-file copies use account-keyed IndexedDB records, never native paths or automatic capture; header entries preserve the existing navigation destinations.
 - Installable app uses public/manifest.webmanifest plus vite-plugin-pwa generateSW registered only from src/lib/pwa.ts; it caches the hashed app frame only (no HTML for account/transfer/workspace/terminal, no server calls) and never reloads without user consent, so private data and Demo output never land in caches.
+- Owner bootstrap happens only after sign-in, server-side, when the provider-verified account email matches the server-only owner setting and no owner exists; public pages never show owner setup or its configuration state.
