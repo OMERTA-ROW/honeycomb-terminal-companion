@@ -4,7 +4,7 @@ export type MembershipState = { state: 'member'; role: 'owner' | 'admin' | 'memb
 export function normEmail(e: string | null | undefined) { return (e ?? '').trim().toLowerCase(); }
 
 /** Only a provider-verified address equal to the server-configured owner email may claim, and only while no owner exists. */
-export function ownerClaimAllowed(input: { configured?: string | null; email?: string | null; emailVerified: boolean; ownerExists: boolean; hasRole: boolean }) {
+export function ownerClaimAllowed(input: { configured?: string | null | undefined; email?: string | null | undefined; emailVerified: boolean; ownerExists: boolean; hasRole: boolean }) {
   const c = normEmail(input.configured);
   return Boolean(c) && input.emailVerified && !input.ownerExists && !input.hasRole && normEmail(input.email) === c;
 }
