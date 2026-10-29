@@ -306,6 +306,79 @@ export type Database = {
         }
         Relationships: []
       }
+      hc_task_activity: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          owner_id: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          owner_id: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          owner_id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hc_task_activity_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "hc_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hc_tasks: {
+        Row: {
+          actions: string[]
+          created_at: string
+          goal: string
+          host_id: string | null
+          id: string
+          owner_id: string
+          state: string
+          updated_at: string
+        }
+        Insert: {
+          actions?: string[]
+          created_at?: string
+          goal: string
+          host_id?: string | null
+          id: string
+          owner_id: string
+          state?: string
+          updated_at?: string
+        }
+        Update: {
+          actions?: string[]
+          created_at?: string
+          goal?: string
+          host_id?: string | null
+          id?: string
+          owner_id?: string
+          state?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hc_tasks_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "hc_hosts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hc_transfers: {
         Row: {
           created_at: string
@@ -491,6 +564,16 @@ export type Database = {
       hc_set_role: {
         Args: { p_role: Database["public"]["Enums"]["hc_role"]; p_user: string }
         Returns: undefined
+      }
+      hc_task_action: {
+        Args: {
+          p_actions?: string[]
+          p_goal?: string
+          p_host?: string
+          p_id: string
+          p_op: string
+        }
+        Returns: string
       }
     }
     Enums: {
