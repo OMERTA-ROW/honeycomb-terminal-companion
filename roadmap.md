@@ -1,5 +1,7 @@
 # Honeycomb Terminal next work
 
+- [ ] Private autonomous task workflow: account-authorized goals/status, host/action grants, fixed-code activity, stop/revoke and blocked executor readiness; isolated tests and truthful acceptance evidence.
+
 - [ ] Add quick-access Honeycomb workspace with local-browser projects, exports/downloads and session logs; persistence/export checks, truthful Files/Home Screen guidance and native folder/shortcut prerequisites.
 - [ ] Latest reconciliation: add only missing basic profiles, email account/recovery experience, session revocation/audit and isolation checks; preserve completed UI and native blockers. Owner profile choice resolved, development authorized.
 - [x] Staged creative package preview: audio/video/book/game requests, metadata-only selected files/original playback, separate-output policy, disconnected provider/model/agent selectors and credential-free inert handoff; acceptance documented. 66 full-suite tests, 20 focused post-correction tests and three-size preview flows passed; automatic build OK. Transfer-first and account-profile pause preserved.
