@@ -106,6 +106,7 @@ def main():
 
 def lan_serve(args):
     import threading
+    import time
     from .lan import Hub, LanDenied, build_server, check_bind, detect_lan_ip, ensure_certificate
     try:
         bind = check_bind(args.bind or detect_lan_ip())
@@ -139,7 +140,6 @@ def lan_serve(args):
         while True:
             time.sleep(30)
             hub.reap()
-    import time
     threading.Thread(target=reaper, daemon=True).start()
     hub.audit("host_started")
     print("\nOn iPad/iPhone (same Wi-Fi) open:  https://%s" % authority)
