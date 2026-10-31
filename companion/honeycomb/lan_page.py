@@ -43,6 +43,18 @@ button{cursor:pointer;min-height:40px}button.primary{background:var(--gold);colo
 <div class="keys"><button id="copySel">Copy selection</button><button id="copyAll">Copy all</button><button id="paste">Paste</button><button id="test">Test Connection</button><button id="forget">Unpair this device</button></div>
 <p id="testMsg" class="muted" role="status"></p>
 </section>
+<section id="files" class="panel hidden" aria-labelledby="files-h">
+<h2 id="files-h" style="margin-top:0;color:var(--gold2);font-size:16px">Paste / Add File → save on Mac</h2>
+<p class="muted">Saves into <code>~/Honeycomb/Inbox</code> on your Mac. Nothing is run — this is separate from the terminal. Max 25 MB. To add a project folder (e.g. OMNI, Evolution), create it inside the Inbox on the Mac; only those folders appear here.</p>
+<div id="drop" style="border:1px dashed var(--gold);border-radius:8px;padding:12px;text-align:center"><label>Choose a file <input type="file" id="pick"></label><br><small>or drag a file here (desktop/iPad with drag support)</small></div>
+<p><textarea id="ptext" placeholder="…or paste text/commands here to save as a .txt file (not run)" style="width:100%;min-height:70px"></textarea></p>
+<div class="row"><select id="dest" aria-label="Destination folder" style="flex:1;font:inherit;color:var(--text);background:#1e180d;border:1px solid #6b5418;border-radius:8px;padding:8px"></select><input id="fname" placeholder="file name" maxlength="120" style="flex:1"></div>
+<p id="review" class="muted" role="status">Nothing selected.</p>
+<progress id="prog" max="100" value="0" class="hidden" style="width:100%;accent-color:var(--gold)"></progress>
+<p><button class="primary" id="save" disabled>Save to Mac</button> <button id="clearF">Clear</button></p>
+<p id="fileMsg" class="muted" role="status"></p>
+<small>iPhone/iPad: the clipboard pastes text only. For photos or documents use “Choose a file” (Files/Photos).</small>
+</section>
 <script src="/app.js"></script></body></html>"""
 
 JS = r"""
@@ -62,7 +74,7 @@ function connect(){if(stopped)return;if(!navigator.onLine){status('Offline — t
   retry++;const wait=Math.min(15000,1000*2**Math.min(retry,4));status('Mac unreachable (asleep, offline, different network or host stopped). Retrying…','bad');setTimeout(connect,wait)}}
 async function init(){let st;try{st=await (await fetch('/api/state',{cache:'no-store'})).json()}catch{status('Mac unreachable','bad');return setTimeout(init,4000)}
  $('fp').textContent=st.fingerprint.match(/.{2}/g).join(':');if(!st.paired){$('pair').classList.remove('hidden');status('Not paired');return}
- $('app').classList.remove('hidden');connect()}
+ $('app').classList.remove('hidden');$('files').classList.remove('hidden');loadDest();connect()}
 $('pairBtn').onclick=async()=>{$('pairMsg').textContent='Sending…';const r=await fetch('/api/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:$('code').value,name:$('name').value})});const j=await r.json();
  if(!r.ok){$('pairMsg').textContent={code_invalid:'Wrong code.',code_expired:'Code expired or used. On the Mac type: code',device_limit:'Too many devices; revoke one on the Mac.'}[j.error]||'Refused.';return}
  $('pairMsg').textContent='Waiting for approval on the Mac… type: approve '+j.id;const poll=async()=>{const s=await (await fetch('/api/pair/status?id='+j.id+'&secret='+encodeURIComponent(j.secret),{cache:'no-store'})).json();
@@ -82,4 +94,24 @@ $('forget').onclick=async()=>{if(!confirm('Unpair and end this device\'s shell?'
 addEventListener('online',()=>{if(!ws||ws.readyState>1){retry=0;connect()}});addEventListener('offline',()=>status('Offline — this device has no network','bad'));addEventListener('resize',size);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(!ws||ws.readyState>1)&&!stopped){retry=0;connect()}});
 init();
+
+let pending=null,MAX=25*1024*1024;
+async function loadDest(){try{const j=await (await fetch('/api/files/destinations',{cache:'no-store'})).json();MAX=j.max||MAX;$('dest').innerHTML='';(j.destinations||[]).forEach(d=>{const o=document.createElement('option');o.value=o.textContent=d;$('dest').appendChild(o)})}catch{$('fileMsg').textContent='Could not load folders — Mac unreachable.'}}
+function fmt(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
+function review(){const t=$('ptext').value;if($('pick').files[0])pending=$('pick').files[0];else if(t)pending=new Blob([t],{type:'text/plain'});else pending=null;
+ if(!pending){$('review').textContent='Nothing selected.';$('save').disabled=true;return}
+ if(!$('fname').value)$('fname').value=pending.name||'pasted.txt';
+ const big=pending.size>MAX;$('review').textContent=(big?'Too large: ':'Review: ')+'“'+$('fname').value+'” ('+fmt(pending.size)+') → '+($('dest').value||'?')+'. Saved only, never run.';$('save').disabled=big||!$('dest').value}
+['input','change'].forEach(ev=>{$('ptext').addEventListener(ev,review);$('pick').addEventListener(ev,()=>{$('fname').value='';review()});$('fname').addEventListener(ev,review);$('dest').addEventListener(ev,review)});
+$('drop').addEventListener('dragover',e=>e.preventDefault());
+$('drop').addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);$('pick').files=dt.files;$('fname').value='';review()}});
+$('clearF').onclick=()=>{$('pick').value='';$('ptext').value='';$('fname').value='';$('fileMsg').textContent='';review()};
+$('save').onclick=()=>{if(!pending)return;if(!navigator.onLine){$('fileMsg').textContent='Offline — not sent.';return}
+ const x=new XMLHttpRequest();x.open('POST','/api/files?dest='+encodeURIComponent($('dest').value)+'&name='+encodeURIComponent($('fname').value));
+ $('prog').classList.remove('hidden');$('prog').value=0;$('save').disabled=true;x.upload.onprogress=e=>{if(e.lengthComputable)$('prog').value=100*e.loaded/e.total};
+ x.onload=()=>{let j={};try{j=JSON.parse(x.responseText)}catch{}$('save').disabled=false;
+  if(x.status===200){$('prog').value=100;$('fileMsg').textContent='Saved on Mac as “'+j.saved+'” in '+$('dest').value+' ('+fmt(j.bytes)+').'}
+  else if(x.status===401){$('fileMsg').textContent='Not paired or revoked — pair again.'}
+  else $('fileMsg').textContent='Not saved: '+({too_large:'file over 25 MB',destination_not_allowed:'folder not allowed on the Mac',bad_name:'invalid file name',origin_denied:'blocked'}[j.error]||'error '+x.status)};
+ x.onerror=()=>{$('save').disabled=false;$('fileMsg').textContent='Not saved — Mac unreachable. Check Wi-Fi and that Honeycomb is running.'};x.send(pending)};
 """

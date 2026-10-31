@@ -14,7 +14,7 @@ class LanTests(unittest.TestCase):
     def setUpClass(cls):
         cls.dir = tempfile.mkdtemp()
         cls.cert, cls.key, der, fp = ensure_certificate(cls.dir, "127.0.0.1")
-        cls.port = 18765
+        cls.port = 18765 + (cls.__name__ != "LanTests")
         cls.auth = "127.0.0.1:%d" % cls.port
         cls.hub = Hub(cls.auth, ["/bin/sh"], cls.dir, os.path.join(cls.dir, "audit.jsonl"), on_event=lambda *_: None)
         cls.server = build_server(cls.hub, "127.0.0.1", cls.port, cls.cert, cls.key, der, fp)
@@ -119,3 +119,35 @@ class LanTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LanFileTests(LanTests):
+    """Paste / Add File: saves bytes only, never runs them; paired + allowlisted folder only."""
+    def up(self, data, dest="Inbox", name="a.sh", cookie=None, origin=True):
+        c = http.client.HTTPSConnection("127.0.0.1", self.port, context=self.ctx)
+        h = {"Content-Type": "application/octet-stream"}
+        if origin: h["Origin"] = "https://" + self.auth
+        if cookie: h["Cookie"] = cookie
+        c.request("POST", "/api/files?dest=%s&name=%s" % (dest, urllib.request.quote(name)), data, h)
+        r = c.getresponse(); return r.status, json.loads(r.read())
+
+    def test_upload_rules(self):
+        self.assertEqual(self.up(b"x")[0], 401)
+        did, ck = self.pair("Phone")
+        self.assertEqual(self.up(b"x", cookie=ck, origin=False)[0], 403)
+        marker = os.path.join(self.dir, "ran")
+        s, j = self.up(b"touch %s\n" % marker.encode(), name="../../evil.sh", cookie=ck)
+        self.assertEqual((s, j["saved"]), (200, "evil.sh"))
+        p = os.path.join(self.hub.inbox, "evil.sh")
+        self.assertFalse(os.path.exists(marker)); self.assertEqual(os.stat(p).st_mode & 0o777, 0o600)
+        self.assertEqual(self.up(b"y", name="evil.sh", cookie=ck)[1]["saved"], "evil (2).sh")
+        self.assertEqual(self.up(b"y", dest="OMNI", cookie=ck)[1]["error"], "destination_not_allowed")
+        os.mkdir(os.path.join(self.hub.inbox, "OMNI"))
+        self.assertIn("OMNI", self.req("GET", "/api/files/destinations", cookie=ck)[1]["destinations"])
+        self.assertEqual(self.up(b"y", dest="OMNI", cookie=ck)[0], 200)
+        self.assertEqual(self.up(b"y", dest="..", cookie=ck)[1]["error"], "destination_not_allowed")
+        from honeycomb import files
+        with self.assertRaises(files.FileRefused):
+            files.save(self.hub.inbox, "Inbox", "big.bin", b"z" * (files.MAX_UPLOAD + 1))
+        self.hub.revoke(did)
+        self.assertEqual(self.up(b"x", cookie=ck)[0], 401)

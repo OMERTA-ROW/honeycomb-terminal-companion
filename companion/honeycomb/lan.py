@@ -24,6 +24,7 @@ from urllib.parse import urlparse, parse_qs
 
 from .pty_session import PtySession
 from . import lan_page
+from . import files
 
 CODE_TTL = 120
 CODE_ATTEMPTS = 5
@@ -149,6 +150,7 @@ class Hub:
         self.code_hash, self.code_expiry, self.code_attempts = None, 0, 0
         self.failures = 0
         self.pending, self.devices, self.sessions = {}, {}, {}
+        self.inbox = os.path.join(cwd, "Honeycomb", files.INBOX)
 
     # ---- audit: fixed event codes + random ids only, never names/input/output/tokens
     def audit(self, event, device=""):
@@ -407,6 +409,10 @@ def make_handler(hub):
                     return self._json(404, {"error": str(e)})
                 extra = {"Set-Cookie": "hc_lan=%s; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=%d" % (token, SESSION_TTL)} if token else None
                 return self._json(200, {"status": status}, extra)
+            elif url.path == "/api/files/destinations":
+                if not hub.device_for(self._token()):
+                    return self._json(401, {"error": "not_paired"})
+                return self._json(200, {"destinations": files.destinations(hub.inbox), "max": files.MAX_UPLOAD, "folder": "~/Honeycomb/Inbox"})
             elif url.path == "/ws":
                 return self._websocket()
             else:
@@ -419,6 +425,8 @@ def make_handler(hub):
             if not self._host_ok():
                 return
             length = int(self.headers.get("Content-Length") or 0)
+            if urlparse(self.path).path == "/api/files":
+                return self._upload(length)
             if length > 4096:
                 self.close_connection = True
                 return self._json(413, {"error": "too_large"})
@@ -447,6 +455,26 @@ def make_handler(hub):
                 hub.revoke(did)
                 return self._json(200, {"ok": True}, {"Set-Cookie": "hc_lan=; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=0"})
             return self._json(404, {"error": "not_found"})
+
+        def _upload(self, length):
+            # Saves bytes only; nothing is ever executed or sent to the shell.
+            did = hub.device_for(self._token())
+            if self.headers.get("Origin") != origin or not did or length > files.MAX_UPLOAD:
+                self.close_connection = True
+                if length <= files.MAX_UPLOAD:
+                    self.rfile.read(length)  # drain so the client sees the reply, not a reset
+                err = "origin_denied" if self.headers.get("Origin") != origin else ("not_paired" if not did else "too_large")
+                return self._json({"origin_denied": 403, "not_paired": 401}.get(err, 413), {"error": err})
+            data = self.rfile.read(length)
+            q = parse_qs(urlparse(self.path).query)
+            try:
+                os.makedirs(hub.inbox, mode=0o700, exist_ok=True)
+                saved = files.save(hub.inbox, q.get("dest", [""])[0], q.get("name", [""])[0], data)
+            except files.FileRefused as e:
+                hub.audit("file_refused", did)
+                return self._json(400, {"error": str(e)})
+            hub.audit("file_saved", did)
+            return self._json(200, {"saved": saved, "bytes": len(data)})
 
         def _websocket(self):
             key = self.headers.get("Sec-WebSocket-Key")

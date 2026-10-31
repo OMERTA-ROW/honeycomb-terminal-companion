@@ -85,6 +85,7 @@ function Reconnect({ link, online, onForget }: { link: MacLink; online: boolean;
       {online
         ? <Button asChild size="lg"><a href={liveUrl(link.address)} target="_blank" rel="noopener noreferrer">Open live terminal</a></Button>
         : <Button size="lg" disabled>Offline — reconnect to Wi-Fi first</Button>}
+      <p className="text-sm">On the live page, use <strong className="text-primary">Paste / Add File</strong> to save text or a file into your Mac’s Honeycomb Inbox — saved only, never run.</p>
       <p className="text-xs text-muted-foreground">The live page shows Connected, Reconnecting, Offline or Revoked. If the Mac revoked this device, it asks for a new code — this page cannot check that from here.</p>
       <Button variant="outline" size="sm" onClick={onForget}>Forget this Mac</Button>
     </section>
