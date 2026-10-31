@@ -29,3 +29,4 @@
 - Keep local workspace/diagnostic/editor tools in companion/honeycomb/workspace.py behind interactive console consent; limit review to dedicated exports, preserve quarantined bytes and never treat local filesystem selection as remote authority.
 - Live shell access is only the companion's lan-serve: private-IPv4 bind, TLS, one-use code plus Mac-console approval, per-frame revocation; it stays outside the web app and accounts so no hosted/public endpoint can reach a shell.
 - Paste / Add File in lan-serve only saves bytes (0600, no overwrite) into ~/Honeycomb/Inbox or Mac-created subfolders; it never touches the PTY, so file transfer stays separate from execution.
+- Connectors page reads a browser-safe catalog in src/lib/connectors.ts; effectiveStatus never reports Connected without a verified adapter, so planned integrations can't look live.
