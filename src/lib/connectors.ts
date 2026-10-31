@@ -53,6 +53,22 @@ export const CONNECTORS: Connector[] = [
     steps: ["Owner approves a Perplexity connection", "Key is stored in secure backend settings", "Run a test question"],
   },
   {
+    id: "gemini-api", group: "AI agents", name: "Google Gemini API", status: "not-configured", adapterAvailable: false,
+    summary: "Optional Gemini answers and drafting through a server-side connection. Not a terminal agent.",
+    blocker: "No Gemini connection has been approved or built yet.",
+    scopes: ["Send a prompt you choose", "Receive text answers", "Your account only"],
+    never: ["Terminal access", "File editing on your Mac", "Seeing other users' data"],
+    steps: ["Owner approves a Gemini connection", "Key is stored in secure backend settings, never in chat", "Run a test prompt", "Disconnect any time"],
+  },
+  {
+    id: "gemini-cli", group: "AI agents", name: "Gemini CLI", status: "setup-required", adapterAvailable: false,
+    summary: "Coding agent that would run on your paired Mac through an approved helper.",
+    blocker: "The Mac app and QuickConnect terminal work today. What isn't built yet is the add-on that lets this agent run inside it.",
+    scopes: ["Chosen project folder only", "Proposed commands shown for your approval"],
+    never: ["Whole-disk access", "Admin privileges", "Running without your approval"],
+    steps: ["Pass QuickConnect on your Mac", "Install Gemini CLI on the Mac yourself and sign in there", "Pick one project folder", "Run a connection test"],
+  },
+  {
     id: "custom-mcp", group: "Custom MCP", name: "Custom MCP server", status: "not-configured", adapterAvailable: false,
     summary: "Connect a compatible AI tool using the Model Context Protocol.",
     blocker: "Needs agent sign-in for Honeycomb and your approval to publish, neither done yet.",
