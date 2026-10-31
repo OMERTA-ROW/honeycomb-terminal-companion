@@ -1,62 +1,97 @@
-# Honeycomb Terminal companion — macOS source skeleton (NOT BUILT, NOT TESTED)
+# Honeycomb Terminal Companion — private local acceptance core
 
-Status: planning skeleton only, 2026-10-25. This directory contains a proposed
-source layout and build/packaging instructions for the macOS host companion.
-**No binary exists. No installer exists. Nothing here has been compiled, signed,
-or run on any Mac.** Do not link to or advertise a download.
+Status, 2026-10-31: **runnable source, not a remote companion release.** No
+macOS build/hardware verification, signed binary, installer or download exists.
+The web terminal still runs Demo commands. This code opens no sockets, serves
+no HTTP and cannot be reached from a phone. No production backend was changed.
 
-## Proposed layout (not yet implemented)
+## Implemented
 
-```text
-companion/
-  macos/
-    Sources/
-      HoneycombCompanion/
-        App.swift              # menu-bar app entry; owner-visible stop/revoke controls
-        PtySession.swift       # PTY spawn with the signed-in user's login shell (never root)
-        SessionBroker.swift    # detached supervisor so UI restarts don't kill the PTY
-        Pairing.swift          # short-lived single-use challenge, host-side approval UI
-        KeyStore.swift         # device public keys in Keychain; private keys never leave devices
-        Transport.swift        # E2E encrypted channel (reviewed Noise implementation TBD)
-    Package.swift              # SwiftPM manifest (draft)
-    Tests/                     # PTY, pairing-expiry, revoke, reconnect acceptance tests
-  docs/
-    SIGNING.md                 # signing/notarization prerequisites and blockers
+- Real Unix PTY with bounded input, terminal resize, user shell, temporary-test
+  working directory and process-group shutdown. The local CLI refuses root,
+  requires an interactive console and explicit local consent.
+- Ephemeral host-side pairing model: 120-second single-use tokens, five attempts
+  per issued token, explicit host approval, account/host/device/session scope,
+  monotonic input authorization, revocation and stop. No global internet rate
+  limiter or durable trust store exists; this model is not remotely exposed.
+- X25519 key agreement, HKDF-SHA256 directional keys and AES-GCM scoped frames,
+  peer fingerprint pinning, tamper/replay rejection using the cryptography
+  library. Peer fingerprints must come from independently authenticated pairing;
+  encryption alone does not authenticate a user. Keys stay in test memory and
+  must be regenerated each run; do not persist/reuse channel keys or counters.
+- In-process authorized encrypted input/output adapter, verified against a real
+  sandbox shell and denied after revocation. Its account verifier is a fixture,
+  not a deployed identity connection. Never replace it with a browser flag.
+- Bounded fixed-code security events, never shell input/output, email or secrets.
+
+## Owner Mac preparation and local installation
+
+Requires macOS, Python 3.11+ already installed by the owner, project source,
+outbound package downloads, and a normal user account. No Apple paid membership
+is required for this local source test. Do not use sudo. Dependencies install
+inside a virtual environment; this does not install a system service.
+
+Run from the project root in Terminal.app:
+
+```bash
+python3 -m venv companion/.venv
+companion/.venv/bin/python -m pip install -r companion/requirements.txt
+PYTHONPATH=companion companion/.venv/bin/python -m honeycomb doctor
+PYTHONPATH=companion companion/.venv/bin/python -m unittest discover -s companion/tests -v
+PYTHONPATH=companion companion/.venv/bin/python -m honeycomb local-shell
 ```
 
-## Build & packaging instructions (for when implementation is authorized)
+For local-shell, type `ALLOW LOCAL SHELL` at the consent prompt. It launches your
+own login shell in your home directory, **not an isolated project sandbox**.
+Use harmless `whoami`, `pwd`, `which git` and `printf 'Honeycomb %s\n' connected`;
+compare with Terminal.app. Type `exit` to stop. This is a real LOCAL shell, not
+mobile pairing or Omni autonomous execution. Never enter secrets for testing.
+No commands/outputs are saved by the companion. Test fixtures use disposable
+temporary directories and do not create application accounts or send email.
 
-1. Requires a Mac with Xcode 16+ and an Apple Developer Program membership
-   (paid — not procured; see blockers).
-2. `cd companion/macos && swift build` once sources exist.
-3. Sign with a Developer ID Application certificate; notarize with
-   `xcrun notarytool`; staple with `xcrun stapler`.
-4. Distribute as a signed `.dmg` or `.pkg`. No download link exists today.
+## Pass/fail evidence
 
-## Explicit blockers
+- PASS in Linux sandbox: 17 isolated tests, including real PTY output and
+  encrypted input/output → revocation denies further input/output.
+- PASS: token expiry/reuse/attempt limit, host approval, cross-account/host/
+  session denial, inactive-account denial, stop, tamper/replay/key-pin rejection.
+- NOT RUN: Mac CLI, macOS shell/permissions, physical keyboard, iPhone/iPad PWA,
+  different-network connection, mobile clipboard, background behavior, tmux,
+  signing/notarization/install/update. Sandbox success is not Mac acceptance.
 
-- **Hardware:** no physical Mac is available in this environment; no build or
-  test has run.
-- **Signing:** Apple Developer Program membership and Developer ID certificate
-  are not procured (paid service — requires owner authorization).
-- **Notarization:** requires the above plus notarytool credentials, stored
-  securely (never in source or chat).
-- **Distribution:** no hosting or download page exists; any link shown anywhere
-  in the preview is disabled placeholder text.
-- **iOS/iPadOS/Android apps:** separate native projects; not started. Mobile
-  install instructions in the preview are truthful placeholders ("not yet
-  available"), not store links.
+## Minimum remaining implementation gates
 
-## Smallest real-device acceptance test (when a Mac + iPhone exist)
+1. Verify this source on an owner-authorized Mac. Add native menu-bar consent,
+   Keychain/non-exportable host identity and protected durable trust storage.
+2. Implement host enrollment tied to provider-verified private membership and
+   account/session revocation. Existing file-transfer trust does not grant shell
+   access. No sample host or last-seen timestamp is connectivity evidence.
+3. Supply a reviewed outbound authenticated relay supporting both Mac and PWA;
+   this project's server-function runtime cannot host a persistent shell daemon.
+   Relay hosting/capacity/private access need owner approval; none provisioned.
+   No port forwarding, unauthenticated endpoint or public shell is acceptable.
+4. Implement verified single-use QR containing host identity, host-side device
+   confirmation, bound capabilities and revocation on every message. Integrate
+   PWA cryptography, fresh reconnect keys and server-side membership verification.
+5. Add host tmux/session supervision, bounded scrollback and live status based on
+   authenticated heartbeats; label offline/unknown honestly, never infer sleep.
+6. Connect terminal controls only after the above. Autonomous money, deletion,
+   credentials, public publication and external messages need per-task approval;
+   shell shortcut warnings are not a security sandbox. No autonomous dispatch yet.
+7. Optional signed distribution needs Developer ID/notarization credentials and
+   signing access supplied securely by the owner; no purchases made here.
 
-1. Build and launch the companion on the owner's Mac (unsigned local build is
-   fine for the spike).
-2. Companion spawns a PTY with the owner's login shell; verify `whoami`, `pwd`,
-   and `which git` match the Mac's own Terminal.app.
-3. Pair over the local network with a short-lived code; confirm expiry and
-   wrong-code rejection.
-4. From the phone, run `echo 'Honeycomb connected'`; verify the exact output
-   returns and appears in the Mac's session log.
-5. Enable airplane mode on the phone for 30 seconds, disable it, and verify
-   the same shell session resumes (PID, cwd, scrollback).
-6. Revoke the phone on the Mac; verify reconnect is denied.
+## Smallest physical remote acceptance (BLOCKED until gates 2–5)
+
+1. Sign in as verified owner; issue a member invitation, accept with that person's
+   own login. Confirm nonmember/removed member and cross-account hosts are denied.
+2. On Mac approve a named iPhone/iPad via one-use expiring QR; reject wrong,
+   expired, reused and revoked proofs. Pairing approval is performed on the Mac.
+3. Phone on cellular, awake Mac on home Wi-Fi: execute
+   `printf 'Honeycomb %s\n' connected`; verify actual Mac output and session ID.
+4. Test input, resize, Ctrl+C, history, selected output copy and selected input
+   paste. Phone airplane mode 30 seconds: reconnect to same host tmux session.
+5. Revoke device during execution; deny subsequent input/output/reconnect. Stop
+   on host; verify session closed. Logs contain event codes, not credentials.
+6. Test Mac sleep/offline, OS permission refusal and expired account session.
+   No Demo result can satisfy any remote acceptance step.

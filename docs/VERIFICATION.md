@@ -1,5 +1,8 @@
 # Preview verification — 2026-10-24
 
+## Latest local companion checks — 2026-10-31
+17 Python isolated companion tests pass on Linux, not macOS. A real `/bin/sh` in a disposable directory produced `Honeycomb connected`; the marker is split in input so terminal echo cannot satisfy the assertion. Encrypted in-process input/output test passes and subsequent revoked input/output is denied; no network services, production credentials/accounts or real email used. Peer pin mismatch, replay/tamper, 120-second expiry, five-attempt bound, single-use/approval reuse, account/host/session isolation and stop checked. 94 retained web tests pass before final presentation updates. Remote Mac/iPad, real account-connected transport, persistence and signed installation remain unverified and blocked. See companion/README.md.
+
 ## Scope and environment
 Automated Chromium against `http://localhost:8080`, fresh isolated browser context. Desktop viewport 1280×1800; phone-size viewport 390×844; tablet-size viewport 768×1024. This is browser automation and screenshot inspection, **not** physical iPad/iPhone/Android testing, native app testing, or testing a real companion/remote shell. All commands, hosts, owner approval and reconnect results remain simulated.
 

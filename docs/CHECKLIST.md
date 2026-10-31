@@ -1,5 +1,14 @@
 # Implementation checklist
 
+## Current companion acceptance status — 2026-10-31 (overrides historical skeleton entries)
+- [x] Runnable network-free local PTY source; local CLI consent and root denial.
+- [x] Isolated host-scope/pairing/revocation model and pinned directional encryption tests; no production identity claims.
+- [x] Encrypted in-process input → real sandbox PTY → encrypted output; revocation denies further input/output.
+- [x] Private readiness check requires active account middleware; installed-page status and local Mac preparation instructions.
+- [ ] Physical Mac source test — owner hardware/source required.
+- [ ] Genuine remote acceptance — verified host enrollment, durable protected keys/trust, outbound authenticated relay, PWA adapter and host session supervisor required.
+- [ ] Signed installer/distribution — no artifacts available; signing/notarization owner prerequisites remain.
+
 Legend: [x] Working in preview · [~] Prototype / simulated UI · [ ] Blocked / not started
 
 ## Preview (web, responsive iPad/phone)
