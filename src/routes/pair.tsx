@@ -87,6 +87,7 @@ function Pair() {
     <AppShell>
       <h1 className="text-2xl font-semibold">Pair a computer</h1>
       <p className="text-sm text-warning mt-1">Simulated pairing — no real device keys are created or exchanged. The QR image is a decorative placeholder, not scannable.</p>
+      <div className="mt-3 flex flex-wrap gap-2"><Button asChild variant="outline"><Link to="/transfer">Real selected-file pairing & devices</Link></Button><Button asChild variant="outline"><Link to="/install">Companion acceptance status</Link></Button></div>
 
       <section className="mt-5 border-b pb-4 max-w-lg" aria-label="Mac connection prerequisites">
         <h2 className="font-medium text-primary">Mac + iPhone / iPad · planned</h2>
@@ -149,8 +150,8 @@ function Pair() {
       <section className="mt-8 max-w-lg text-sm text-muted-foreground space-y-2">
         <h2 className="font-medium text-foreground">Install prerequisites (honest status)</h2>
         <ul className="list-disc pl-4 space-y-1.5">
-          <li><span className="text-foreground">Mac companion:</span> planned; source skeleton in <code className="font-mono text-xs">companion/</code>. No installer exists — any download button would be disabled placeholder. Signing and notarization are not procured.</li>
-          <li><span className="text-foreground">iPhone/iPad and Android apps:</span> not yet available. No store links exist; nothing here fabricates one.</li>
+          <li><span className="text-foreground">Mac companion:</span> runnable local console source; not a remote release. Mac installation and secure remote transport remain unverified. No signed installer exists.</li>
+          <li><span className="text-foreground">iPhone/iPad and Android:</span> web app Home Screen support exists; native store apps are unavailable. Mobile remote shell remains blocked.</li>
           <li><span className="text-foreground">Pairing security:</span> real pairing will use short-lived single-use challenges with host-side approval; the fixed code above is a demo only.</li>
         </ul>
       </section>

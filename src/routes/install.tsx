@@ -63,7 +63,7 @@ function Install() {
   return (
     <AppShell>
       <h1 className="text-2xl font-semibold mb-2">Install & updates</h1>
-      <p className="text-sm text-muted-foreground mb-6">This installs the web preview only. It is not a native app or companion, and it does not give your phone a real shell or pairing — hosts and commands stay Demo.</p>
+      <p className="text-sm text-muted-foreground mb-6">Web app only · remote terminal hosts and commands remain Demo. Account sign-in and selected-file transfer are separate real services; transfer pairing never grants shell access.</p>
       <div className="grid gap-4 md:grid-cols-2">
         <section className="rounded-md border border-border bg-card p-4 space-y-2">
           <h2 className="font-medium text-primary">Status</h2>
@@ -100,6 +100,20 @@ function Install() {
                 <dt>Remote connection</dt><dd>{companion.relay}</dd><dt>Reconnect</dt><dd>{companion.persistence}</dd>
               </dl>}
           <p className="text-muted-foreground">Owner Mac preparation: Python 3.11 or later, a normal non-root account, and the project source. Follow companion/README.md for the local-only acceptance commands. No ports are opened. Real mobile pairing, host approval and reconnect acceptance are still pending.</p>
+          <h3 className="font-medium pt-3">Local Mac tools · source only</h3>
+          <dl className="grid gap-2 sm:grid-cols-[auto_1fr]">
+            <dt>Desktop workspace</dt><dd>Opt-in dedicated folder with Projects, Exports and Session logs. Local console only; no automatic sync.</dd>
+            <dt>Storage review</dt><dd>Consent-only exact-duplicate check of workspace exports. Selected copies can move to review and be restored; no permanent deletion or claimed space recovery.</dd>
+            <dt>VS Code</dt><dd>Installed local editor can receive the approved workspace after console consent. Remote editor adapter remains disconnected.</dd>
+            <dt>Biometrics</dt><dd>Honeycomb biometric sign-in is unavailable. Google or your device may use its own verification; that does not grant Terminal membership.</dd>
+          </dl>
+          <h3 className="font-medium pt-3">Acceptance gates</h3>
+          <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+            <li>Local shell and encrypted-frame tests: Linux sandbox evidence only; Mac test pending.</li>
+            <li>Remote pairing, cellular-to-Mac shell, disconnect/resume and live revocation: blocked.</li>
+            <li>iPhone/iPad installation, clipboard and physical keyboard: not tested on hardware.</li>
+          </ul>
+          <div className="flex flex-wrap gap-2 pt-2"><Button asChild variant="outline"><Link to="/transfer">Selected-file devices & pairing</Link></Button><Button asChild variant="outline"><Link to="/workspace">Browser workspace</Link></Button></div>
           <Button asChild variant="link"><Link to="/instructions">Connection and keyboard instructions</Link></Button>
         </section>
       </div>

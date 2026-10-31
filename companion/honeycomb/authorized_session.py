@@ -24,7 +24,13 @@ class AuthorizedSession:
 
     def input(self, sequence, ciphertext):
         self.authorize()
-        self.pty.write(self.channel.open(sequence, ciphertext))
+        try:
+            self.pty.write(self.channel.open(sequence, ciphertext))
+        except Exception:
+            # Protocol violations fail closed; a rejected frame cannot leave a shell alive.
+            self.guard.revoke(self.scope)
+            self.pty.close()
+            raise
 
     def output(self):
         self.authorize()
