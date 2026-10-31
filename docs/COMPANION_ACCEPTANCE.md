@@ -1,5 +1,42 @@
 # Private companion acceptance report — 2026-10-31
 
+## Secure Device Link — current live path (supersedes older BLOCKED rows below)
+
+One common macOS companion: `public/downloads/honeycomb-companion-mac.zip` (served at
+`/downloads/honeycomb-companion-mac.zip`, linked from Terminal and Install). It is a pure-Python
+zipapp run by Apple's `/usr/bin/python3` (Command Line Tools, Python >= 3.9), so the same file runs
+on Apple silicon and Intel Mac mini, iMac and MacBook. Unsigned test build; not notarized.
+
+Built and tested (Linux sandbox, loopback TLS, not a Mac): private-IPv4-only bind, self-signed TLS
+with fingerprint shown on both sides, one-use 8-char code (120 s, 5 tries, global lockout), Mac
+console `approve ID`, HttpOnly/Secure/SameSite=Strict session, Host/Origin checks, real PTY,
+reconnect with persistent session (30 min), revocation checked on every frame (close 4401),
+secret-free audit log, file Inbox separate from shell.
+
+Not built: account-device enrollment (the Mac is not linked to a Honeycomb account; Mac console
+approval is the only authority, and website "Remove" does not revoke on the Mac), relay for
+cellular/different networks, signed/notarized installer, Windows/Linux helpers, QR pairing,
+biometric unlock, website-side online probe (browser cannot reach the Mac).
+
+### Owner acceptance checklist (Mac + iPhone/iPad on the same Wi-Fi)
+
+| # | Step | Pass criterion | State |
+|---|---|---|---|
+| 1 | Download zip on Mac from Terminal page, unzip | Folder with Start Honeycomb, .pyz, READ-ME-FIRST | NOT RUN on Mac |
+| 2 | Control-click Start Honeycomb → Open; type `ALLOW LAN TERMINAL` | Prints https address, fingerprint, code | NOT RUN on Mac |
+| 3 | iPad/iPhone Safari: Terminal → enter address → Connect | Certificate warning shows same fingerprint; accept | NOT RUN |
+| 4 | Enter code + device name; Mac types `approve ID` | Terminal opens | NOT RUN |
+| 5 | Run `pwd` | Mac home path printed | Sandbox PASS / device NOT RUN |
+| 6 | Lock phone 30 s, reopen | Same session resumes, scrollback kept | Sandbox PASS / device NOT RUN |
+| 7 | Mac: `revoke ID` | Phone returns to pairing; reconnect refused | Sandbox PASS / device NOT RUN |
+| 8 | Wrong/expired code; second use of a code | Refused | Sandbox PASS / device NOT RUN |
+| 9 | Share → Add to Home Screen; reopen | Opens Terminal page | NOT RUN |
+| 10 | Mac: `quit` | Phone shows offline; nothing listening | Sandbox PASS / device NOT RUN |
+
+Prerequisites: Mac and phone on the same private Wi-Fi (no guest/client isolation), Command Line
+Tools (macOS offers them on first start), Mac awake. Next platform after Mac proof: Windows helper.
+
+
 ## Delivered, not deployed
 
 ### Remaining-update audit, 2026-10-31
