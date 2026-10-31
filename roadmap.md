@@ -1,5 +1,7 @@
 # Honeycomb Terminal next work
 
+- [ ] Private companion acceptance: runnable host source, isolated security/session tests, installation instructions and honest remote-relay/hardware blockers; preserve current accounts and Demo screens.
+
 - [ ] Private autonomous task workflow: account-authorized goals/status, host/action grants, fixed-code activity, stop/revoke and blocked executor readiness; isolated tests and truthful acceptance evidence.
 
 - [ ] Add quick-access Honeycomb workspace with local-browser projects, exports/downloads and session logs; persistence/export checks, truthful Files/Home Screen guidance and native folder/shortcut prerequisites.
