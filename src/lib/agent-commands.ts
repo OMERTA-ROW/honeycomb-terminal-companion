@@ -28,7 +28,7 @@ export type AgentCommand =
   | { kind: "disconnect"; provider: ProviderId }
   | { kind: "exit" };
 
-const find = (id: string) => AGENTS.find((a) => a.id === id.toLowerCase() || (id.toLowerCase() === "claude-code" && a.id === "claude") || a.name.toLowerCase().startsWith(id.toLowerCase()));
+const find = (raw: string) => { const id = raw.toLowerCase() === "claude-code" ? "claude" : raw.toLowerCase(); return AGENTS.find((a) => a.id === id) ?? AGENTS.find((a) => a.name.toLowerCase().startsWith(id)); };
 
 export function agentsText(): string {
   return AGENTS.map((a) => `${!a.available ? "blocked" : a.needsSetup ? "setup  " : "ready  "}  ${a.id.padEnd(10)} ${a.name} — ${a.usage}`).join("\n")
