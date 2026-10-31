@@ -8,7 +8,7 @@ import type { FitAddon } from "@xterm/addon-fit";
 import { Button } from "@/components/ui/button";
 import { DESTINATIONS } from "@/lib/destinations";
 import { complete, exec, HOME, newSession, type ShellState } from "@/lib/sandbox-shell";
-import { commonPrefix, emptyLine, feed, redraw, type LineState } from "@/lib/line-editor";
+import { commonPrefix, emptyLine, feed, redraw, sanitizePaste, type LineState } from "@/lib/line-editor";
 import { AGENTS, AGENT_COMMANDS, parseAgentCommand } from "@/lib/agent-commands";
 import { agentStatus, askAgent, probeEndpoint } from "@/lib/agent.functions";
 import { useAccountUser } from "@/hooks/use-account-user";
@@ -39,6 +39,7 @@ export function SandboxWorkspace() {
   const [sidebar, setSidebar] = useState(false);
   const [launcher, setLauncher] = useState(false);
   const [note, setNote] = useState("");
+  const [pasteBox, setPasteBox] = useState<string | null>(null);
   const [height, setHeight] = useState<number | null>(null);
   const [voice, setVoice] = useState<{ phase: "consent" | "recording" | "transcribing" | "intent" | "error"; text?: string; intent?: VoiceIntent } | null>(null);
   const recRef = useRef<{ stop: () => Promise<File>; cancel: () => void } | null>(null);
@@ -119,7 +120,8 @@ export function SandboxWorkspace() {
         } else if (opts.length > 1) { write("\r\n" + opts.join("  ") + "\r\n"); }
         lineRef.current = line;
       } else if (ev.type === "submit") {
-        s.transcript += lineRef.current.buf; write("\r\n");
+        // Repaint the full submitted line first: a paste ending in Enter arrives in one chunk and was never drawn.
+        t.write(`\r\x1b[K${termPrompt(s.state)}${ev.line}`); s.transcript += ev.line; write("\r\n");
         const a = parseAgentCommand(ev.line);
         if (a.kind !== "none") { lineRef.current = emptyLine(s.state.history); void runAgent(ev.line, a, s); persist(); if (busyRef.current) return; }
         else {
@@ -166,6 +168,16 @@ export function SandboxWorkspace() {
       const fit = new FitAddon(); t.loadAddon(fit); t.open(hostRef.current); fit.fit();
       termRef.current = t; fitRef.current = fit;
       t.onData((d) => onDataRef.current(d));
+      // Native paste (Cmd+V, Ctrl+V, Ctrl+Shift+V, iOS long-press Paste) lands on xterm's textarea; route it through the sanitizer.
+      const onPaste = (e: ClipboardEvent) => { const txt = e.clipboardData?.getData("text/plain"); e.preventDefault(); e.stopImmediatePropagation(); if (txt) pasteRef.current(txt); };
+      hostRef.current.addEventListener("paste", onPaste, true);
+      const ta = t.textarea; if (ta) { ta.setAttribute("autocapitalize", "off"); ta.setAttribute("autocorrect", "off"); ta.setAttribute("spellcheck", "false"); ta.setAttribute("aria-label", "Terminal input"); }
+      // Ctrl+Shift+C copies the selection (Linux/Windows convention); Ctrl+Shift+V is left to the browser paste event.
+      t.attachCustomKeyEventHandler((e) => {
+        if (e.type === "keydown" && e.ctrlKey && e.shiftKey && e.code === "KeyC") { if (t.hasSelection()) void navigator.clipboard?.writeText(t.getSelection()).catch(() => undefined); return false; }
+        if (e.type === "keydown" && e.ctrlKey && e.shiftKey && e.code === "KeyV") return false;
+        return true;
+      });
       ro = new ResizeObserver(() => { try { fit.fit(); } catch { /* hidden */ } }); ro.observe(hostRef.current);
       let restored: Session[] = []; let act: string | null = null;
       try { const p = JSON.parse(localStorage.getItem(KEY) ?? "null") as { sessions: Session[]; active: string } | null; if (p) { restored = p.sessions; act = p.active; } } catch { restored = []; }
@@ -188,6 +200,13 @@ export function SandboxWorkspace() {
   useEffect(() => { requestAnimationFrame(() => { try { fitRef.current?.fit(); } catch { /* */ } }); }, [sidebar, launcher]);
 
   const send = (d: string) => { onDataRef.current(d); termRef.current?.focus(); };
+  /** Every paste path (button, Cmd/Ctrl+V, Ctrl+Shift+V, long-press Paste, paste box) types sanitized text at the cursor. */
+  function insertPaste(raw: string) {
+    const txt = sanitizePaste(raw); if (!txt) return;
+    setPasteBox(null); setNote(txt.includes("\r") ? "Pasted — lines ending in a newline were run." : "Pasted at the cursor — press Enter to run.");
+    send(txt);
+  }
+  const pasteRef = useRef(insertPaste); pasteRef.current = insertPaste;
 
   // Voice: consent -> record -> transcribe -> show intent -> run (read-only) or wait for a tap (confirm).
   function runIntent(i: VoiceIntent) {
@@ -223,7 +242,13 @@ export function SandboxWorkspace() {
     try { await navigator.clipboard.writeText(txt); setNote(t?.hasSelection() ? "Selection copied." : "Whole session copied."); } catch { setNote("Copy blocked — select text and use the system Copy."); }
   }
   async function paste() {
-    try { const txt = await navigator.clipboard.readText(); termRef.current?.paste(txt); } catch { setNote("Paste blocked — long-press the terminal and choose Paste."); }
+    // Clipboard read needs a user tap and may prompt (iOS shows a "Paste" bubble). If unavailable or denied, open a paste box.
+    if (!navigator.clipboard?.readText) { setPasteBox(""); return; }
+    try {
+      const txt = await navigator.clipboard.readText();
+      if (!txt) { setNote("Clipboard is empty (or holds no text)."); termRef.current?.focus(); return; }
+      insertPaste(txt);
+    } catch { setNote("Clipboard access was blocked — long-press the box below and choose Paste."); setPasteBox(""); }
   }
 
   return (
@@ -283,6 +308,12 @@ export function SandboxWorkspace() {
                   : voice.intent.risk === "confirm" ? <div className="flex gap-2"><Button size="sm" onClick={() => runIntent(voice.intent!)}>Confirm & run</Button><Button size="sm" variant="outline" onClick={cancelVoice}>Cancel</Button></div>
                   : <p className="text-muted-foreground">Running (read-only)…</p>}
               </div>}
+            </div>)}
+          {pasteBox !== null && (
+            <div role="dialog" aria-label="Paste box" className="shrink-0 space-y-1 border-t border-primary bg-card p-2">
+              <textarea aria-label="Paste text here" autoFocus rows={2} value={pasteBox} onChange={(e) => setPasteBox(e.target.value)} autoCapitalize="off" autoCorrect="off" spellCheck={false}
+                placeholder="Long-press here and choose Paste" className="w-full rounded border border-border bg-background p-2 font-mono text-xs" />
+              <div className="flex gap-2"><Button size="sm" onClick={() => insertPaste(pasteBox)} disabled={!pasteBox}>Insert at cursor</Button><Button size="sm" variant="outline" onClick={() => { setPasteBox(null); termRef.current?.focus(); }}>Cancel</Button></div>
             </div>)}
           {note && <p className="shrink-0 px-3 text-[11px] text-primary">{note}</p>}
           <div aria-label="Terminal keys" className="flex shrink-0 gap-1 overflow-x-auto border-t border-border px-2 py-1.5">

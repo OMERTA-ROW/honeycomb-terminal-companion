@@ -31,3 +31,20 @@ describe("tab completion against the real sandbox tree", () => {
     expect(commonPrefix(["history", "help"])).toBe("h");
   });
 });
+
+import { sanitizePaste as sp } from "./line-editor";
+import { feed as fd, emptyLine as el } from "./line-editor";
+describe("paste", () => {
+  it("normalizes iOS smart quotes and drops control bytes", () => {
+    expect(sp("echo \u201Chi there\u201D\x03\t\x1b")).toBe('echo "hi there" ');
+  });
+  it("inserts at the cursor without submitting", () => {
+    const s = { ...el(), buf: "cat ", pos: 4 };
+    const r = fd(s, sp("README.txt"));
+    expect(r.state.buf).toBe("cat README.txt"); expect(r.events).toEqual([]);
+  });
+  it("CRLF becomes a single Enter per line", () => {
+    const r = fd(el(), sp("pwd\r\nls\r\n"));
+    expect(r.events).toEqual([{ type: "submit", line: "pwd" }, { type: "submit", line: "ls" }]);
+  });
+});
