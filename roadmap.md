@@ -1,5 +1,7 @@
 # Honeycomb Terminal next work
 
+- [ ] Remaining owner acceptance update (2026-10-31): audit native/web features; add consent-only local workspace, read-only diagnostics and supported local editor handoff; run isolated tests and refresh actual acceptance evidence.
+- [ ] Biometric account authentication — blocked: managed account provider has no supported passkey method; OS biometrics for provider sign-in do not grant Honeycomb membership.
 - [x] Private companion acceptance preparation: network-free local PTY source, encrypted in-process adapter, isolated security/session tests and Mac instructions; private readiness source added, accounts/Demo preserved.
 - [ ] Live Mac/iPad companion acceptance — blocked: authorized Mac hardware, verified host enrollment/key storage, outbound relay, PWA adapter and tmux supervisor not available; no signed native artifact.
 
