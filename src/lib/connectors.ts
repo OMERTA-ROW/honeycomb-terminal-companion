@@ -31,7 +31,7 @@ export const CONNECTORS: Connector[] = [
   {
     id: "codex-cli", group: "AI agents", name: "Codex CLI", status: "setup-required", adapterAvailable: false,
     summary: "Coding agent that would run on your paired Mac through an approved helper.",
-    blocker: "Needs a verified Mac pairing linked to your account and the Mac helper, which isn't built yet.",
+    blocker: "The Mac app and QuickConnect terminal work today. What isn't built yet is the add-on that lets this agent run inside it.",
     scopes: ["Chosen project folder only", "Proposed commands shown for your approval"],
     never: ["Whole-disk access", "Admin privileges", "Running without your approval"],
     steps: ["Pass QuickConnect on your Mac", "Install Codex CLI on the Mac yourself and sign in there", "Pick one project folder", "Run a connection test"],
@@ -39,7 +39,7 @@ export const CONNECTORS: Connector[] = [
   {
     id: "claude-code-cli", group: "AI agents", name: "Claude Code CLI", status: "setup-required", adapterAvailable: false,
     summary: "Coding agent that would run on your paired Mac through an approved helper.",
-    blocker: "Needs a verified Mac pairing linked to your account and the Mac helper, which isn't built yet.",
+    blocker: "The Mac app and QuickConnect terminal work today. What isn't built yet is the add-on that lets this agent run inside it.",
     scopes: ["Chosen project folder only", "Proposed commands shown for your approval"],
     never: ["Whole-disk access", "Admin privileges", "Running without your approval"],
     steps: ["Pass QuickConnect on your Mac", "Install Claude Code on the Mac yourself and sign in there", "Pick one project folder", "Run a connection test"],

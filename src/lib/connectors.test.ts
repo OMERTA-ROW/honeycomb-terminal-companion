@@ -11,3 +11,9 @@ describe("connectors", () => {
     expect(p.never).toContain("Terminal access");
   });
 });
+
+describe("connector wording", () => {
+  it("never says the Mac helper itself is missing", () => {
+    for (const c of CONNECTORS) expect(c.blocker).not.toMatch(/helper, which isn't built/);
+  });
+});
