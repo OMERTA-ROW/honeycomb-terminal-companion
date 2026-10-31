@@ -33,3 +33,4 @@ Demo (simulated hosts, /pair) is never counted in this log.
 | `ask perplexity` | BLOCKED | No Perplexity connection in workspace; owner must create and link one |
 | `connect api/mcp <https url>` | BUILT-UNVERIFIED | Private/local URLs refused by unit tests |
 | Codex / Claude Code CLI | BLOCKED | Cannot run programs in browser or server runtime; needs Mac add-on |
+| xterm.js inline terminal (prompt/input/output in one viewport), Tab, history, Ctrl+C, resize, persistence, Esc×2 exit | Sandbox | Playwright 390px→1280px: pwd/mkdir/cd (Tab)/ls ~/history/Ctrl+C inline; width 374→1264; reload kept session; Esc Esc exited. Not a PTY — no vim/real processes; Mac PTY only via companion lan-serve page |
