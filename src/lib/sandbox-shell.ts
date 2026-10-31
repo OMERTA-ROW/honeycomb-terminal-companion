@@ -141,3 +141,14 @@ export function exec(prev: ShellState, raw: string, now = Date.now()): ExecResul
 }
 
 export function prompt(s: ShellState) { return `${s.cwd.replace(new RegExp(`^${HOME}`), "~") || "/"} $`; }
+
+/** Tab completion: command names for the first word, otherwise entries in the target directory. */
+export function complete(s: ShellState, line: string, extra: readonly string[] = []): string[] {
+  const words = line.split(/\s+/); const word = words[words.length - 1] ?? "";
+  if (words.length <= 1) return [...new Set([...COMMANDS, ...extra])].filter((c) => c.startsWith(word)).sort();
+  const slash = word.lastIndexOf("/");
+  const dirPart = slash >= 0 ? word.slice(0, slash + 1) : ""; const base = word.slice(slash + 1);
+  const dir = get(s.root, resolve(s.cwd, dirPart || "."));
+  if (!dir || dir.type !== "dir") return [];
+  return Object.entries(dir.children).filter(([n]) => n.startsWith(base)).map(([n, c]) => dirPart + n + (c.type === "dir" ? "/" : "")).sort();
+}
