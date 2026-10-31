@@ -32,3 +32,4 @@
 - Connectors page reads a browser-safe catalog in src/lib/connectors.ts; effectiveStatus never reports Connected without a verified adapter, so planned integrations can't look live.
 
 - Mac host enrollment: the signed-in app creates a hashed one-use code (hc_create_host_enrollment); the helper redeems it with the publishable key (hc_enroll_host) and keeps its host secret in host.json 0600; hc_host_status heartbeats revocation. Why: account-linked hosts without exposing service keys or reaching the Mac from the cloud.
+- Browser sandbox terminal lives in src/lib/sandbox-shell.ts (pure, device-local file tree); it is never presented as macOS, iOS or a hosted server. Why: real commands without a Mac while Workers cannot spawn processes.
