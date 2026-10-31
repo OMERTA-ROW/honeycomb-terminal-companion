@@ -66,6 +66,22 @@ function move(s: LineState, k: string): LineState {
   return s;
 }
 
+/**
+ * Normalize clipboard text before it is typed at the cursor: iOS "smart"
+ * quotes/dashes become ASCII, NBSP/tabs become spaces, CRLF becomes one Enter,
+ * bracketed-paste markers and other control bytes are dropped so a paste can
+ * never trigger Ctrl+C/D, Tab completion or Escape. Newlines still submit lines.
+ */
+export function sanitizePaste(text: string): string {
+  return text
+    .replace(/\x1b\[20[01]~/g, "")
+    .replace(/[\u2018\u2019\u201A\u2032]/g, "'").replace(/[\u201C\u201D\u201E\u2033]/g, '"')
+    .replace(/[\u2013\u2014]/g, "-").replace(/[\u00A0\u2007\u202F\t]/g, " ").replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\r\n?/g, "\n")
+    .replace(/[\x00-\x09\x0b-\x1f\x7f]/g, "")
+    .replace(/\n/g, "\r");
+}
+
 /** Longest common prefix for Tab completion. */
 export function commonPrefix(xs: string[]): string {
   if (!xs.length) return ""; let p = xs[0]!;

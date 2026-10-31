@@ -39,6 +39,12 @@ function parentOf(root: Node, path: string): { dir: Node | undefined; name: stri
   return { dir: get(root, path.slice(0, i) || "/"), name: path.slice(i + 1) };
 }
 function validName(n: string) { return /^[A-Za-z0-9._ -]{1,64}$/.test(n) && n !== "." && n !== ".."; }
+/** Same-directory entry that differs only by letter case (for a helpful hint; lookups stay case-sensitive like Linux). */
+function caseMatch(root: Node, path: string): string | undefined {
+  const { dir, name } = parentOf(root, path);
+  if (!dir || dir.type !== "dir") return undefined;
+  return Object.keys(dir.children).find((k) => k !== name && k.toLowerCase() === name.toLowerCase());
+}
 
 /** Minimal quoting: "a b" and 'a b' are single args. */
 export function tokenize(line: string): string[] {
@@ -95,7 +101,11 @@ export function exec(prev: ShellState, raw: string, now = Date.now()): ExecResul
     case "cat": {
       if (!rest.length) return err("missing file operand");
       const parts: string[] = [];
-      for (const a of rest) { const n = get(state.root, resolve(state.cwd, a)); if (!n) return err(`${a}: No such file or directory`); if (n.type === "dir") return err(`${a}: Is a directory`); parts.push(n.content.replace(/\n$/, "")); }
+      for (const a of rest) {
+        const p = resolve(state.cwd, a); const n = get(state.root, p);
+        if (!n) { const alt = caseMatch(state.root, p); return err(`${a}: No such file or directory${alt ? ` (names are case-sensitive — did you mean ${alt}?)` : ""}`); }
+        if (n.type === "dir") return err(`${a}: Is a directory`); parts.push(n.content.replace(/\n$/, ""));
+      }
       out = parts.join("\n"); break;
     }
     case "mkdir": case "touch": {
