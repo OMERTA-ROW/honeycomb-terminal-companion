@@ -61,6 +61,7 @@ def load(state_dir):
 
 def link(state_dir, code, name, os_name, fingerprint, rpc=_rpc):
     code = normalize_code(code)
+    fingerprint = str(fingerprint).replace(":", "").lower()
     name = "".join(ch for ch in str(name)[:40] if ch.isprintable()).strip() or "My Mac"
     secret = secrets.token_hex(32)
     out = rpc("hc_enroll_host", {"p_code": code, "p_name": name, "p_os": os_name, "p_fingerprint": fingerprint,
