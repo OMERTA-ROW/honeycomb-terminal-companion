@@ -77,7 +77,7 @@ $('term').addEventListener('paste',e=>{e.preventDefault();const t=e.clipboardDat
 $('copySel').onclick=async()=>{const t=String(getSelection());if(!t){$('testMsg').textContent='Select text in the output first.';return}await navigator.clipboard.writeText(t);$('testMsg').textContent='Copied selection.'};
 $('copyAll').onclick=async()=>{await navigator.clipboard.writeText(buf);$('testMsg').textContent='Copied output.'};
 $('paste').onclick=async()=>{try{const t=await navigator.clipboard.readText();if(t)sendLine(t)}catch{$('testMsg').textContent='Paste blocked by browser — long-press the output area and choose Paste.'}};
-$('test').onclick=async()=>{$('testMsg').textContent='Running harmless echo on the Mac…';const r=await fetch('/api/test',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});const j=await r.json();$('testMsg').textContent=r.ok?('Mac '+j.host+' replied: '+j.output):'Failed: '+j.error};
+$('test').onclick=async()=>{$('testMsg').textContent='Running harmless echo on the Mac…';const r=await fetch('/api/test',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});const j=await r.json();$('testMsg').textContent=r.ok?('Host '+j.host+' replied: '+j.output):'Failed: '+j.error};
 $('forget').onclick=async()=>{if(!confirm('Unpair and end this device\'s shell?'))return;stopped=true;await fetch('/api/forget',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});location.reload()};
 addEventListener('online',()=>{if(!ws||ws.readyState>1){retry=0;connect()}});addEventListener('offline',()=>status('Offline — this device has no network','bad'));addEventListener('resize',size);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(!ws||ws.readyState>1)&&!stopped){retry=0;connect()}});
