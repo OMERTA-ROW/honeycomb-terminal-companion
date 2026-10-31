@@ -5,6 +5,7 @@ import { SAMPLE_HOSTS } from "@/lib/terminal";
 vi.mock("@tanstack/react-router", () => ({
   createFileRoute: () => () => ({ useParams: () => ({ hostId: "studio-mac" }) }),
   Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a>,
+  useNavigate: () => () => undefined,
 }));
 vi.mock("@/hooks/use-hosts", () => ({ useHosts: () => ({ hosts: SAMPLE_HOSTS }) }));
 import { Terminal } from "@/routes/terminal.$hostId";

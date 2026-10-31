@@ -1,5 +1,6 @@
 # Honeycomb Terminal next work
 
+- [x] Mac download fixed (zip with double-click starter, served at /downloads), Terminal nav + search route, iOS Home Screen steps; 97 app tests, desktop/phone nav + download checks pass.
 - [x] Live local-network terminal (2026-10-31): unsigned .pyz companion, TLS/WSS, code + Mac approval, reconnect, revoke, copy/paste, Test Connection; 37 companion tests + Chromium end-to-end against built file pass.
 - [ ] Mac/iPad physical acceptance of LAN mode — blocked: owner must run on their Mac/iPad and record the 8 checks.
 - [ ] Different-network (cellular) access — blocked: needs owner-approved private relay; none provisioned.
