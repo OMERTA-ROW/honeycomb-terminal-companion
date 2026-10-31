@@ -157,6 +157,24 @@ class LocalPtyTests(unittest.TestCase):
 
 
 class EncryptedLocalIntegrationTests(unittest.TestCase):
+    def test_invalid_encrypted_input_closes_shell_and_revokes(self):
+        scope = Scope("fixture-account", "fixture-host", "fixture-device", "fixture-session")
+        guard = HostGuard(scope.account, scope.host)
+        guard.approve_on_host(guard.claim(guard.offer(), scope), scope, True)
+        host, device = new_identity(), new_identity()
+        channel = Channel(host, public_identity(device), fingerprint(public_identity(device)), scope, "host")
+        with tempfile.TemporaryDirectory() as directory:
+            session = AuthorizedSession(guard, scope, channel, lambda: True, ["/bin/sh"], directory)
+            try:
+                with self.assertRaises(Denied):
+                    session.input(0, b"invalid ciphertext")
+                self.assertTrue(session.pty.closed)
+                self.assertNotIn(scope, guard.grants)
+                with self.assertRaises(Denied):
+                    session.output()
+            finally:
+                session.stop()
+
     def test_encrypted_input_real_output_then_revocation(self):
         scope = Scope("fixture-account", "fixture-host", "fixture-device", "fixture-session")
         guard = HostGuard(scope.account, scope.host)

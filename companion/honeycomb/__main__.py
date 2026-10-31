@@ -9,6 +9,7 @@ import sys
 import termios
 import tty
 import shutil
+import subprocess
 
 from .pty_session import PtySession
 from .workspace import initialize, diagnostics, open_workspace, quarantine_duplicate, restore_export, WorkspaceDenied
