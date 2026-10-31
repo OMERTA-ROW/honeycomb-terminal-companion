@@ -8,7 +8,7 @@ import type { FitAddon } from "@xterm/addon-fit";
 import { Button } from "@/components/ui/button";
 import { DESTINATIONS } from "@/lib/destinations";
 import { complete, exec, HOME, newSession, type ShellState } from "@/lib/sandbox-shell";
-import { commonPrefix, emptyLine, feed, redraw, type LineState } from "@/lib/line-editor";
+import { commonPrefix, emptyLine, feed, redraw, sanitizePaste, type LineState } from "@/lib/line-editor";
 import { AGENTS, AGENT_COMMANDS, parseAgentCommand } from "@/lib/agent-commands";
 import { agentStatus, askAgent, probeEndpoint } from "@/lib/agent.functions";
 import { useAccountUser } from "@/hooks/use-account-user";
@@ -39,6 +39,7 @@ export function SandboxWorkspace() {
   const [sidebar, setSidebar] = useState(false);
   const [launcher, setLauncher] = useState(false);
   const [note, setNote] = useState("");
+  const [pasteBox, setPasteBox] = useState<string | null>(null);
   const [height, setHeight] = useState<number | null>(null);
   const [voice, setVoice] = useState<{ phase: "consent" | "recording" | "transcribing" | "intent" | "error"; text?: string; intent?: VoiceIntent } | null>(null);
   const recRef = useRef<{ stop: () => Promise<File>; cancel: () => void } | null>(null);
@@ -166,6 +167,16 @@ export function SandboxWorkspace() {
       const fit = new FitAddon(); t.loadAddon(fit); t.open(hostRef.current); fit.fit();
       termRef.current = t; fitRef.current = fit;
       t.onData((d) => onDataRef.current(d));
+      // Native paste (Cmd+V, Ctrl+V, Ctrl+Shift+V, iOS long-press Paste) lands on xterm's textarea; route it through the sanitizer.
+      const onPaste = (e: ClipboardEvent) => { const txt = e.clipboardData?.getData("text/plain"); e.preventDefault(); e.stopImmediatePropagation(); if (txt) pasteRef.current(txt); };
+      hostRef.current.addEventListener("paste", onPaste, true);
+      const ta = t.textarea; if (ta) { ta.setAttribute("autocapitalize", "off"); ta.setAttribute("autocorrect", "off"); ta.setAttribute("spellcheck", "false"); ta.setAttribute("aria-label", "Terminal input"); }
+      // Ctrl+Shift+C copies the selection (Linux/Windows convention); Ctrl+Shift+V is left to the browser paste event.
+      t.attachCustomKeyEventHandler((e) => {
+        if (e.type === "keydown" && e.ctrlKey && e.shiftKey && e.code === "KeyC") { if (t.hasSelection()) void navigator.clipboard?.writeText(t.getSelection()).catch(() => undefined); return false; }
+        if (e.type === "keydown" && e.ctrlKey && e.shiftKey && e.code === "KeyV") return false;
+        return true;
+      });
       ro = new ResizeObserver(() => { try { fit.fit(); } catch { /* hidden */ } }); ro.observe(hostRef.current);
       let restored: Session[] = []; let act: string | null = null;
       try { const p = JSON.parse(localStorage.getItem(KEY) ?? "null") as { sessions: Session[]; active: string } | null; if (p) { restored = p.sessions; act = p.active; } } catch { restored = []; }
@@ -188,6 +199,13 @@ export function SandboxWorkspace() {
   useEffect(() => { requestAnimationFrame(() => { try { fitRef.current?.fit(); } catch { /* */ } }); }, [sidebar, launcher]);
 
   const send = (d: string) => { onDataRef.current(d); termRef.current?.focus(); };
+  /** Every paste path (button, Cmd/Ctrl+V, Ctrl+Shift+V, long-press Paste, paste box) types sanitized text at the cursor. */
+  function insertPaste(raw: string) {
+    const txt = sanitizePaste(raw); if (!txt) return;
+    setPasteBox(null); setNote(txt.includes("\r") ? "Pasted — lines ending in a newline were run." : "Pasted at the cursor — press Enter to run.");
+    send(txt);
+  }
+  const pasteRef = useRef(insertPaste); pasteRef.current = insertPaste;
 
   // Voice: consent -> record -> transcribe -> show intent -> run (read-only) or wait for a tap (confirm).
   function runIntent(i: VoiceIntent) {
@@ -223,7 +241,13 @@ export function SandboxWorkspace() {
     try { await navigator.clipboard.writeText(txt); setNote(t?.hasSelection() ? "Selection copied." : "Whole session copied."); } catch { setNote("Copy blocked — select text and use the system Copy."); }
   }
   async function paste() {
-    try { const txt = await navigator.clipboard.readText(); termRef.current?.paste(txt); } catch { setNote("Paste blocked — long-press the terminal and choose Paste."); }
+    // Clipboard read needs a user tap and may prompt (iOS shows a "Paste" bubble). If unavailable or denied, open a paste box.
+    if (!navigator.clipboard?.readText) { setPasteBox(""); return; }
+    try {
+      const txt = await navigator.clipboard.readText();
+      if (!txt) { setNote("Clipboard is empty (or holds no text)."); termRef.current?.focus(); return; }
+      insertPaste(txt);
+    } catch { setNote("Clipboard access was blocked — long-press the box below and choose Paste."); setPasteBox(""); }
   }
 
   return (
