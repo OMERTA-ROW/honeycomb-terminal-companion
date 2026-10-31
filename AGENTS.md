@@ -30,3 +30,5 @@
 - Live shell access is only the companion's lan-serve: private-IPv4 bind, TLS, one-use code plus Mac-console approval, per-frame revocation; it stays outside the web app and accounts so no hosted/public endpoint can reach a shell.
 - Paste / Add File in lan-serve only saves bytes (0600, no overwrite) into ~/Honeycomb/Inbox or Mac-created subfolders; it never touches the PTY, so file transfer stays separate from execution.
 - Connectors page reads a browser-safe catalog in src/lib/connectors.ts; effectiveStatus never reports Connected without a verified adapter, so planned integrations can't look live.
+
+- Mac host enrollment: the signed-in app creates a hashed one-use code (hc_create_host_enrollment); the helper redeems it with the publishable key (hc_enroll_host) and keeps its host secret in host.json 0600; hc_host_status heartbeats revocation. Why: account-linked hosts without exposing service keys or reaching the Mac from the cloud.
