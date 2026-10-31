@@ -23,7 +23,8 @@ function clone<T>(v: T): T { return JSON.parse(JSON.stringify(v)) as T; }
 function count(n: Node): number { return n.type === "file" ? 1 : 1 + Object.values(n.children).reduce((a, c) => a + count(c), 0); }
 
 export function resolve(cwd: string, p: string): string {
-  const parts = (p.startsWith("/") ? p : `${cwd}/${p}`).replace(/^~(?=\/|$)/, HOME).split("/");
+  const q = p.replace(/^~(?=\/|$)/, HOME);
+  const parts = (q.startsWith("/") ? q : `${cwd}/${q}`).split("/");
   const out: string[] = [];
   for (const s of parts) { if (!s || s === ".") continue; if (s === "..") out.pop(); else out.push(s); }
   return "/" + out.join("/");

@@ -101,7 +101,7 @@ export function SandboxWorkspace() {
         const now = Date.now();
         if (!lineRef.current.buf && now - escRef.current < 700) { exitRef.current(); return; }
         escRef.current = now; setNote("Press Esc again (empty line) to exit full screen.");
-      } else if (ev.type === "interrupt") { write(`${lineRef.current.buf}^C\r\n`); showPrompt(); }
+      } else if (ev.type === "interrupt") { write("^C\r\n"); showPrompt(); }
       else if (ev.type === "eof") { write("exit\r\n"); closeSession(s.id); return; }
       else if (ev.type === "clear") { t.clear(); s.transcript = ""; }
       else if (ev.type === "tab") {
@@ -115,7 +115,7 @@ export function SandboxWorkspace() {
         } else if (opts.length > 1) { write("\r\n" + opts.join("  ") + "\r\n"); }
         lineRef.current = line;
       } else if (ev.type === "submit") {
-        write(lineRef.current.buf + "\r\n");
+        write("\r\n");
         const a = parseAgentCommand(ev.line);
         if (a.kind !== "none") { lineRef.current = emptyLine(s.state.history); void runAgent(ev.line, a, s); persist(); if (busyRef.current) return; }
         else {
