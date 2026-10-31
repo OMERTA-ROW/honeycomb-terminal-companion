@@ -50,7 +50,7 @@ button{cursor:pointer;min-height:40px}button.primary{background:var(--gold);colo
 <p><textarea id="ptext" placeholder="…or paste text/commands here to save as a .txt file (not run)" style="width:100%;min-height:70px"></textarea></p>
 <div class="row"><select id="dest" aria-label="Destination folder" style="flex:1;font:inherit;color:var(--text);background:#1e180d;border:1px solid #6b5418;border-radius:8px;padding:8px"></select><input id="fname" placeholder="file name" maxlength="120" style="flex:1"></div>
 <p id="review" class="muted" role="status">Nothing selected.</p>
-<progress id="prog" max="100" value="0" class="hidden" style="width:100%"></progress>
+<progress id="prog" max="100" value="0" class="hidden" style="width:100%;accent-color:var(--gold)"></progress>
 <p><button class="primary" id="save" disabled>Save to Mac</button> <button id="clearF">Clear</button></p>
 <p id="fileMsg" class="muted" role="status"></p>
 <small>iPhone/iPad: the clipboard pastes text only. For photos or documents use “Choose a file” (Files/Photos).</small>
