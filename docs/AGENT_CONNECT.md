@@ -31,3 +31,21 @@ Perplexity must never be presented as having coding-agent, MCP-server or termina
 - For internet use: owner-approved private relay.
 - MCP server needs OAuth activation and a publish decision (owner forbids publishing so far).
 - Perplexity needs the owner to choose a connection; nothing connected now.
+
+## Agent-to-Device QuickConnect (owner-approved 2026-10-31, contract only)
+Goal: a command like "Connect Honeycomb to my Mac" lets an authorized agent start pairing/reconnect and hand the owner a terminal link — without repeated setup.
+
+Implemented now: `src/lib/agent-device-contract.ts` — tool list, scopes, approval level, rate limits and a deny-by-default decision function, with tests. It is NOT connected to any MCP server, API, account or companion.
+
+Tools: list_approved_devices, get_connection_status, request_pairing (Mac approval), request_connection (owner), open_terminal_session (owner; returns a link the owner opens — agent never sees shell I/O), disconnect_session, revoke_device (owner).
+Never allowed: remote companion install/update, self-approval of enrollment, privilege elevation, keystrokes/terminal output to the agent, files outside the Inbox.
+
+App access vs Mac access: an agent would only call Honeycomb's app tools. It never controls macOS directly. No agent (ChatGPT, Claude or other) is connected today.
+
+Remaining prerequisites (BLOCKED):
+1. QuickConnect real Mac/iPad first-run acceptance (priority).
+2. Server-side device registry tied to accounts — today approved computers live only in the browser and on the Mac, so a server/agent cannot list them.
+3. Account-linked companion enrollment + outbound companion channel (companion today only listens on local Wi-Fi; the hosted app cannot reach it).
+4. Agent profiles table, expiring tokens, audit and rate-limit storage with RLS.
+5. OAuth authorization server activation + consent page + MCP endpoint, and an owner decision to publish (the hosted endpoint only exists after publishing).
+6. Owner approval UI for "owner"-level requests.
