@@ -130,6 +130,61 @@ testing; no biometric templates should ever be stored by Honeycomb.
 - Account has no membership: use a legitimate owner/invite onboarding path.
   A revoked session must reauthenticate; a Google identity alone is not access.
 
+## LIVE local-network mode (2026-10-31) — real shell, same Wi-Fi only
+
+`lan-serve` gives a paired iPad/iPhone your normal Mac user's real shell over
+HTTPS/WSS on ONE private local-network address. It refuses 0.0.0.0, public and
+IPv6 addresses, requires typed consent, an 8-character 120-second single-use
+code (5 tries), and typed `approve ID` in the Mac window. Approved devices get a
+12-hour HttpOnly/Secure/SameSite=Strict cookie; Host and Origin are checked and
+revocation is re-checked on every frame. One shell per device survives
+disconnects for 30 minutes (128 KiB scrollback). Audit file holds event codes and
+random device IDs only. Quitting closes every shell; nothing stays listening.
+Not internet access, not tied to Honeycomb accounts, not tmux, not signed.
+
+### Mac install (unsigned, Apple silicon or Intel, macOS built-in Python 3.9+)
+
+```bash
+xcode-select --install        # only if python3 asks for Command Line Tools
+mkdir -p ~/Honeycomb && cd ~/Honeycomb
+# put honeycomb-companion.pyz + .sha256 here (from Files, or build: sh companion/scripts/build-macos.sh)
+shasum -a 256 -c honeycomb-companion.pyz.sha256
+xattr -d com.apple.quarantine honeycomb-companion.pyz 2>/dev/null || true
+python3 honeycomb-companion.pyz doctor
+python3 honeycomb-companion.pyz lan-serve        # or --bind 192.168.1.20 --port 8765
+```
+
+macOS may ask to allow incoming connections for python3: Allow (private network).
+Remove: quit, then `rm -rf ~/Honeycomb "~/Library/Application Support/Honeycomb"`.
+
+### iPad/iPhone
+
+1. Same Wi-Fi as the Mac. In Safari open the printed `https://192.168.x.x:8765`.
+2. Certificate warning is expected (self-signed). Compare the SHA-256 on the
+   phone page with the Mac window before continuing. Optional trust: open
+   `/honeycomb-lan.cer`, install in Settings → Profile Downloaded, then enable it
+   in General → About → Certificate Trust Settings (remove it afterward).
+3. Enter code + device name → on Mac type `approve ID`.
+4. Share → Add to Home Screen for an app icon (opens this Mac page, not the
+   hosted app; offline means "Mac unreachable").
+
+### First pairing acceptance (record PASS/FAIL)
+
+1. Test Connection shows `Honeycomb connected` from the Mac host name.
+2. Send `printf 'Honeycomb %s\n' connected; uname -s` → `Darwin` output.
+3. Ctrl‑C stops `sleep 100`; arrows/Tab/external keyboard typing work.
+4. Copy selection / Copy all / Paste (destructive lines ask first).
+5. Airplane mode 30 s → "Mac unreachable… Retrying" → same shell returns.
+6. Wrong code ×5, reused code, expired code are refused; `deny ID` gives no access.
+7. On Mac `revoke ID` → phone returns to pairing; old cookie refused.
+8. `quit` → phone shows unreachable; `lsof -iTCP:8765` shows nothing.
+
+Sandbox evidence (Linux, not a Mac): 37 companion tests PASS, including real
+TLS/WSS loopback shell I/O, reconnect persistence, revocation, origin/host and
+code limits; built `.pyz` driven by Chromium (tablet viewport) paired, ran
+commands, Test Connection, reload-reconnect and revoke: PASS. NOT RUN: macOS,
+Safari/iPad, physical keyboard, mobile clipboard, real Wi-Fi.
+
 ## Pass/fail evidence
 
 - PASS in Linux sandbox: 30 isolated tests, including real PTY output and
