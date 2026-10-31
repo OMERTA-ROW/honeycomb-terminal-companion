@@ -7,7 +7,7 @@ import hashlib, json, os, re, secrets, ssl, urllib.error, urllib.request
 
 BACKEND = "https://tkfrohljkrdivqgqxytk.supabase.co"
 PUBLISHABLE_KEY = "sb_publishable_q7AMKYbv75zkxViLTpKT9Q_2WKIhs_o"
-CODE_RE = re.compile(r"^[A-Z2-9]{12}$")
+CODE_RE = re.compile(r"^[A-HJ-NP-Z2-9]{12}$")
 
 
 class AccountError(Exception):
