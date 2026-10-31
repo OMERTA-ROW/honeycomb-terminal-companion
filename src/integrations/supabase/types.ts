@@ -618,6 +618,18 @@ export type Database = {
         Args: { p_host: string; p_secret: string }
         Returns: Json
       }
+      hc_my_hosts: {
+        Args: never
+        Returns: {
+          created_at: string
+          fingerprint: string
+          id: string
+          last_seen: string
+          name: string
+          os: string
+          revoked_at: string
+        }[]
+      }
       hc_my_role: {
         Args: never
         Returns: Database["public"]["Enums"]["hc_role"]
