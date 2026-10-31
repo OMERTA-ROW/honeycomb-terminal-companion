@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { Link, useNavigate, useRouter, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Bot, Copy, ClipboardPaste, LogOut, Menu, Plus, X } from "lucide-react";
 import type { Terminal as XTerm } from "@xterm/xterm";
@@ -46,6 +46,7 @@ export function SandboxWorkspace() {
   const lineRef = useRef<LineState>(emptyLine()); const busyRef = useRef<number>(0); const escRef = useRef(0);
   const { user } = useAccountUser(); const userRef = useRef(user); userRef.current = user;
   const navigate = useNavigate(); const router = useRouter();
+  const { cmd } = useSearch({ from: "/terminal/sandbox" }); const cmdRef = useRef(cmd);
   const ask = useServerFn(askAgent); const probe = useServerFn(probeEndpoint); const statusFn = useServerFn(agentStatus);
   const fns = useRef({ ask, probe, statusFn }); fns.current = { ask, probe, statusFn };
 
@@ -82,7 +83,7 @@ export function SandboxWorkspace() {
     write("\x1b[2m… waiting for server (Ctrl+C to stop waiting)\x1b[0m\r\n");
     let out: string;
     try {
-      if (a.kind === "status") { const st = await fns.current.statusFn(); out = `gemini: ${st.gemini}\nperplexity: ${st.perplexity}\nmcp/api: connect mcp|api <https url>\ncodex/claude: blocked here — run on your Mac`; }
+      if (a.kind === "status") { const st = await fns.current.statusFn(); out = `gemini: ${st.gemini}\nclaude: ${st.claude}\nopenai: ${st.openai}\nperplexity: ${st.perplexity}\nmcp/api: connect mcp|api <https url>\ncodex / claude-code CLIs: not built — need the Mac add-on`; }
       else if (a.kind === "ask") { const r = await fns.current.ask({ data: { provider: a.provider, prompt: a.prompt } }); out = `[${r.source}${r.ok ? "" : " · error"}]\n${r.text}`; }
       else if (a.kind === "probe") { const r = await fns.current.probe({ data: { provider: a.provider, url: a.url } }); out = `[${a.provider}${r.ok ? " · reachable" : " · failed"}]\n${r.text}`; }
       else out = "";
@@ -168,6 +169,8 @@ export function SandboxWorkspace() {
       if (!restored.length) restored = [makeSession(1)];
       if (!restored.some((s) => s.id === act)) act = restored[0]!.id;
       commit(restored, act); paint(restored.find((s) => s.id === act)!); t.focus();
+      // A connector card may prefill a command; it is typed at the prompt but never auto-run.
+      if (cmdRef.current) onDataRef.current(cmdRef.current.replace(/[\x00-\x1f\x7f]/g, "").slice(0, 200));
     })();
     return () => { disposed = true; ro?.disconnect(); termRef.current?.dispose(); termRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -228,7 +231,7 @@ export function SandboxWorkspace() {
               <p className="mb-1 text-[11px] text-muted-foreground">Types the command at the prompt — press Enter to run.</p>
               <div className="grid grid-cols-2 gap-1 sm:grid-cols-4">
                 {AGENTS.map((a) => (
-                  <button key={a.id} type="button" className="rounded border border-border p-2 text-left text-xs hover:border-primary" onClick={() => { setLauncher(false); send("\x15" + (a.id === "gemini" || a.id === "perplexity" ? `ask ${a.id} ` : a.id === "mcp" || a.id === "api" ? `connect ${a.id} https://` : `connect ${a.id}`)); }}>
+                  <button key={a.id} type="button" className="rounded border border-border p-2 text-left text-xs hover:border-primary" onClick={() => { setLauncher(false); send("\x15" + (a.id === "gemini" || a.id === "perplexity" || a.id === "openai" ? `ask ${a.id} ` : a.id === "claude-api" ? "ask claude " : a.id === "mcp" || a.id === "api" ? `connect ${a.id} https://` : `connect ${a.id}`)); }}>
                     <span className="block text-primary">{a.name}</span><span className="text-muted-foreground">{!a.available ? "Blocked here" : a.needsSetup ? "Setup needed" : "Ready"}</span>
                   </button>))}
               </div>
