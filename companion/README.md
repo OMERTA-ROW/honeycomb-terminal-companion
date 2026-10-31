@@ -49,8 +49,6 @@ mobile pairing or Omni autonomous execution. Never enter secrets for testing.
 No commands/outputs are saved by the companion. Test fixtures use disposable
 temporary directories and do not create application accounts or send email.
 
-## Pass/fail evidence
-
 ## Local desktop workspace, diagnostics and VS Code
 
 These commands require a normal user's interactive console and a separate typed
@@ -132,10 +130,15 @@ testing; no biometric templates should ever be stored by Honeycomb.
 - Account has no membership: use a legitimate owner/invite onboarding path.
   A revoked session must reauthenticate; a Google identity alone is not access.
 
-- PASS in Linux sandbox: 17 isolated tests, including real PTY output and
+## Pass/fail evidence
+
+- PASS in Linux sandbox: 30 isolated tests, including real PTY output and
   encrypted input/output → revocation denies further input/output.
 - PASS: token expiry/reuse/attempt limit, host approval, cross-account/host/
   session denial, inactive-account denial, stop, tamper/replay/key-pin rejection.
+- PASS: workspace consent/path denial, exact-vs-similar review, preservation,
+  restore non-overwrite and mocked local editor arguments; invalid input closes
+  the encrypted local shell. Non-root interactive disposable CLI flow also passed.
 - NOT RUN: Mac CLI, macOS shell/permissions, physical keyboard, iPhone/iPad PWA,
   different-network connection, mobile clipboard, background behavior, tmux,
   signing/notarization/install/update. Sandbox success is not Mac acceptance.

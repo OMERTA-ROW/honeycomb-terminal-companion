@@ -68,16 +68,20 @@ public endpoint, billing or real-machine installation was changed.
 
 | Check | Result / limits |
 |---|---|
-| Companion test discovery | PASS: 17 unittest tests, Linux sandbox |
+| Companion test discovery | PASS: 30 unittest tests, Linux sandbox; initial system Python lacked cryptography, rerun succeeded in isolated venv |
+| Non-root interactive local CLI | PASS: disposable workspace init → consent scan → quarantine → restore; originals byte-identical, no network |
+| Consent / path / original safety | PASS: no-consent denial, symlink/escape refusal, similar-file denial, restore non-overwrite; 12 new workspace tests |
+| Invalid encrypted input | PASS: PTY closes and scope revokes; subsequent output denied |
 | Real harmless PTY output and cwd | PASS: disposable local /bin/sh; not a Mac |
 | Encrypted input/output then revoke | PASS: in-process channel; fixture account verifier, no WAN |
 | Pair expiry/reuse/five attempts/approval | PASS: isolated model, not production pairing |
 | Cross-account/host/session, inactive account, stop | PASS: isolated model |
 | Pin mismatch, ciphertext tamper, replay | PASS: fresh test identities and scoped AEAD |
 | Application regression discovery | PASS: 13 Vitest files, 94 tests |
-| Automatic web build | PASS: latest observed 2026-10-31T02:46:41Z |
-| Browser navigation | PASS: /install private readiness CTA → /account with /install return path; public Become owner absent |
+| Automatic web build | PASS: latest observed 2026-10-31T02:51:11Z |
+| Browser navigation | PASS: install → file transfer, pair → file transfer, workspace → install; public owner setup/Become owner absent; initial check needed to await route render |
 | Layout | PASS: Chromium 1280×1800, 768×1024, 390×844; no horizontal overflow or page errors; native status screenshots inspected |
+| Leaf metadata | PASS: all content routes have their own head, og:title/description/type and twitter:card |
 | Signed-in private readiness | NOT RUN against owner session; middleware reused, no identity fixture created |
 | Mac installation / phone or iPad live use | NOT RUN; owner hardware and real transport absent |
 | tmux / mobile reconnect / account-connected shell revoke | BLOCKED: enrollment, transport and supervisor not implemented |
