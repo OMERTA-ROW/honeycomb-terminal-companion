@@ -21,6 +21,7 @@ import { Route as PairRouteImport } from './routes/pair'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
+import { Route as TerminalIndexRouteImport } from './routes/terminal.index'
 import { Route as TerminalHostIdRouteImport } from './routes/terminal.$hostId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -83,6 +84,11 @@ const WorkspaceRoute = WorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TerminalIndexRoute = TerminalIndexRouteImport.update({
+  id: '/terminal/',
+  path: '/terminal/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TerminalHostIdRoute = TerminalHostIdRouteImport.update({
   id: '/terminal/$hostId',
   path: '/terminal/$hostId',
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
+  '/terminal/': typeof TerminalIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
+  '/terminal': typeof TerminalIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
+  '/terminal/': typeof TerminalIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/terminal/$hostId'
+    | '/terminal/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/terminal/$hostId'
+    | '/terminal'
   id:
     | '__root__'
     | '/'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/terminal/$hostId'
+    | '/terminal/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -197,6 +209,7 @@ export interface RootRouteChildren {
   TransferRoute: typeof TransferRoute
   WorkspaceRoute: typeof WorkspaceRoute
   TerminalHostIdRoute: typeof TerminalHostIdRoute
+  TerminalIndexRoute: typeof TerminalIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -285,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terminal/': {
+      id: '/terminal/'
+      path: '/terminal'
+      fullPath: '/terminal/'
+      preLoaderRoute: typeof TerminalIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terminal/$hostId': {
       id: '/terminal/$hostId'
       path: '/terminal/$hostId'
@@ -309,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   TransferRoute: TransferRoute,
   WorkspaceRoute: WorkspaceRoute,
   TerminalHostIdRoute: TerminalHostIdRoute,
+  TerminalIndexRoute: TerminalIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
