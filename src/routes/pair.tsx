@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
 import { useHosts } from "@/hooks/use-hosts";
@@ -7,7 +7,6 @@ import {
   PAIRING_CODE_TTL_SECONDS,
   PAIRING_STATE_INFO,
   pairingCodeExpired,
-  pairingPayload,
   testConnectionResult,
   type PairingState,
   type TestConnectionState,
