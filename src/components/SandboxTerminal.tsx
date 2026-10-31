@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useRouter, useSearch } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Bot, Copy, ClipboardPaste, LogOut, Menu, Plus, X } from "lucide-react";
+import { Bot, Copy, ClipboardPaste, LogOut, Menu, Mic, Plus, Square, X } from "lucide-react";
+import { parseVoice, type VoiceIntent } from "@/lib/voice-actions";
 import type { Terminal as XTerm } from "@xterm/xterm";
 import type { FitAddon } from "@xterm/addon-fit";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,8 @@ export function SandboxWorkspace() {
   const [launcher, setLauncher] = useState(false);
   const [note, setNote] = useState("");
   const [height, setHeight] = useState<number | null>(null);
+  const [voice, setVoice] = useState<{ phase: "consent" | "recording" | "transcribing" | "intent" | "error"; text?: string; intent?: VoiceIntent } | null>(null);
+  const recRef = useRef<{ stop: () => Promise<File>; cancel: () => void } | null>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<XTerm | null>(null);
   const fitRef = useRef<FitAddon | null>(null);
@@ -185,6 +188,36 @@ export function SandboxWorkspace() {
   useEffect(() => { requestAnimationFrame(() => { try { fitRef.current?.fit(); } catch { /* */ } }); }, [sidebar, launcher]);
 
   const send = (d: string) => { onDataRef.current(d); termRef.current?.focus(); };
+
+  // Voice: consent -> record -> transcribe -> show intent -> run (read-only) or wait for a tap (confirm).
+  function runIntent(i: VoiceIntent) {
+    setVoice(null);
+    if (i.kind === "navigate") { if (i.to !== "/terminal/sandbox") void navigate({ to: i.to }); else termRef.current?.focus(); }
+    else if (i.kind === "new-session") addSession();
+    else if (i.kind === "command") send("\x15" + i.command + "\r");
+  }
+  async function micTap() {
+    if (voice?.phase === "recording") {
+      const rec = recRef.current; recRef.current = null; if (!rec) return;
+      setVoice({ phase: "transcribing", text: "" });
+      try {
+        const { transcribeClip } = await import("@/lib/voice-client");
+        const file = await rec.stop();
+        const text = await transcribeClip(file, (t) => setVoice({ phase: "transcribing", text: t }));
+        const intent = parseVoice(text);
+        if (intent.kind !== "unknown" && intent.risk === "read") { setVoice({ phase: "intent", text, intent }); setTimeout(() => runIntent(intent), 600); }
+        else setVoice({ phase: "intent", text, intent });
+      } catch (e) { setVoice({ phase: "error", text: e instanceof Error ? e.message : "Voice failed" }); }
+      return;
+    }
+    if (!userRef.current) { setVoice({ phase: "error", text: "Sign in first to use voice. You can always type instead." }); return; }
+    if (localStorage.getItem("honeycomb.voice.consent.v1") !== "yes") { setVoice({ phase: "consent" }); return; }
+    try {
+      const { recordWav } = await import("@/lib/voice-client");
+      recRef.current = await recordWav(); setVoice({ phase: "recording" });
+    } catch (e) { setVoice({ phase: "error", text: e instanceof Error ? e.message : "Microphone failed" }); }
+  }
+  function cancelVoice() { recRef.current?.cancel(); recRef.current = null; setVoice(null); termRef.current?.focus(); }
   async function copySel() {
     const t = termRef.current; const s = cur(); const txt = t?.getSelection() || (s ? strip(s.transcript) : "");
     try { await navigator.clipboard.writeText(txt); setNote(t?.hasSelection() ? "Selection copied." : "Whole session copied."); } catch { setNote("Copy blocked — select text and use the system Copy."); }
@@ -236,10 +269,26 @@ export function SandboxWorkspace() {
                   </button>))}
               </div>
             </div>)}
+          {voice && (
+            <div role="status" aria-label="Voice" className="shrink-0 border-t border-primary bg-card px-3 py-2 text-xs">
+              {voice.phase === "consent" && <div className="space-y-2"><p>Voice sends your recording to the Honeycomb server and Lovable AI to turn it into text. Audio isn't saved. Voice can only do what you could tap yourself.</p>
+                <div className="flex gap-2"><Button size="sm" onClick={() => { localStorage.setItem("honeycomb.voice.consent.v1", "yes"); setVoice(null); void micTap(); }}>Allow voice</Button><Button size="sm" variant="outline" onClick={cancelVoice}>Not now</Button></div></div>}
+              {voice.phase === "recording" && <p className="text-primary">● Listening… tap Stop when done (30 s max).</p>}
+              {voice.phase === "transcribing" && <p>Transcribing… <span className="text-muted-foreground">{voice.text}</span></p>}
+              {voice.phase === "error" && <div className="flex items-center justify-between gap-2"><p className="text-warning">{voice.text}</p><Button size="sm" variant="outline" onClick={cancelVoice}>OK</Button></div>}
+              {voice.phase === "intent" && voice.intent && <div className="space-y-1">
+                <p>Heard: <span className="font-mono">"{voice.text}"</span></p>
+                <p className="text-primary">→ {voice.intent.label}{voice.intent.kind === "command" ? <span className="font-mono"> · {voice.intent.command}</span> : null}</p>
+                {voice.intent.kind === "unknown" ? <Button size="sm" variant="outline" onClick={cancelVoice}>OK</Button>
+                  : voice.intent.risk === "confirm" ? <div className="flex gap-2"><Button size="sm" onClick={() => runIntent(voice.intent!)}>Confirm & run</Button><Button size="sm" variant="outline" onClick={cancelVoice}>Cancel</Button></div>
+                  : <p className="text-muted-foreground">Running (read-only)…</p>}
+              </div>}
+            </div>)}
           {note && <p className="shrink-0 px-3 text-[11px] text-primary">{note}</p>}
           <div aria-label="Terminal keys" className="flex shrink-0 gap-1 overflow-x-auto border-t border-border px-2 py-1.5">
             {([["Esc", "\x1b"], ["Tab", "\t"], ["Ctrl+C", "\x03"], ["Ctrl+D", "\x04"], ["↑", "\x1b[A"], ["↓", "\x1b[B"], ["←", "\x1b[D"], ["→", "\x1b[C"]] as const).map(([l, d]) => (
               <Button key={l} type="button" variant="outline" size="sm" className="shrink-0 font-mono" onMouseDown={(e) => e.preventDefault()} onClick={() => send(d)}>{l}</Button>))}
+            <Button type="button" size="sm" variant={voice?.phase === "recording" ? "default" : "outline"} className="shrink-0" aria-label={voice?.phase === "recording" ? "Stop recording" : "Voice command"} onClick={() => void micTap()} disabled={voice?.phase === "transcribing"}>{voice?.phase === "recording" ? <Square className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}</Button>
             <Button type="button" size="sm" className="shrink-0" onClick={() => setLauncher((v) => !v)} aria-expanded={launcher}><Bot className="mr-1 h-3.5 w-3.5" />Agents</Button>
             <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={copySel}><Copy className="mr-1 h-3.5 w-3.5" />Copy</Button>
             <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={paste}><ClipboardPaste className="mr-1 h-3.5 w-3.5" />Paste</Button>
