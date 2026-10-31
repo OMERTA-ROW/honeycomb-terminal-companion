@@ -51,6 +51,87 @@ temporary directories and do not create application accounts or send email.
 
 ## Pass/fail evidence
 
+## Local desktop workspace, diagnostics and VS Code
+
+These commands require a normal user's interactive console and a separate typed
+consent for each action. They never enroll a host or dispatch from the web app.
+Run from the project root after the virtual-environment setup above:
+
+```bash
+PYTHONPATH=companion companion/.venv/bin/python -m honeycomb workspace-init
+PYTHONPATH=companion companion/.venv/bin/python -m honeycomb workspace-open
+PYTHONPATH=companion companion/.venv/bin/python -m honeycomb workspace-scan
+PYTHONPATH=companion companion/.venv/bin/python -m honeycomb vscode-open
+```
+
+Default dedicated folder: `~/Desktop/Honeycomb Workspace`, with `projects`,
+`exports`, `session-logs` and hidden `.review`. Override using `--workspace`
+with an owner-selected new dedicated path. Existing unrelated folders are
+refused. Finder open and editor launch are macOS-only. The projects folder
+is not a shell sandbox; VS Code may load project settings/extensions, so only
+open projects you trust and retain VS Code Workspace Trust protections.
+
+Scan reads only top-level exports: maximum 500 entries and 64 MiB per file,
+skipping symlinks, directories and unsupported files. Reports actual filesystem
+capacity and exact SHA-256 duplicate groups; not similar-photo detection,
+system cleanup, malware scanning or unused-app analysis. It never scans projects
+or captures shell logs. Filenames are displayed locally, not sent or persisted
+in an audit service. Do not share unredacted diagnostics containing private names.
+
+For two owner-reviewed independent duplicate copies, preserve one and move the
+other into reversible local review (nothing deleted, zero bytes recovered):
+
+```bash
+PYTHONPATH=companion companion/.venv/bin/python -m honeycomb workspace-quarantine --selected copy.txt --keeper original.txt
+PYTHONPATH=companion companion/.venv/bin/python -m honeycomb workspace-restore --review-id YOUR_LOCAL_REVIEW_ID --selected copy.txt
+```
+
+Review ID is a local filename, not an auth token. Retain it for restoration.
+Restore refuses to overwrite existing files. No automatic cleanup, cloud
+deletion, recursive deletion or permanent purge exists. These tools are not safe
+for exposure to a remote caller: durable host/account authorization, protected
+directory handles and concurrency review remain required before such exposure.
+
+VS Code must already be installed. On Mac, in VS Code's Command Palette choose
+**Shell Command: Install 'code' command in PATH**, then reopen Terminal.
+`doctor` checks availability without launching software. `vscode-open` invokes
+only `code --new-window <approved-workspace>/projects` after consent; success
+means an open request returned, not independently verified window state. It
+never starts Remote Tunnels or installs an extension. Browser editing remains
+blocked on a separately authenticated/authorized adapter.
+
+Primary references (reviewed 2026-10-31):
+- https://code.visualstudio.com/docs/configure/command-line
+- https://code.visualstudio.com/docs/remote/tunnels
+- https://developer.apple.com/documentation/localauthentication
+
+Biometrics: no Honeycomb passkey/Touch ID/Face ID enrollment or unlock is
+implemented. Managed account sign-in has no supported passkey method here.
+Your Google/device provider may independently use its own device verification;
+that neither proves host pairing nor grants Honeycomb membership. A native
+LocalAuthentication integration needs macOS/iOS implementation and hardware
+testing; no biometric templates should ever be stored by Honeycomb.
+
+### Troubleshooting
+
+- `workspace_not_initialized`: run workspace-init after reviewing the selected
+  dedicated path. `existing_folder_denied`: choose a new folder; do not delete
+  unrelated contents to bypass this check.
+- `symlink_denied`: choose a direct local directory. Desktop/cloud redirection
+  may require choosing another owner-approved path; never weaken the check.
+- `OS operation failed`: check normal-user folder access and installed tools.
+  Do not use sudo or grant blanket Full Disk Access to run these tests.
+- `vscode_cli_unavailable`: use the official PATH instruction above; no remote
+  tunnel or port forwarding is needed for a local editor open.
+- `not_exact_duplicate` / `original_required`: keep both files and review them;
+  similar files are never cleanup candidates.
+- Interrupted local shell: exit/Ctrl+D; process group closes. Frame rejection
+  in the isolated adapter now closes the PTY and revokes that fixture grant.
+- Mac/iPad cannot connect: expected until enrollment/relay/PWA adapter gates
+  below are implemented. Reopening a Demo screen is not live reconnect.
+- Account has no membership: use a legitimate owner/invite onboarding path.
+  A revoked session must reauthenticate; a Google identity alone is not access.
+
 - PASS in Linux sandbox: 17 isolated tests, including real PTY output and
   encrypted input/output → revocation denies further input/output.
 - PASS: token expiry/reuse/attempt limit, host approval, cross-account/host/

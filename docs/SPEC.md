@@ -1,6 +1,13 @@
 # Honeycomb Terminal — Product Specification
 
 ## Current override — private companion acceptance, 2026-10-31
+Latest remaining-update scope: local console now supports explicit dedicated desktop
+workspace creation/open, export-only consent diagnostics, reversible exact-duplicate
+quarantine/restore and installed local VS Code open requests. These are not remote
+adapters, account authority or whole-disk cleanup. Biometric sign-in remains
+unsupported by the configured managed provider; native unlock is not implemented.
+Current evidence and owner pass/fail checklist: `COMPANION_ACCEPTANCE.md`.
+
 Owner now authorizes genuine Mac companion development and secure remote-shell acceptance, superseding historical execution-not-authorized wording below. Network-free Python Unix PTY and scoped encrypted-frame acceptance source now exists in `companion/`; it is verified on the Linux sandbox only, not macOS. No remote relay, production enrollment, PWA shell adapter, persistent tmux supervisor or signed installer exists. Remote terminal stays Demo. Existing private invitations/owner identity and selected-file authorization remain unchanged. Follow `companion/README.md` for local installation, runnable tests, threat boundaries and physical acceptance gates. No public deployment, audience change or paid provisioning is authorized.
 
 Source: owner brief and complete owner-copied canonical Notion plan, supplied Oct 24 2026 (fetch timestamp 2026-10-24T19:26:56.132Z). Canonical reference: https://app.notion.com/p/403c1161030681c98771c23caa433198. Reconciliation uses the supplied text, not access to the private link. Requirement-by-requirement comparison: `GAP_CHECKLIST.md`; next native work: `IMPLEMENTATION_PLAN.md`; actual preview checks: `VERIFICATION.md`.

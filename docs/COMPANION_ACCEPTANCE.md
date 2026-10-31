@@ -2,6 +2,56 @@
 
 ## Delivered, not deployed
 
+### Remaining-update audit, 2026-10-31
+
+Added local-console-only dedicated desktop workspace creation/open, consent-only
+export diagnostics, exact duplicate reversible quarantine/restore, and detected
+installed VS Code local launch. Added fail-closed PTY shutdown/revocation for
+invalid encrypted input; CLI restores console state even if resize setup fails.
+No account, backend, transport infrastructure or provider configuration changed.
+
+The web install/pair/workspace pages now separate real selected-file pairing
+from Demo shell pairing, disclose local source capabilities, and link existing
+device/workspace flows. The black/gold frame and four main destinations remain.
+No new biometric control was fabricated: managed provider passkeys are unsupported
+here, and native biometric unlock remains unimplemented.
+
+Source audit confirms owner/invite-only account middleware and scoped transfer
+operations already exist. Neither membership nor file trust grants a shell.
+Existing keyboard/copy-paste controls remain Demo, browser-permission dependent.
+Native cleanup is limited to owner-selected local exports, preserves originals
+and all quarantined bytes, and never claims freed space. Do not expose these
+filesystem tools remotely without durable authorization and race-hardening.
+
+Current test results are recorded below after execution; historical counts in
+older sections are evidence of previous runs, not additional hardware tests.
+
+## End-to-end owner checklist (actual state)
+
+| Step | Pass criterion | Actual state |
+|---|---|---|
+| Local install | Run doctor and unittest on owner Mac, no sudo/listener | NOT RUN on Mac; source commands supplied |
+| Workspace | Consent create/open, reopen files unchanged | Isolated temporary-directory tests; Finder NOT RUN |
+| Diagnostics | Consent scan exports, exact vs similar, originals retained, restore | Isolated tests; owner disk NOT RUN |
+| VS Code | Consent opens selected local projects, no tunnel | Mocked argument/denial tests; real Mac editor NOT RUN |
+| Owner identity | Verified configured identity retains owner; ordinary account denied | Existing isolated owner tests; owner OAuth NOT RUN this update |
+| Invited account | Real invite accepted, isolated devices, removed member denied | No emails/accounts created; authenticated UI NOT RUN |
+| File pairing | 120s QR/code; named approval; reject expired/reused | Existing source/tests; physical two-client NOT RUN |
+| File transfer | Different networks, identical SHA-256, revoke mid-transfer denied | BLOCKED acceptance: physical authorized clients required |
+| Shell pairing | Authenticated Mac identity, explicit shell grant and phone approval | BLOCKED: enrollment/relay/mobile adapter absent |
+| Test Connection | Actual Mac prints Honeycomb connected via encrypted WAN session | BLOCKED; local PTY output is not remote success |
+| Keyboard | Phone/iPad input, resize, Ctrl+C, selected copy/paste | Existing browser tests; physical keyboard/clipboard NOT RUN |
+| Reconnect | Phone offline 30s; same persistent host session resumes | BLOCKED: supervisor/reconnect protocol absent |
+| Revocation | Revoke denies live input/output/reconnect immediately | Isolated local scope checks PASS; live path BLOCKED |
+| Biometrics | Supported OS prompt, fallback, no raw templates | BLOCKED: native adapter/provider support absent |
+| PWA | Physical Home Screen/install/update; no private data cache | NOT RUN; editor worker remains disabled |
+
+No live end-to-end step above is marked PASS without real account/host/device
+evidence. Owner must install source locally first; this does not require a paid
+Apple signing account. Signed distribution needs securely supplied signing/
+notarization access. Reviewed private relay infrastructure and native enrollment
+remain implementation prerequisites; no service was provisioned or approved.
+
 Runnable network-free Unix host source in companion/honeycomb: real local PTY,
 opt-in normal-user console, bounded input and resize, process-group shutdown,
 ephemeral host pairing/scopes/revocation, pinned directional encrypted frames
