@@ -19,12 +19,12 @@ export const Route = createFileRoute("/instructions")({
 });
 
 const sections: [string, string[]][] = [
-  ["Getting started", ["Install the companion app on your computer (planned for macOS, Windows, Linux).", "Sign in on the computer and on this device.", "Approve pairing once on the computer.", "Tap the computer in the list to open or resume its shell."]],
+  ["Getting started", ["Sign in with your private invited account. Account membership does not grant access to a computer.", "The companion local-console source is available for owner testing; no signed installer or remote shell connection exists yet.", "Real mobile pairing still requires verified host registration, encrypted relay and explicit approval on the Mac.", "Until those checks pass, computers and terminal commands in the hive remain Demo."]],
   ["Keyboard", ["Esc cancels a terminal action; this preview displays an Escape marker.", "Ctrl is sticky: tap Ctrl, then C to cancel the line, L to clear the screen, or U to erase the line.", "Tab completes a partial command in this simulation.", "↑ and ↓ recall commands; returning below the newest restores your draft. ← and → move the cursor or collapse a selection.", "Supported external keyboard keys use the same simulated actions; physical keyboard checks are still pending."]],
   ["Shortcuts", ["Tap ★ to manage shortcuts.", "Every shortcut shows the command before it runs.", "Risky commands (like deleting files) always ask you to confirm."]],
   ["Copy & paste", ["Press and hold or drag over terminal text to select, then use Copy. With no selection, Copy uses the displayed output.", "Paste inserts at the cursor or replaces selected command text. Your browser may ask for clipboard permission."]],
   ["When something's wrong", ["Asleep: wake the computer.", "Offline: make sure it's on, online, and the companion is running.", "Needs permission: allow terminal access in the companion app.", "Revoked: pair again from the computer."]],
-  ["Good to know", ["A real connection will require your computer to be awake and reachable, and its owner to approve this device.", "In the planned product, commands run in the computer’s own shell, not on this device or hosted compute.", "In this preview everything is simulated; companion, sign-in and real connections are not implemented."]],
+  ["Good to know", ["A real connection will require your computer to be awake and reachable, and its owner to approve this device.", "In the planned product, commands run in the computer’s own shell, not on this device or hosted compute.", "Private account sign-in and selected-file transfer are separate real features. Terminal commands and host pairing are still Demo; local companion tests do not establish remote connectivity."]],
 ];
 
 function Instructions() {

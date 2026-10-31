@@ -6,6 +6,7 @@ import time
 import unittest
 
 from honeycomb.pty_session import PtySession
+from honeycomb.authorized_session import AuthorizedSession
 from honeycomb.security import Channel, Denied, HostGuard, Scope, fingerprint, new_identity, public_identity
 
 
@@ -153,6 +154,36 @@ class LocalPtyTests(unittest.TestCase):
                     session.resize(0, 80)
             finally:
                 session.close()
+
+
+class EncryptedLocalIntegrationTests(unittest.TestCase):
+    def test_encrypted_input_real_output_then_revocation(self):
+        scope = Scope("fixture-account", "fixture-host", "fixture-device", "fixture-session")
+        guard = HostGuard(scope.account, scope.host)
+        handle = guard.claim(guard.offer(), scope)
+        guard.approve_on_host(handle, scope, True)
+        host, device = new_identity(), new_identity()
+        host_channel = Channel(host, public_identity(device), fingerprint(public_identity(device)), scope, "host")
+        device_channel = Channel(device, public_identity(host), fingerprint(public_identity(host)), scope, "device")
+        with tempfile.TemporaryDirectory() as directory:
+            session = AuthorizedSession(guard, scope, host_channel, lambda: True, ["/bin/sh"], directory)
+            try:
+                session.input(*device_channel.seal(b"printf 'Honeycomb %s\\n' connected\n"))
+                output = b""
+                deadline = time.monotonic() + 3
+                while time.monotonic() < deadline:
+                    output += device_channel.open(*session.output())
+                    if b"Honeycomb connected\r\n" in output:
+                        break
+                self.assertIn(b"Honeycomb connected\r\n", output)
+                guard.revoke(scope)
+                with self.assertRaises(Denied):
+                    session.input(*device_channel.seal(b"touch forbidden\n"))
+                self.assertFalse((Path(directory) / "forbidden").exists())
+                with self.assertRaises(Denied):
+                    session.output()
+            finally:
+                session.stop()
 
 
 if __name__ == "__main__":
