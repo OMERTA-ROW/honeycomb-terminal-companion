@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
+import { Route as ConnectorsRouteImport } from './routes/connectors'
 import { Route as DeviceCareRouteImport } from './routes/device-care'
 import { Route as InstallRouteImport } from './routes/install'
 import { Route as InstructionsRouteImport } from './routes/instructions'
@@ -32,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const AccountRoute = AccountRouteImport.update({
   id: '/account',
   path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnectorsRoute = ConnectorsRouteImport.update({
+  id: '/connectors',
+  path: '/connectors',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DeviceCareRoute = DeviceCareRouteImport.update({
@@ -98,6 +104,7 @@ const TerminalHostIdRoute = TerminalHostIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/connectors': typeof ConnectorsRoute
   '/device-care': typeof DeviceCareRoute
   '/install': typeof InstallRoute
   '/instructions': typeof InstructionsRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/connectors': typeof ConnectorsRoute
   '/device-care': typeof DeviceCareRoute
   '/install': typeof InstallRoute
   '/instructions': typeof InstructionsRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/connectors': typeof ConnectorsRoute
   '/device-care': typeof DeviceCareRoute
   '/install': typeof InstallRoute
   '/instructions': typeof InstructionsRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/account'
+    | '/connectors'
     | '/device-care'
     | '/install'
     | '/instructions'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/account'
+    | '/connectors'
     | '/device-care'
     | '/install'
     | '/instructions'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/account'
+    | '/connectors'
     | '/device-care'
     | '/install'
     | '/instructions'
@@ -198,6 +210,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  ConnectorsRoute: typeof ConnectorsRoute
   DeviceCareRoute: typeof DeviceCareRoute
   InstallRoute: typeof InstallRoute
   InstructionsRoute: typeof InstructionsRoute
@@ -226,6 +239,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connectors': {
+      id: '/connectors'
+      path: '/connectors'
+      fullPath: '/connectors'
+      preLoaderRoute: typeof ConnectorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/device-care': {
@@ -318,6 +338,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  ConnectorsRoute: ConnectorsRoute,
   DeviceCareRoute: DeviceCareRoute,
   InstallRoute: InstallRoute,
   InstructionsRoute: InstructionsRoute,
