@@ -65,7 +65,8 @@ def ensure_certificate(directory, ip):
     os.makedirs(directory, mode=0o700, exist_ok=True)
     cert, key = os.path.join(directory, "lan-cert.pem"), os.path.join(directory, "lan-key.pem")
     marker = os.path.join(directory, "lan-cert.ip")
-    if not (os.path.exists(cert) and os.path.exists(key) and open(marker).read() == ip if os.path.exists(marker) else False):
+    current = os.path.exists(cert) and os.path.exists(key) and os.path.exists(marker) and open(marker).read() == ip
+    if not current:
         config = os.path.join(directory, "lan-openssl.cnf")
         with open(config, "w") as f:
             f.write("[req]\ndistinguished_name=dn\nx509_extensions=ext\nprompt=no\n[dn]\nCN=Honeycomb LAN %s\n"
