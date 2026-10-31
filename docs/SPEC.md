@@ -103,3 +103,6 @@ Account polish requested at 21:23 UTC is queued after this work. Reuse existing 
 
 ## Staged creative ecosystem extension — 21:54 UTC
 Audio/vocal cleanup/EQ/normalization with before/after and separate export; selected video edits/cleanup/render; book manuscript/layout/cover/barcode/metadata/print-ready exports using customer-owned assigned ISBNs (no generation/publication); game code/assets/tests/build/checkpoint/review/rollback. Direct provider/model/agent choice does not confer shell access. All processing requires available authorized adapter or configured provider; none assumed connected. Versioned cross-terminal handoff revalidates Guardian scopes/recipient capabilities, never forwards credentials or grants privileges. Original files preserved. Current implementation is metadata-only local preview; full requirements and per-package/AI/handoff acceptance in CREATIVE_PACKAGES.md. Shared Honeycomb/Omni ecosystem boundary excludes Vault password/recovery flows. Transfer-first and queued account work remain unchanged.
+
+## Honeycomb Agent Connect (future, not implemented)
+See docs/AGENT_CONNECT.md. Secondary to QuickConnect acceptance; planned only.

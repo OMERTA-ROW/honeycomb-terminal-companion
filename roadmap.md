@@ -59,3 +59,4 @@
 - [x] Invite-only accounts: public sign-up off, owner/admin/member roles, single-use email-bound expiring revocable invitations, owner setup gated on HC_OWNER_EMAIL, Members page, invite page, empty real computers list.
 - [ ] Runtime role/invite SQL tests (src/test/members.integration.sql) — blocked: sandbox database login lacks permission to create temporary test users.
 - [x] Owner setting already supplied; verified-email server bootstrap exists. Owner runtime acceptance remains unverified; do not ask owner to add the secret again.
+- [ ] Honeycomb Agent Connect (secondary, design only): docs/AGENT_CONNECT.md — Codex CLI / Claude Code CLI local adapters, custom agents via MCP or scoped API, Perplexity research-only; per-profile scopes, revoke, audit. Blocked behind QuickConnect real-device acceptance, account-linked enrollment, relay and publish/OAuth approval.
