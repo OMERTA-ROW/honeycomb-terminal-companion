@@ -21,7 +21,8 @@ export function AppShell({ children, terminal = false }: { children: ReactNode; 
       <div className="window-body relative z-10">
         <nav className="window-sidebar" aria-label="Main navigation">
           {([
-            ["/terminal", "Terminal", SquareTerminal],
+            ["/terminal/sandbox", "Terminal", SquareTerminal],
+            ["/terminal", "Connect Mac", Monitor],
             ["/connectors", "Connectors", Plug],
             ["/", "Computers", Monitor],
             ["/pair", "Pair", Link2],
