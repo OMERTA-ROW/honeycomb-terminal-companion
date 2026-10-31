@@ -15,8 +15,7 @@ secret-free audit log, file Inbox separate from shell.
 
 Not built: account-device enrollment (the Mac is not linked to a Honeycomb account; Mac console
 approval is the only authority, and website "Remove" does not revoke on the Mac), relay for
-cellular/different networks, signed/notarized installer, Windows/Linux helpers, QR pairing,
-biometric unlock, website-side online probe (browser cannot reach the Mac).
+cellular/different networks, signed/notarized installer, Windows/Linux helpers, biometric unlock, website-side online probe. QR pairing IS built (2026-10-31): the Mac window prints a real QR of https://<private IP>:<port>/#pair=CODE (fragment never sent to a server; 120 s, single use, new `code` invalidates old, Mac approval still required). The earlier /pair QR was a decorative Demo grid and was removed. The website still cannot probe whether the Mac is online.
 
 ### Owner acceptance checklist (Mac + iPhone/iPad on the same Wi-Fi)
 
@@ -24,7 +23,7 @@ biometric unlock, website-side online probe (browser cannot reach the Mac).
 |---|---|---|---|
 | 1 | Download zip on Mac from Terminal page, unzip | Folder with Start Honeycomb, .pyz, READ-ME-FIRST | NOT RUN on Mac |
 | 2 | Control-click Start Honeycomb → Open; type `ALLOW LAN TERMINAL` | Prints https address, fingerprint, code | NOT RUN on Mac |
-| 3 | iPad/iPhone Safari: Terminal → enter address → Connect | Certificate warning shows same fingerprint; accept | NOT RUN |
+| 3 | iPhone/iPad Camera: scan QR in the Mac window, tap link | Safari opens https://<Mac IP>; warning → Show Details, SHA-256 matches Mac; code pre-filled | Sandbox PASS (browser, cert warning skipped by harness) / device NOT RUN |
 | 4 | Enter code + device name; Mac types `approve ID` | Terminal opens | NOT RUN |
 | 5 | Run `pwd` | Mac home path printed | Sandbox PASS / device NOT RUN |
 | 6 | Lock phone 30 s, reopen | Same session resumes, scrollback kept | Sandbox PASS / device NOT RUN |

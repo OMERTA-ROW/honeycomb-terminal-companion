@@ -15,6 +15,16 @@ from .pty_session import PtySession
 from .workspace import initialize, diagnostics, open_workspace, quarantine_duplicate, restore_export, WorkspaceDenied
 
 
+def _show_code(authority, code):
+    from .qr import pairing_url, render
+    url = pairing_url(authority, code)
+    print("\nScan with the iPhone/iPad Camera (same Wi-Fi). Expires in 120 s, single use:")
+    print(render(url))
+    print("Link:", url)
+    print("Pairing code (120 s, single use):", code)
+    print("New QR/code anytime: type  code\n")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Honeycomb local host acceptance core — NOT remote connectivity")
     parser.add_argument("command", choices=["doctor", "local-shell", "workspace-init", "workspace-open", "workspace-scan", "workspace-quarantine", "workspace-restore", "vscode-open", "lan-serve"])
@@ -145,7 +155,7 @@ def lan_serve(args):
     print("\nOn iPad/iPhone (same Wi-Fi) open:  https://%s" % authority)
     print("Or add it in the Honeycomb app (signed in): https://honeycomb-terminal-companion.lovable.app/terminal?add=%s" % authority)
     print("Certificate SHA-256 (must match the phone screen):\n  " + ":".join(fp[i:i+2] for i in range(0, len(fp), 2)))
-    print("Pairing code (120 s, single use):", hub.new_code())
+    _show_code(authority, hub.new_code())
     print("Commands: code | approve ID | deny ID | devices | revoke ID | quit")
     try:
         while True:
@@ -154,7 +164,7 @@ def lan_serve(args):
                 continue
             try:
                 if parts[0] == "code":
-                    print("Pairing code (120 s, single use):", hub.new_code())
+                    _show_code(authority, hub.new_code())
                 elif parts[0] in ("approve", "deny") and len(parts) == 2:
                     hub.decide(parts[1], parts[0] == "approve")
                     print("Approved." if parts[0] == "approve" else "Denied.")
