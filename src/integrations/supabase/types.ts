@@ -139,9 +139,52 @@ export type Database = {
         }
         Relationships: []
       }
+      hc_enroll_failures: {
+        Row: {
+          created_at: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
+      hc_host_enrollments: {
+        Row: {
+          code_hash: string
+          created_at: string
+          expires_at: string
+          id: string
+          owner_id: string
+          used_at: string | null
+        }
+        Insert: {
+          code_hash: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          owner_id: string
+          used_at?: string | null
+        }
+        Update: {
+          code_hash?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          owner_id?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
       hc_hosts: {
         Row: {
           created_at: string
+          fingerprint: string | null
           id: string
           last_seen: string | null
           name: string
@@ -149,9 +192,11 @@ export type Database = {
           owner_id: string
           public_key: Json
           revoked_at: string | null
+          secret_hash: string | null
         }
         Insert: {
           created_at?: string
+          fingerprint?: string | null
           id?: string
           last_seen?: string | null
           name: string
@@ -159,9 +204,11 @@ export type Database = {
           owner_id: string
           public_key: Json
           revoked_at?: string | null
+          secret_hash?: string | null
         }
         Update: {
           created_at?: string
+          fingerprint?: string | null
           id?: string
           last_seen?: string | null
           name?: string
@@ -169,6 +216,7 @@ export type Database = {
           owner_id?: string
           public_key?: Json
           revoked_at?: string | null
+          secret_hash?: string | null
         }
         Relationships: []
       }
@@ -535,6 +583,10 @@ export type Database = {
         Args: { p_email: string; p_token_hash: string }
         Returns: Json
       }
+      hc_create_host_enrollment: {
+        Args: { p_code_hash: string }
+        Returns: string
+      }
       hc_create_invite: {
         Args: {
           p_email: string
@@ -544,6 +596,16 @@ export type Database = {
         }
         Returns: string
       }
+      hc_enroll_host: {
+        Args: {
+          p_code: string
+          p_fingerprint: string
+          p_name: string
+          p_os: string
+          p_secret_hash: string
+        }
+        Returns: Json
+      }
       hc_finish_invite: {
         Args: {
           p_invite: string
@@ -552,12 +614,17 @@ export type Database = {
         }
         Returns: undefined
       }
+      hc_host_status: {
+        Args: { p_host: string; p_secret: string }
+        Returns: Json
+      }
       hc_my_role: {
         Args: never
         Returns: Database["public"]["Enums"]["hc_role"]
       }
       hc_owner_exists: { Args: never; Returns: boolean }
       hc_remove_member: { Args: { p_user: string }; Returns: undefined }
+      hc_revoke_host: { Args: { p_host: string }; Returns: undefined }
       hc_revoke_invite: { Args: { p_id: string }; Returns: undefined }
       hc_revoke_sessions: { Args: { p_all: boolean }; Returns: undefined }
       hc_session_allowed: { Args: never; Returns: boolean }
