@@ -1,15 +1,17 @@
 # Honeycomb Terminal next work
 
+- [x] Remaining owner acceptance update (2026-10-31): native/web audit, consent-only local workspace/export diagnostics/reversible review and installed local editor request; 30 companion tests, 94 app tests, non-root disposable CLI flow and three-size navigation/layout checks passed. Live gates remain blocked below.
+- [ ] Biometric account authentication — blocked: managed account provider has no supported passkey method; OS biometrics for provider sign-in do not grant Honeycomb membership.
 - [x] Private companion acceptance preparation: network-free local PTY source, encrypted in-process adapter, isolated security/session tests and Mac instructions; private readiness source added, accounts/Demo preserved.
 - [ ] Live Mac/iPad companion acceptance — blocked: authorized Mac hardware, verified host enrollment/key storage, outbound relay, PWA adapter and tmux supervisor not available; no signed native artifact.
 
 - [ ] Private autonomous task workflow: account-authorized goals/status, host/action grants, fixed-code activity, stop/revoke and blocked executor readiness; isolated tests and truthful acceptance evidence.
 
-- [ ] Add quick-access Honeycomb workspace with local-browser projects, exports/downloads and session logs; persistence/export checks, truthful Files/Home Screen guidance and native folder/shortcut prerequisites.
-- [ ] Latest reconciliation: add only missing basic profiles, email account/recovery experience, session revocation/audit and isolation checks; preserve completed UI and native blockers. Owner profile choice resolved, development authorized.
+- [x] Quick-access local-browser workspace and account-keyed selected copies exist; local desktop folder tools now added. Native mobile Files exposure and remote folder connection remain blocked on verified adapters.
+- [x] Account/profile/recovery/session source exists and retained; owner/invite isolated rules pass in 94-test suite. Real owner/invited-account end-to-end acceptance remains pending authorized sessions.
 - [x] Staged creative package preview: audio/video/book/game requests, metadata-only selected files/original playback, separate-output policy, disconnected provider/model/agent selectors and credential-free inert handoff; acceptance documented. 66 full-suite tests, 20 focused post-correction tests and three-size preview flows passed; automatic build OK. Transfer-first and account-profile pause preserved.
 - [ ] Real creative processing/AI connection/cross-terminal handoff — blocked: verified transfer-first acceptance, authorized host/tools/provider configuration and durable Guardian-scoped runner/artifact/checkpoint infrastructure; per-package acceptance pending in CREATIVE_PACKAGES.md.
-- [ ] Approved follow-up: polish signup/login/logout/recovery, session/device revocation and secret-free audit while reusing Guardian. Basic display-name/preferences profiles approved; no SSO or Vault modification claimed.
+- [x] Existing invite-only account login/logout/recovery, session/device revocation and audit source preserved; no public self-signup or Vault modification added.
 - [x] Read-only account inspection: Google/email enabled, signup allowed, email confirmation on; Lovable button exists but provider flag not reported. Zero accounts; OAuth return/two-client evidence absent. No auth settings changed.
 - [x] Reconcile the 21:14 add-on queue, Mac/iPhone/iPad priority, locked-phone notification/log masking requirements and real-only Test Connection acceptance; strengthen existing Demo pairing/test notices without changing transport. 36 relevant tests and three-size browser checks passed.
 - [x] Add Demo hive computers, saved Combs command cards and Demo job pass/fail completion notices.
@@ -24,7 +26,7 @@
 
 - [x] Implement real selected-file transfer source: authenticated registration, expiring single-use pairing, named-device approval and attempt limits.
 - [x] Guardian enforcement source: device-bound access, per-file grants, revocation, secret-free audit and integrity; isolated PostgreSQL logic/grants tests passed.
-- [ ] Authenticated two-client UI verification — blocked: zero auth users; owner first sign-in needed.
+- [ ] Authenticated two-client UI verification — blocked: authorized private account/client acceptance session required; historical zero-user report is not current evidence.
 - [ ] Different-network physical acceptance across supported devices — blocked: authorized physical clients and network evidence needed.
 - [x] Document Omni enhancement boundary only; no real enhancement integration.
 - [x] After transfer logic checks: Unity/video/browser creative-task requirements and explicitly disconnected local preview/review/cancellation.
@@ -50,4 +52,4 @@
 - [ ] Native installers (macOS/Windows/Linux companion, iOS/Android apps) — none exist; blocked on companion implementation, Mac hardware and paid signing accounts.
 - [x] Invite-only accounts: public sign-up off, owner/admin/member roles, single-use email-bound expiring revocable invitations, owner setup gated on HC_OWNER_EMAIL, Members page, invite page, empty real computers list.
 - [ ] Runtime role/invite SQL tests (src/test/members.integration.sql) — blocked: sandbox database login lacks permission to create temporary test users.
-- [ ] Owner setup — blocked: owner must add HC_OWNER_EMAIL secret.
+- [x] Owner setting already supplied; verified-email server bootstrap exists. Owner runtime acceptance remains unverified; do not ask owner to add the secret again.

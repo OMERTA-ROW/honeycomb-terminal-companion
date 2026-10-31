@@ -1,6 +1,12 @@
 # Implementation checklist
 
 ## Current companion acceptance status — 2026-10-31 (overrides historical skeleton entries)
+- [x] Local dedicated desktop workspace creation/persistence source with console consent; no browser-to-host folder connection.
+- [x] Local export-only exact duplicate scan, individually consented reversible review/restore; zero space recovery claimed, originals preserved.
+- [x] Installed local VS Code CLI detection/open request after consent; macOS real editor acceptance pending.
+- [x] Invalid encrypted frame closes local PTY/revokes fixture scope; terminal setup failure cleanup guarded.
+- [ ] Biometric authentication — no supported managed passkey method; native OS unlock/hardware adapter absent.
+- [ ] Account-connected remote shell, persistent sessions and different-network mobile acceptance — blocked; no fake successes.
 - [x] Runnable network-free local PTY source; local CLI consent and root denial.
 - [x] Isolated host-scope/pairing/revocation model and pinned directional encryption tests; no production identity claims.
 - [x] Encrypted in-process input → real sandbox PTY → encrypted output; revocation denies further input/output.
