@@ -30,24 +30,6 @@ export const Route = createFileRoute("/pair")({
 // Deterministic demo code — never a real pairing credential.
 const CODE = "482617";
 
-// Decorative QR-style grid derived from the payload. Clearly labelled as a
-// stand-in: it is not scannable and carries no real pairing data.
-function FakeQr({ payload }: { payload: string }) {
-  const cells = useMemo(() => {
-    let h = 7;
-    return Array.from({ length: 121 }, (_, i) => {
-      h = (h * 31 + payload.charCodeAt(i % payload.length)) % 997;
-      return h % 3 !== 0;
-    });
-  }, [payload]);
-  return (
-    <div role="img" aria-label="Decorative QR placeholder — not scannable" className="grid grid-cols-11 gap-0.5 w-36 h-36 p-2 bg-card border rounded-md mx-auto">
-      {cells.map((on, i) => (
-        <span key={i} className={on ? "bg-primary" : "bg-transparent"} />
-      ))}
-    </div>
-  );
-}
 
 function Pair() {
   const [state, setState] = useState<PairingState>("requested");
@@ -86,7 +68,7 @@ function Pair() {
   return (
     <AppShell>
       <h1 className="text-2xl font-semibold">Pair a computer</h1>
-      <p className="text-sm text-warning mt-1">Simulated pairing — no real device keys are created or exchanged. The QR image is a decorative placeholder, not scannable.</p>
+      <p className="text-sm text-warning mt-1">Simulated pairing — no real device keys are created or exchanged. There is no QR on this Demo page; the real QR appears in the Mac app window.</p>
       <div className="mt-3 flex flex-wrap gap-2"><Button asChild variant="outline"><Link to="/transfer">Real selected-file pairing & devices</Link></Button><Button asChild variant="outline"><Link to="/install">Companion acceptance status</Link></Button></div>
 
       <section className="mt-5 border-b pb-4 max-w-lg" aria-label="Mac connection prerequisites">
@@ -110,7 +92,7 @@ function Pair() {
 
         {(effective === "requested" || effective === "pending") && (
           <div className="mt-5 space-y-4">
-            <FakeQr payload={pairingPayload(CODE)} />
+            <p className="text-center text-xs text-muted-foreground">Demo only — no QR here. For a real Mac, scan the QR shown in the Mac app's Terminal window.</p>
             <p className="text-center text-xs text-muted-foreground">Or confirm this code on the computer:</p>
             <div className="font-mono text-4xl text-primary text-center">{CODE}</div>
             {effective === "requested" && (
