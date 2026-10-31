@@ -308,6 +308,12 @@ export function SandboxWorkspace() {
                   : <p className="text-muted-foreground">Running (read-only)…</p>}
               </div>}
             </div>)}
+          {pasteBox !== null && (
+            <div role="dialog" aria-label="Paste box" className="shrink-0 space-y-1 border-t border-primary bg-card p-2">
+              <textarea aria-label="Paste text here" autoFocus rows={2} value={pasteBox} onChange={(e) => setPasteBox(e.target.value)} autoCapitalize="off" autoCorrect="off" spellCheck={false}
+                placeholder="Long-press here and choose Paste" className="w-full rounded border border-border bg-background p-2 font-mono text-xs" />
+              <div className="flex gap-2"><Button size="sm" onClick={() => insertPaste(pasteBox)} disabled={!pasteBox}>Insert at cursor</Button><Button size="sm" variant="outline" onClick={() => { setPasteBox(null); termRef.current?.focus(); }}>Cancel</Button></div>
+            </div>)}
           {note && <p className="shrink-0 px-3 text-[11px] text-primary">{note}</p>}
           <div aria-label="Terminal keys" className="flex shrink-0 gap-1 overflow-x-auto border-t border-border px-2 py-1.5">
             {([["Esc", "\x1b"], ["Tab", "\t"], ["Ctrl+C", "\x03"], ["Ctrl+D", "\x04"], ["↑", "\x1b[A"], ["↓", "\x1b[B"], ["←", "\x1b[D"], ["→", "\x1b[C"]] as const).map(([l, d]) => (

@@ -40,3 +40,17 @@ describe("browser sandbox shell", () => {
   });
   it("quotes keep spaces", () => { expect(tokenize(`echo "a b" 'c'`)).toEqual(["echo", "a b", "c"]); });
 });
+
+import { exec as ex2, newSession as ns2 } from "./sandbox-shell";
+describe("case sensitivity", () => {
+  it("ls listing name works with cat; wrong case hints", () => {
+    const s = ns2();
+    expect(ex2(s, "ls").output).toBe("README.txt");
+    expect(ex2(s, "cat README.txt").output).toContain("Browser sandbox");
+    expect(ex2(s, "cat readme.txt").output).toBe("cat: readme.txt: No such file or directory (names are case-sensitive — did you mean README.txt?)");
+  });
+  it("new lowercase file shares the same cwd", () => {
+    let s = ns2(); s = ex2(s, "echo hi > readme.txt").state;
+    expect(ex2(s, "cat readme.txt").output).toBe("hi");
+  });
+});
