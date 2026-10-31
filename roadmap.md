@@ -61,3 +61,4 @@
 - [x] Owner setting already supplied; verified-email server bootstrap exists. Owner runtime acceptance remains unverified; do not ask owner to add the secret again.
 - [ ] Honeycomb Agent Connect (secondary, design only): docs/AGENT_CONNECT.md — Codex CLI / Claude Code CLI local adapters, custom agents via MCP or scoped API, Perplexity research-only; per-profile scopes, revoke, audit. Blocked behind QuickConnect real-device acceptance, account-linked enrollment, relay and publish/OAuth approval.
 - [ ] Agent-to-Device QuickConnect: contract + rules done (src/lib/agent-device-contract.ts); server registry, companion enrollment channel, OAuth/MCP endpoint and publish decision BLOCKED (see docs/AGENT_CONNECT.md).
+- [ ] Platform for all users (docs/PLATFORM.md): device/provider-neutral QuickConnect, matrix, tenant isolation, enrollment. Gated behind Mac+iPad pilot; Linux/Windows/Android/cloud/relay planned.

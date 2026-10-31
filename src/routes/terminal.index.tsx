@@ -138,7 +138,7 @@ function ConnectMac({ prefill, prefillName, onSaved }: { prefill: string | null;
       {clean
         ? <Button asChild size="lg"><a href={liveUrl(clean)} target="_blank" rel="noopener noreferrer" onClick={() => onSaved({ address: clean, name: name.trim() || "My Mac", savedAt: Date.now() })}>Connect</a></Button>
         : <Button size="lg" disabled>Connect</Button>}
-      <p className="text-xs text-muted-foreground">Same Wi-Fi only for now. Cellular needs a private relay that isn't set up, and Bluetooth isn't available in iPhone/iPad browsers. <Link to="/install" className="text-primary underline">Troubleshooting</Link></p>
+      <p className="text-xs text-muted-foreground">Mac is the first supported computer; Linux, Windows and cloud computers are planned. Same Wi-Fi only for now — cellular needs a private relay that isn't set up, and Bluetooth isn't available in iPhone/iPad browsers. <Link to="/install" className="text-primary underline">Troubleshooting</Link></p>
     </section>
   );
 }
