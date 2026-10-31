@@ -66,14 +66,14 @@ function render(chunk){let s=chunk.replace(/\x1b\][^\x07\x1b]*(\x07|\x1b\\)/g,''
  if(buf.length>200000)buf=buf.slice(-150000);const t=$('term');const atEnd=t.scrollTop+t.clientHeight>=t.scrollHeight-30;t.textContent=buf;if(atEnd)t.scrollTop=t.scrollHeight}
 function send(d){if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'i',d}));else status('Not connected — input not sent','bad')}
 function size(){const t=$('term');const cols=Math.max(20,Math.floor(t.clientWidth/7.8)),rows=Math.max(5,Math.floor(t.clientHeight/17.5));if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'r',rows,cols}))}
-function connect(){if(stopped)return;if(!navigator.onLine){status('Offline — this device has no network','bad');return}
- status(retry?'Reconnecting…':'Connecting…');ws=new WebSocket('wss://'+location.host+'/ws');ws.binaryType='arraybuffer';
- ws.onopen=()=>{retry=0;status('Live · Mac shell','live');buf='';size()};
+function connect(){if(stopped)return;if(!navigator.onLine){status('Offline — no network','bad');return}
+ status(retry?'Searching for your Mac…':'Searching…');ws=new WebSocket('wss://'+location.host+'/ws');ws.binaryType='arraybuffer';
+ ws.onopen=()=>{retry=0;status('Connected · live Mac shell','live');buf='';size()};
  ws.onmessage=e=>{if(typeof e.data==='string'){const m=JSON.parse(e.data);if(m.t==='exit')render('\n[shell exited — reconnect starts a new shell]\n');return}render(dec.decode(e.data,{stream:true}))};
- ws.onclose=e=>{if(e.code===4401){stopped=true;status('Revoked or expired — pair again','bad');setTimeout(()=>location.reload(),1500);return}
+ ws.onclose=e=>{if(e.code===4401){stopped=true;status('Permission needed — pair again','bad');setTimeout(()=>location.reload(),1500);return}
   retry++;const wait=Math.min(15000,1000*2**Math.min(retry,4));status('Mac unreachable (asleep, offline, different network or host stopped). Retrying…','bad');setTimeout(connect,wait)}}
 async function init(){let st;try{st=await (await fetch('/api/state',{cache:'no-store'})).json()}catch{status('Mac unreachable','bad');return setTimeout(init,4000)}
- $('fp').textContent=st.fingerprint.match(/.{2}/g).join(':');if(!st.paired){$('pair').classList.remove('hidden');status('Not paired');return}
+ $('fp').textContent=st.fingerprint.match(/.{2}/g).join(':');if(!st.paired){$('pair').classList.remove('hidden');status('Pairing · approval needed');return}
  $('app').classList.remove('hidden');$('files').classList.remove('hidden');loadDest();connect()}
 $('pairBtn').onclick=async()=>{$('pairMsg').textContent='Sending…';const r=await fetch('/api/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:$('code').value,name:$('name').value})});const j=await r.json();
  if(!r.ok){$('pairMsg').textContent={code_invalid:'Wrong code.',code_expired:'Code expired or used. On the Mac type: code',device_limit:'Too many devices; revoke one on the Mac.'}[j.error]||'Refused.';return}
@@ -91,7 +91,7 @@ $('copyAll').onclick=async()=>{await navigator.clipboard.writeText(buf);$('testM
 $('paste').onclick=async()=>{try{const t=await navigator.clipboard.readText();if(t)sendLine(t)}catch{$('testMsg').textContent='Paste blocked by browser — long-press the output area and choose Paste.'}};
 $('test').onclick=async()=>{$('testMsg').textContent='Running harmless echo on the Mac…';const r=await fetch('/api/test',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});const j=await r.json();$('testMsg').textContent=r.ok?('Host '+j.host+' replied: '+j.output):'Failed: '+j.error};
 $('forget').onclick=async()=>{if(!confirm('Unpair and end this device\'s shell?'))return;stopped=true;await fetch('/api/forget',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});location.reload()};
-addEventListener('online',()=>{if(!ws||ws.readyState>1){retry=0;connect()}});addEventListener('offline',()=>status('Offline — this device has no network','bad'));addEventListener('resize',size);
+addEventListener('online',()=>{if(!ws||ws.readyState>1){retry=0;connect()}});addEventListener('offline',()=>status('Offline — no network','bad'));addEventListener('resize',size);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(!ws||ws.readyState>1)&&!stopped){retry=0;connect()}});
 init();
 
