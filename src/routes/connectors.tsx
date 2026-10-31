@@ -23,7 +23,12 @@ function Connectors() {
   return (
     <AppShell>
       <h1 className="text-2xl font-semibold">Connectors</h1>
-      <p className="text-sm text-muted-foreground mt-2">Planned integrations. None are connected yet — each shows what's needed first. QuickConnect for your Mac comes first.</p>
+      <section aria-label="Connect your Mac" className="mt-4 rounded-md border border-primary p-4 space-y-2">
+        <h2 className="text-lg font-medium text-primary">Want your Mac's terminal? Use QuickConnect.</h2>
+        <p className="text-sm text-muted-foreground">Connecting your Mac doesn't need anything on this page. The Mac app is ready to download: start it on your Mac, then pair this device on the same Wi-Fi.</p>
+        <Button asChild><Link to="/terminal">Open Terminal · Connect Mac</Link></Button>
+      </section>
+      <p className="text-sm text-muted-foreground mt-4">The items below are planned add-ons for AI agents and services. None are connected yet — each shows what's still needed.</p>
       <p className="text-sm mt-2 text-warning">{CONNECTOR_SECRET_NOTE}</p>
       {!ready ? <p className="mt-4">Checking account…</p> : !user ? (
         <Button asChild className="mt-4"><Link to="/account">Sign in to manage your connectors</Link></Button>
