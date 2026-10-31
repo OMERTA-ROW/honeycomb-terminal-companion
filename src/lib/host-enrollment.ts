@@ -4,7 +4,7 @@ export interface AccountHost {
   last_seen: string | null; revoked_at: string | null; created_at: string;
 }
 
-const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no I or O; matches helper
 /** Helper checks in every 60 s; allow one missed beat. */
 export const ONLINE_WINDOW_MS = 150_000;
 

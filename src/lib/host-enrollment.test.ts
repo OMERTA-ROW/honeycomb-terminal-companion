@@ -6,7 +6,7 @@ const base: AccountHost = { id: "1", name: "Mac", os: "macos", fingerprint: "a".
 describe("host enrollment", () => {
   it("codes are 12 chars the Mac helper accepts", () => {
     const c = enrollmentCode();
-    expect(c).toMatch(/^[A-Z2-9]{12}$/);
+    expect(c).toMatch(/^[A-HJ-NP-Z2-9]{12}$/);
   });
   it("never shows online without a recent check-in", () => {
     expect(hostState(base, Date.now()).label).toBe("Helper offline");

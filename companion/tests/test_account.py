@@ -25,7 +25,7 @@ class AccountTests(unittest.TestCase):
 
     def test_revoked_host_locks_pairing_and_devices(self):
         d = tempfile.mkdtemp(); h = Hub("192.168.1.2:8765", ["/bin/sh"], d, None, on_event=lambda *_: None)
-        code = h.new_code(); p = h.request_pair(code, "iPad"); h.decide(p["id"], True)
+        code = h.new_code(); rid, sec = h.request_pair(code, "iPad"); h.decide(rid, True); h.pair_status(rid, sec)
         h.lock_host()
         self.assertTrue(all(v["revoked"] for v in h.devices.values()))
         with self.assertRaises(LanDenied): h.new_code()
