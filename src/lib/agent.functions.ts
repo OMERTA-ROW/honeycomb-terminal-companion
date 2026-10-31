@@ -10,33 +10,51 @@ export const agentStatus = createServerFn({ method: "POST" })
   .middleware([requireActiveAccount])
   .handler(async () => ({
     gemini: process.env['LOVABLE_API_KEY'] ? "ready" : "blocked: AI not enabled",
+    claude: process.env['LOVABLE_API_KEY'] ? "ready (Claude API model, not Claude Code)" : "blocked: AI not enabled",
+    openai: process.env['LOVABLE_API_KEY'] ? "ready (GPT API model, not Codex)" : "blocked: AI not enabled",
     perplexity: process.env['PERPLEXITY_API_KEY'] ? "ready" : "blocked: no Perplexity connection linked",
   }));
 
 export const askAgent = createServerFn({ method: "POST" })
   .middleware([requireActiveAccount])
-  .inputValidator((d: { provider: "gemini" | "perplexity"; prompt: string }) => {
-    if (d.provider !== "gemini" && d.provider !== "perplexity") throw new Error("Unknown provider");
+  .inputValidator((d: { provider: "gemini" | "perplexity" | "claude" | "openai"; prompt: string }) => {
+    if (!["gemini", "perplexity", "claude", "openai"].includes(d.provider)) throw new Error("Unknown provider");
     if (typeof d.prompt !== "string" || !d.prompt.trim() || d.prompt.length > 4000) throw new Error("Question must be 1-4000 characters");
     return d;
   })
   .handler(async ({ data }): Promise<Result> => {
     const signal = AbortSignal.timeout(45000);
-    if (data.provider === "gemini") {
+    const SYSTEM = "You answer inside a terminal. Plain text, concise, no markdown tables.";
+    if (data.provider === "claude") {
       const key = process.env['LOVABLE_API_KEY'];
-      if (!key) return { ok: false, text: "BLOCKED: AI is not enabled for this project.", source: "gemini" };
+      if (!key) return { ok: false, text: "BLOCKED: AI is not enabled for this project.", source: "claude" };
+      const r = await fetch("https://ai.gateway.lovable.dev/v1/messages", {
+        method: "POST", signal,
+        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "anthropic-version": "2023-06-01" },
+        body: JSON.stringify({ model: "anthropic/claude-sonnet-5", max_tokens: 2048, system: SYSTEM, messages: [{ role: "user", content: data.prompt }] }),
+      });
+      if (r.status === 429) return { ok: false, text: "Rate limited — wait a moment and try again.", source: "claude" };
+      if (r.status === 402) return { ok: false, text: "AI credits are used up for this workspace.", source: "claude" };
+      if (!r.ok) return { ok: false, text: `Claude request failed [${r.status}]: ${await bodyText(r)}`, source: "claude" };
+      const j = (await r.json()) as { content?: { type: string; text?: string }[] };
+      return { ok: true, text: (j.content ?? []).filter((c) => c.type === "text").map((c) => c.text).join("").trim() || "(empty reply)", source: "Claude model via Lovable AI (not Claude Code)" };
+    }
+    if (data.provider === "gemini" || data.provider === "openai") {
+      const key = process.env['LOVABLE_API_KEY'];
+      if (!key) return { ok: false, text: "BLOCKED: AI is not enabled for this project.", source: data.provider };
+      const isOpenai = data.provider === "openai";
       const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST", signal,
         headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "google/gemini-3.8-flash", messages: [
-          { role: "system", content: "You answer inside a terminal. Plain text, concise, no markdown tables." },
-          { role: "user", content: data.prompt }] }),
+        body: JSON.stringify(isOpenai
+          ? { model: "openai/gpt-6-astra", reasoning_effort: "low", messages: [{ role: "system", content: SYSTEM }, { role: "user", content: data.prompt }] }
+          : { model: "google/gemini-3.8-flash", messages: [{ role: "system", content: SYSTEM }, { role: "user", content: data.prompt }] }),
       });
-      if (r.status === 429) return { ok: false, text: "Rate limited — wait a moment and try again.", source: "gemini" };
-      if (r.status === 402) return { ok: false, text: "AI credits are used up for this workspace.", source: "gemini" };
-      if (!r.ok) return { ok: false, text: `Gemini request failed [${r.status}]: ${await bodyText(r)}`, source: "gemini" };
+      if (r.status === 429) return { ok: false, text: "Rate limited — wait a moment and try again.", source: data.provider };
+      if (r.status === 402) return { ok: false, text: "AI credits are used up for this workspace.", source: data.provider };
+      if (!r.ok) return { ok: false, text: `${isOpenai ? "OpenAI" : "Gemini"} request failed [${r.status}]: ${await bodyText(r)}`, source: data.provider };
       const j = (await r.json()) as { choices?: { message?: { content?: string } }[] };
-      return { ok: true, text: j.choices?.[0]?.message?.content?.trim() || "(empty reply)", source: "Gemini via Lovable AI" };
+      return { ok: true, text: j.choices?.[0]?.message?.content?.trim() || "(empty reply)", source: isOpenai ? "OpenAI GPT model via Lovable AI (not Codex)" : "Gemini via Lovable AI" };
     }
     const pkey = process.env['PERPLEXITY_API_KEY'];
     if (!pkey) return { ok: false, text: "BLOCKED: no Perplexity connection is linked to this project. The owner links one under Connectors → Perplexity, then this command works.", source: "perplexity" };

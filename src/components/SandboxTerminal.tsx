@@ -82,7 +82,7 @@ export function SandboxWorkspace() {
     write("\x1b[2m… waiting for server (Ctrl+C to stop waiting)\x1b[0m\r\n");
     let out: string;
     try {
-      if (a.kind === "status") { const st = await fns.current.statusFn(); out = `gemini: ${st.gemini}\nperplexity: ${st.perplexity}\nmcp/api: connect mcp|api <https url>\ncodex/claude: blocked here — run on your Mac`; }
+      if (a.kind === "status") { const st = await fns.current.statusFn(); out = `gemini: ${st.gemini}\nclaude: ${st.claude}\nopenai: ${st.openai}\nperplexity: ${st.perplexity}\nmcp/api: connect mcp|api <https url>\ncodex/claude: blocked here — run on your Mac`; }
       else if (a.kind === "ask") { const r = await fns.current.ask({ data: { provider: a.provider, prompt: a.prompt } }); out = `[${r.source}${r.ok ? "" : " · error"}]\n${r.text}`; }
       else if (a.kind === "probe") { const r = await fns.current.probe({ data: { provider: a.provider, url: a.url } }); out = `[${a.provider}${r.ok ? " · reachable" : " · failed"}]\n${r.text}`; }
       else out = "";
@@ -228,7 +228,7 @@ export function SandboxWorkspace() {
               <p className="mb-1 text-[11px] text-muted-foreground">Types the command at the prompt — press Enter to run.</p>
               <div className="grid grid-cols-2 gap-1 sm:grid-cols-4">
                 {AGENTS.map((a) => (
-                  <button key={a.id} type="button" className="rounded border border-border p-2 text-left text-xs hover:border-primary" onClick={() => { setLauncher(false); send("\x15" + (a.id === "gemini" || a.id === "perplexity" ? `ask ${a.id} ` : a.id === "mcp" || a.id === "api" ? `connect ${a.id} https://` : `connect ${a.id}`)); }}>
+                  <button key={a.id} type="button" className="rounded border border-border p-2 text-left text-xs hover:border-primary" onClick={() => { setLauncher(false); send("\x15" + (a.id === "gemini" || a.id === "perplexity" || a.id === "openai" ? `ask ${a.id} ` : a.id === "claude-api" ? "ask claude " : a.id === "mcp" || a.id === "api" ? `connect ${a.id} https://` : `connect ${a.id}`)); }}>
                     <span className="block text-primary">{a.name}</span><span className="text-muted-foreground">{!a.available ? "Blocked here" : a.needsSetup ? "Setup needed" : "Ready"}</span>
                   </button>))}
               </div>
