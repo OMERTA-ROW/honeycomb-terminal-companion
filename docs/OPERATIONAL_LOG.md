@@ -19,6 +19,7 @@ NOT RUN · BLOCKED (named prerequisite) · FAIL (with fix).
 | 8 | Reconnect | Reload/lock resumes same session | Reload kept scrollback | run_qr.py | Sandbox | Owner locks phone 30 s |
 | 9 | Revoke (Mac console) | Mac `revoke ID` returns phone to pairing; reconnect refused | Passed | run_qr.py, test_lan.py | Sandbox | Owner revokes on Mac |
 | 10 | Different network | Works over cellular | Not built | — | BLOCKED | Owner-approved private relay |
+| 12 | Browser sandbox terminal | pwd etc. run without a Mac | Real execution on device-local file tree | unit tests + phone-size browser run | Sandbox | Owner opens Terminal on iPhone, taps Start sandbox session, runs pwd |
 | 11 | AI connector | Agent connects with scoped permissions | Catalog only; nothing Connected | connectors.test.ts | BLOCKED | Stages 4 and 8 on real devices first |
 
 Demo (simulated hosts, /pair) is never counted in this log.

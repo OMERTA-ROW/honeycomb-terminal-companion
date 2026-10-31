@@ -7,7 +7,7 @@ export const DESTINATIONS: Destination[] = [
   { to: "/terminal", label: "Terminal", hint: "Browser sandbox terminal, or your Mac's real shell (same Wi-Fi)", keywords: ["terminal", "shell", "command", "console", "live", "mac", "ssh"] },
   { to: "/connectors", label: "Connectors", hint: "AI agents, MCP, API and service integrations", keywords: ["connectors", "integrations", "agent", "ai", "codex", "claude", "perplexity", "gemini", "google", "mcp", "api"] },
   { to: "/", label: "Computers", hint: "Paired computers and their status", keywords: ["computers", "hosts", "devices", "home"] },
-  { to: "/pair", label: "Pair", hint: "Pair a computer with a code or QR", keywords: ["pair", "pairing", "qr", "code", "connect"] },
+  { to: "/pair", label: "Pair", hint: "Demo pairing walkthrough (simulated); real Mac pairing is in Terminal", keywords: ["pair", "pairing", "qr", "code", "connect"] },
   { to: "/jobs", label: "Jobs", hint: "Job progress and logs", keywords: ["jobs", "tasks", "logs"] },
   { to: "/transfer", label: "File transfer", hint: "Send selected files between your devices", keywords: ["file", "transfer", "upload", "send"] },
   { to: "/device-care", label: "Device care", hint: "Storage, security and lock", keywords: ["device", "care", "storage", "security"] },
