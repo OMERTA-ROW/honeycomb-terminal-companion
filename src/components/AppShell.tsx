@@ -30,7 +30,7 @@ export function AppShell({ children, terminal = false }: { children: ReactNode; 
             ["/device-care", "Device care", ShieldCheck],
             ["/instructions", "Instructions", BookOpen],
           ] as const).map(([to, label, Icon]) => (
-            <Link key={to} to={to} className={`sidebar-link ${terminal && to === "/terminal" ? "sidebar-link-active" : ""}`} activeProps={{ className: "sidebar-link-active" }} activeOptions={{ exact: to !== "/terminal" }}>
+            <Link key={to} to={to} className={`sidebar-link ${terminal && to === "/terminal" ? "sidebar-link-active" : ""}`} activeProps={{ className: "sidebar-link-active" }} activeOptions={{ exact: true }}>
               <Icon aria-hidden="true" className="h-4 w-4 shrink-0 text-primary" strokeWidth={1.4} />
               <span>{label}</span>
             </Link>
