@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useHosts } from "@/hooks/use-hosts";
 import { LinkedMacs } from "@/components/LinkedMacs";
+import { SandboxTerminal } from "@/components/SandboxTerminal";
 import { useAccountUser } from "@/hooks/use-account-user";
 import { STATUS_INFO } from "@/lib/terminal";
 import { liveUrl, loadComputers, normalizeAddress, quickStatus, removeComputer, saveComputer, terminalStep, type MacLink, type QuickStatus } from "@/lib/mac-link";
@@ -62,6 +63,8 @@ function TerminalHub() {
           </div>
           {step !== "loading" && <span role="status" className={`rounded-full border px-3 py-1 text-xs ${STATUS[status].tone}`}>{STATUS[status].label}</span>}
         </div>
+        <SandboxTerminal />
+        <h2 className="pt-2 font-medium text-primary">Connect Mac · optional, real shell</h2>
         {step === "loading" && <p className="text-sm text-muted-foreground">Checking your sign-in…</p>}
         {step === "signin" && (
           <section className="rounded-md border border-primary bg-card p-4 space-y-3">
