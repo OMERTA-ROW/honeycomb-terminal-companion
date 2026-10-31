@@ -1,5 +1,10 @@
 # Honeycomb Terminal next work
 
+- [x] Live local-network terminal (2026-10-31): unsigned .pyz companion, TLS/WSS, code + Mac approval, reconnect, revoke, copy/paste, Test Connection; 37 companion tests + Chromium end-to-end against built file pass.
+- [ ] Mac/iPad physical acceptance of LAN mode — blocked: owner must run on their Mac/iPad and record the 8 checks.
+- [ ] Different-network (cellular) access — blocked: needs owner-approved private relay; none provisioned.
+- [ ] Signed/notarized Mac build — blocked: Apple Developer ID (paid) and signing credentials.
+
 - [x] Remaining owner acceptance update (2026-10-31): native/web audit, consent-only local workspace/export diagnostics/reversible review and installed local editor request; 30 companion tests, 94 app tests, non-root disposable CLI flow and three-size navigation/layout checks passed. Live gates remain blocked below.
 - [ ] Biometric account authentication — blocked: managed account provider has no supported passkey method; OS biometrics for provider sign-in do not grant Honeycomb membership.
 - [x] Private companion acceptance preparation: network-free local PTY source, encrypted in-process adapter, isolated security/session tests and Mac instructions; private readiness source added, accounts/Demo preserved.
