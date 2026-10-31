@@ -260,6 +260,7 @@ export function SandboxWorkspace() {
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <span role="status" className="hidden rounded-full border border-primary px-2 py-0.5 text-[11px] text-primary sm:inline">Browser sandbox · not your Mac</span>
+          <Button asChild variant="outline" size="sm"><Link to="/dashboard">Dashboard</Link></Button>
           <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex"><Link to="/terminal">Connect Mac</Link></Button>
           <Button variant="outline" size="sm" onClick={exitView} title="Exit Terminal view (or Esc twice on an empty line). Sessions stay saved."><LogOut className="mr-1 h-3.5 w-3.5" />Exit Terminal</Button>
         </div>

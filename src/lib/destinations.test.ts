@@ -18,3 +18,6 @@ describe("connectors search", () => {
     expect(searchDestinations("mcp")[0]?.to).toBe("/connectors");
   });
 });
+describe("dashboard search", () => {
+  it("Dashboard routes to the owner dashboard", () => expect(searchDestinations("dashboard")[0]?.to).toBe("/dashboard"));
+});
