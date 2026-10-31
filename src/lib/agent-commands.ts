@@ -1,11 +1,14 @@
 /** Browser-safe parser for in-terminal agent commands. No network, no credentials. */
-export type ProviderId = "gemini" | "perplexity" | "codex" | "claude" | "mcp" | "api" | "web";
+export type AskProvider = "gemini" | "perplexity" | "claude" | "openai";
+export type ProviderId = "gemini" | "perplexity" | "claude-api" | "openai" | "codex" | "claude" | "mcp" | "api" | "web";
 
 export interface AgentInfo { id: ProviderId; name: string; runtime: string; auth: string; available: boolean; needsSetup?: boolean; blocker?: string; usage: string }
 
 export const AGENTS: AgentInfo[] = [
   { id: "gemini", name: "Google Gemini", runtime: "Honeycomb server → Lovable AI (Gemini model)", auth: "Your Honeycomb sign-in; no Google key needed", available: true, usage: "ask gemini <question>" },
   { id: "perplexity", name: "Perplexity", runtime: "Honeycomb server → Perplexity search", auth: "Owner links a Perplexity connection to the project (managed or own pplx- key)", available: true, needsSetup: true, usage: "ask perplexity <question>" },
+  { id: "claude-api", name: "Claude (API model)", runtime: "Honeycomb server → Lovable AI (Claude model; not Claude Code)", auth: "Your Honeycomb sign-in", available: true, usage: "ask claude <question>" },
+  { id: "openai", name: "OpenAI GPT (API model)", runtime: "Honeycomb server → Lovable AI (GPT model; not Codex)", auth: "Your Honeycomb sign-in", available: true, usage: "ask openai <question>" },
   { id: "mcp", name: "Custom MCP server", runtime: "Honeycomb server → your https MCP endpoint", auth: "Public https endpoint only; no stored tokens yet", available: true, usage: "connect mcp https://example.com/mcp" },
   { id: "api", name: "Custom API", runtime: "Honeycomb server → your https endpoint (GET)", auth: "Public https endpoint only; no stored tokens yet", available: true, usage: "connect api https://api.example.com/health" },
   { id: "codex", name: "Codex CLI", runtime: "Needs a real computer", auth: "OpenAI sign-in on that computer", available: false, blocker: "This terminal runs in your browser and the Honeycomb server cannot start programs. Install Codex on your Mac and run it from the Mac terminal (Connect Mac).", usage: "connect codex" },
@@ -13,18 +16,19 @@ export const AGENTS: AgentInfo[] = [
   { id: "web", name: "Websites & services", runtime: "Not available", auth: "—", available: false, blocker: "Driving third-party websites is not built and would need each site's own approved access.", usage: "connect web" },
 ];
 
-export const AGENT_COMMANDS = ["agents", "status", "connect", "disconnect", "ask", "exit"] as const;
+export const AGENT_COMMANDS = ["agents", "status", "connect", "disconnect", "ask", "run", "exit"] as const;
+const ASK: readonly string[] = ["gemini", "perplexity", "claude", "openai"];
 
 export type AgentCommand =
   | { kind: "none" }
   | { kind: "text"; output: string }
-  | { kind: "ask"; provider: "gemini" | "perplexity"; prompt: string }
+  | { kind: "ask"; provider: AskProvider; prompt: string }
   | { kind: "probe"; provider: "mcp" | "api"; url: string }
   | { kind: "status" }
   | { kind: "disconnect"; provider: ProviderId }
   | { kind: "exit" };
 
-const find = (id: string) => AGENTS.find((a) => a.id === id.toLowerCase() || a.name.toLowerCase().startsWith(id.toLowerCase()));
+const find = (id: string) => AGENTS.find((a) => a.id === id.toLowerCase() || (id.toLowerCase() === "claude-code" && a.id === "claude") || a.name.toLowerCase().startsWith(id.toLowerCase()));
 
 export function agentsText(): string {
   return AGENTS.map((a) => `${!a.available ? "blocked" : a.needsSetup ? "setup  " : "ready  "}  ${a.id.padEnd(10)} ${a.name} — ${a.usage}`).join("\n")
@@ -37,12 +41,13 @@ export function parseAgentCommand(line: string): AgentCommand {
     case "agents": return { kind: "text", output: agentsText() };
     case "status": return { kind: "status" };
     case "exit": return { kind: "exit" };
-    case "ask": {
+    case "run": case "ask": {
       const prompt = t.slice(t.indexOf(arg) + arg.length).trim();
-      if (arg !== "gemini" && arg !== "perplexity") return { kind: "text", output: "usage: ask gemini <question> | ask perplexity <question>" };
-      if (!prompt) return { kind: "text", output: `usage: ask ${arg} <question>` };
-      if (prompt.length > 4000) return { kind: "text", output: "ask: question too long (4000 characters max)" };
-      return { kind: "ask", provider: arg, prompt };
+      if (arg === "codex" || arg === "claude-code") return { kind: "text", output: `${arg}: BLOCKED — the ${arg} program needs a real computer. Try ask ${arg === "codex" ? "openai" : "claude"} for the API model.` };
+      if (!ASK.includes(arg)) return { kind: "text", output: `usage: ${cmd} <${ASK.join("|")}> <question>` };
+      if (!prompt) return { kind: "text", output: `usage: ${cmd} ${arg} <question>` };
+      if (prompt.length > 4000) return { kind: "text", output: `${cmd}: question too long (4000 characters max)` };
+      return { kind: "ask", provider: arg as AskProvider, prompt };
     }
     case "connect": {
       const a = arg ? find(arg) : undefined;

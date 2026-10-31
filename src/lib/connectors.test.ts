@@ -20,8 +20,19 @@ describe("connector wording", () => {
   it("lists Gemini API and CLI without claiming a live connection", () => {
     const api = CONNECTORS.find((c) => c.id === "gemini-api")!;
     const cli = CONNECTORS.find((c) => c.id === "gemini-cli")!;
-    expect(effectiveStatus(api)).toBe("not-configured");
-    expect(effectiveStatus(cli)).toBe("setup-required");
+    expect(effectiveStatus(api)).toBe("ready");
+    expect(effectiveStatus(cli)).toBe("not-built");
     expect(api.never).toContain("Terminal access");
+  });
+});
+
+describe("connector statuses match what's built", () => {
+  it("ready needs a verified adapter", () => expect(effectiveStatus({ ...CONNECTORS[0]!, status: "ready", adapterAvailable: false })).toBe("setup-required"));
+  it("Perplexity needs authorization, CLIs are not built", () => {
+    expect(effectiveStatus(CONNECTORS.find((c) => c.id === "perplexity")!)).toBe("needs-authorization");
+    for (const id of ["codex-cli", "claude-code-cli", "gemini-cli"]) expect(effectiveStatus(CONNECTORS.find((c) => c.id === id)!)).toBe("not-built");
+  });
+  it("every working card has a terminal command", () => {
+    for (const c of CONNECTORS.filter((x) => effectiveStatus(x) === "ready")) expect(c.command).toBeTruthy();
   });
 });

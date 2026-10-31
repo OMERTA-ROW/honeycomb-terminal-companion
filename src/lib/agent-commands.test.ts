@@ -8,6 +8,11 @@ describe("in-terminal agent commands", () => {
     for (const p of ["codex", "claude"]) { const r = parseAgentCommand(`connect ${p}`); expect(r.kind).toBe("text"); expect(r.kind === "text" && r.output).toContain("BLOCKED"); }
   });
   it("connect mcp with URL probes", () => expect(parseAgentCommand("connect mcp https://x.example/mcp")).toEqual({ kind: "probe", provider: "mcp", url: "https://x.example/mcp" }));
+  it("run is an alias and claude/openai are API models", () => {
+    expect(parseAgentCommand("run claude hi")).toEqual({ kind: "ask", provider: "claude", prompt: "hi" });
+    expect(parseAgentCommand("ask openai hi")).toEqual({ kind: "ask", provider: "openai", prompt: "hi" });
+    const r = parseAgentCommand("ask codex hi"); expect(r.kind === "text" && r.output).toContain("BLOCKED");
+  });
   it("sandbox commands pass through", () => expect(parseAgentCommand("pwd").kind).toBe("none"));
 });
 describe("probe URL guard", () => {
