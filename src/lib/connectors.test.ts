@@ -17,4 +17,11 @@ describe("connector wording", () => {
   it("never says the Mac helper itself is missing", () => {
     for (const c of CONNECTORS) expect(c.blocker).not.toMatch(/helper, which isn't built/);
   });
+  it("lists Gemini API and CLI without claiming a live connection", () => {
+    const api = CONNECTORS.find((c) => c.id === "gemini-api")!;
+    const cli = CONNECTORS.find((c) => c.id === "gemini-cli")!;
+    expect(effectiveStatus(api)).toBe("not-configured");
+    expect(effectiveStatus(cli)).toBe("setup-required");
+    expect(api.never).toContain("Terminal access");
+  });
 });

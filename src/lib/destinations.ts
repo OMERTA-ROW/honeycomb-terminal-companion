@@ -5,7 +5,7 @@ export interface Destination { to: DestinationPath; label: string; hint: string;
 
 export const DESTINATIONS: Destination[] = [
   { to: "/terminal", label: "Terminal", hint: "Live Mac shell (same Wi-Fi) or Demo sessions", keywords: ["terminal", "shell", "command", "console", "live", "mac", "ssh"] },
-  { to: "/connectors", label: "Connectors", hint: "AI agents, MCP, API and service integrations", keywords: ["connectors", "integrations", "agent", "ai", "codex", "claude", "perplexity", "mcp", "api"] },
+  { to: "/connectors", label: "Connectors", hint: "AI agents, MCP, API and service integrations", keywords: ["connectors", "integrations", "agent", "ai", "codex", "claude", "perplexity", "gemini", "google", "mcp", "api"] },
   { to: "/", label: "Computers", hint: "Paired computers and their status", keywords: ["computers", "hosts", "devices", "home"] },
   { to: "/pair", label: "Pair", hint: "Pair a computer with a code or QR", keywords: ["pair", "pairing", "qr", "code", "connect"] },
   { to: "/jobs", label: "Jobs", hint: "Job progress and logs", keywords: ["jobs", "tasks", "logs"] },
