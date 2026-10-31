@@ -22,6 +22,7 @@ import { Route as PairRouteImport } from './routes/pair'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
+import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as TerminalIndexRouteImport } from './routes/terminal.index'
 import { Route as TerminalHostIdRouteImport } from './routes/terminal.$hostId'
 import { Route as TerminalSandboxRouteImport } from './routes/terminal.sandbox'
@@ -91,6 +92,11 @@ const WorkspaceRoute = WorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
+  id: '/api/transcribe',
+  path: '/api/transcribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TerminalIndexRoute = TerminalIndexRouteImport.update({
   id: '/terminal/',
   path: '/terminal/',
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
   '/terminal/sandbox': typeof TerminalSandboxRoute
   '/terminal/': typeof TerminalIndexRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
   '/terminal/sandbox': typeof TerminalSandboxRoute
   '/terminal': typeof TerminalIndexRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
   '/terminal/sandbox': typeof TerminalSandboxRoute
   '/terminal/': typeof TerminalIndexRoute
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/transfer'
     | '/workspace'
+    | '/api/transcribe'
     | '/terminal/$hostId'
     | '/terminal/sandbox'
     | '/terminal/'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/transfer'
     | '/workspace'
+    | '/api/transcribe'
     | '/terminal/$hostId'
     | '/terminal/sandbox'
     | '/terminal'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/transfer'
     | '/workspace'
+    | '/api/transcribe'
     | '/terminal/$hostId'
     | '/terminal/sandbox'
     | '/terminal/'
@@ -233,6 +245,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TransferRoute: typeof TransferRoute
   WorkspaceRoute: typeof WorkspaceRoute
+  ApiTranscribeRoute: typeof ApiTranscribeRoute
   TerminalHostIdRoute: typeof TerminalHostIdRoute
   TerminalSandboxRoute: typeof TerminalSandboxRoute
   TerminalIndexRoute: typeof TerminalIndexRoute
@@ -331,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/transcribe': {
+      id: '/api/transcribe'
+      path: '/api/transcribe'
+      fullPath: '/api/transcribe'
+      preLoaderRoute: typeof ApiTranscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terminal/': {
       id: '/terminal/'
       path: '/terminal'
@@ -369,6 +389,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TransferRoute: TransferRoute,
   WorkspaceRoute: WorkspaceRoute,
+  ApiTranscribeRoute: ApiTranscribeRoute,
   TerminalHostIdRoute: TerminalHostIdRoute,
   TerminalSandboxRoute: TerminalSandboxRoute,
   TerminalIndexRoute: TerminalIndexRoute,
