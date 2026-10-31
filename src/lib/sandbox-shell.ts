@@ -74,7 +74,7 @@ export function exec(prev: ShellState, raw: string, now = Date.now()): ExecResul
     case "uname": out = "Honeycomb-Browser-Sandbox (not macOS, not iOS)"; break;
     case "date": out = new Date(now).toString(); break;
     case "echo": out = rest.join(" "); break;
-    case "help": out = `Browser sandbox commands: ${COMMANDS.join(" ")}\nFor a real Mac shell, use Connect Mac.`; break;
+    case "help": out = `Browser sandbox commands: ${COMMANDS.join(" ")}\nAgent commands: agents status ask connect disconnect exit\nFor a real Mac shell, use Connect Mac.`; break;
     case "history": out = state.history.map((h, i) => `${String(i + 1).padStart(4)}  ${h}`).join("\n"); break;
     case "clear": return { state, output: "", clear: true };
     case "cd": {
