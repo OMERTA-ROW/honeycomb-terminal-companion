@@ -1,0 +1,2 @@
+ALTER TABLE public.hc_account_audit DROP CONSTRAINT hc_account_audit_event_check;
+ALTER TABLE public.hc_account_audit ADD CONSTRAINT hc_account_audit_event_check CHECK (event = ANY (ARRAY['profile_created','profile_updated','session_revoked','all_sessions_revoked','invite_created','invite_revoked','invite_accepted','role_changed','role_changed_by_owner','member_removed','access_removed','owner_bootstrapped','host_enroll_code_issued','host_enrolled','host_revoked']::text[]));
