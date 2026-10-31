@@ -106,3 +106,6 @@ Audio/vocal cleanup/EQ/normalization with before/after and separate export; sele
 
 ## Honeycomb Agent Connect (future, not implemented)
 See docs/AGENT_CONNECT.md. Secondary to QuickConnect acceptance; planned only.
+
+## Platform vision (all users)
+See docs/PLATFORM.md. Mac+iPad pilot first; other platforms planned.
