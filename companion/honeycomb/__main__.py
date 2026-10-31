@@ -143,6 +143,7 @@ def lan_serve(args):
     threading.Thread(target=reaper, daemon=True).start()
     hub.audit("host_started")
     print("\nOn iPad/iPhone (same Wi-Fi) open:  https://%s" % authority)
+    print("Or add it in the Honeycomb app (signed in): https://honeycomb-terminal-companion.lovable.app/terminal?add=%s" % authority)
     print("Certificate SHA-256 (must match the phone screen):\n  " + ":".join(fp[i:i+2] for i in range(0, len(fp), 2)))
     print("Pairing code (120 s, single use):", hub.new_code())
     print("Commands: code | approve ID | deny ID | devices | revoke ID | quit")
