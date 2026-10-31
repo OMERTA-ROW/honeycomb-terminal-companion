@@ -31,6 +31,6 @@ describe("QuickConnect flow", () => {
   it("keeps a Mac saved by the previous version", () => {
     const s = mem();
     s.setItem("honeycomb.mac-link.a", JSON.stringify(mac("192.168.0.9")));
-    expect(loadComputers("a", s)[0].address).toBe("192.168.0.9");
+    expect(loadComputers("a", s)[0]?.address).toBe("192.168.0.9");
   });
 });
