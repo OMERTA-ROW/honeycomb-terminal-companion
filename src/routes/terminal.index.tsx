@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useHosts } from "@/hooks/use-hosts";
+import { LinkedMacs } from "@/components/LinkedMacs";
 import { useAccountUser } from "@/hooks/use-account-user";
 import { STATUS_INFO } from "@/lib/terminal";
 import { liveUrl, loadComputers, normalizeAddress, quickStatus, removeComputer, saveComputer, terminalStep, type MacLink, type QuickStatus } from "@/lib/mac-link";
@@ -69,6 +70,7 @@ function TerminalHub() {
             <Button asChild><Link to="/account" search={{ redirect: "/terminal" }}>Sign in</Link></Button>
           </section>
         )}
+        {user && <LinkedMacs />}
         {user && computers.length > 0 && (
           <section aria-labelledby="mine-h" className="space-y-2">
             <h2 id="mine-h" className="font-medium text-primary">My computers</h2>

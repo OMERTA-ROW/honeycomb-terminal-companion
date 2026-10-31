@@ -155,8 +155,29 @@ def lan_serve(args):
     print("\nOn iPad/iPhone (same Wi-Fi) open:  https://%s" % authority)
     print("Or add it in the Honeycomb app (signed in): https://honeycomb-terminal-companion.lovable.app/terminal?add=%s" % authority)
     print("Certificate SHA-256 (must match the phone screen):\n  " + ":".join(fp[i:i+2] for i in range(0, len(fp), 2)))
-    _show_code(authority, hub.new_code())
-    print("Commands: code | approve ID | deny ID | devices | revoke ID | quit")
+    from . import account
+    os_name = "macos" if platform.system() == "Darwin" else "linux"
+    def check_account(announce=False):
+        rec = account.load(state)
+        if not rec:
+            if announce:
+                print("Account link: NOT LINKED. In the Honeycomb app tap Terminal > Link this Mac, then type:  link CODE")
+            return
+        st = account.status(rec)
+        if st == "revoked" and not hub.host_locked:
+            hub.lock_host()
+            print("\nThis Mac was REVOKED from your Honeycomb account. All phones were disconnected; pairing is off.")
+        elif announce:
+            print("Account link:", {"active": "LINKED as " + rec["name"], "offline": "linked, backend unreachable (LAN keeps working, revocation re-checked every 60 s)", "unknown": "link not recognised by the account; type unlink then link CODE"}.get(st, st))
+    check_account(True)
+    def watcher():
+        while True:
+            time.sleep(60)
+            check_account()
+    threading.Thread(target=watcher, daemon=True).start()
+    if not hub.host_locked:
+        _show_code(authority, hub.new_code())
+    print("Commands: code | link CODE | unlink | account | approve ID | deny ID | devices | revoke ID | quit")
     try:
         while True:
             parts = input("honeycomb> ").strip().split()
@@ -174,6 +195,17 @@ def lan_serve(args):
                 elif parts[0] == "revoke" and len(parts) == 2:
                     hub.revoke(parts[1])
                     print("Revoked; its shell was closed.")
+                elif parts[0] == "link" and len(parts) == 2:
+                    try:
+                        rec = account.link(state, parts[1], platform.node().split(".")[0] or "My Mac", os_name, fp)
+                        print("Linked to your Honeycomb account as", rec["name"], "- refresh the Terminal page.")
+                    except account.AccountError as e:
+                        print("Link failed:", {"code_invalid": "code wrong, used or expired (10 min). Create a new one in the app.", "offline": "cannot reach Honeycomb; check internet.", "code_format": "code is 12 letters/digits.", "rate_limited": "too many attempts; wait 10 minutes.", "host_limit": "5 computers already linked; revoke one in the app."}.get(str(e), str(e)))
+                elif parts[0] == "unlink":
+                    account.unlink(state)
+                    print("Local link removed. Revoke it in the app too.")
+                elif parts[0] == "account":
+                    check_account(True)
                 elif parts[0] in ("quit", "exit"):
                     break
                 else:

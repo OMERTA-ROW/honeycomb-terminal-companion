@@ -7,7 +7,7 @@ export const companionReadiness = createServerFn({ method: 'POST' })
   .handler(async () => ({
     state: 'blocked' as const,
     source: 'Local PTY and encrypted-frame acceptance core available',
-    enrollment: 'Not implemented',
+    enrollment: 'Account link available: Terminal > Link this Mac, then link CODE in the helper',
     relay: 'Not connected',
     persistence: 'Host tmux supervisor not implemented',
     installer: 'No signed native release',

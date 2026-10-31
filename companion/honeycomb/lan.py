@@ -149,6 +149,7 @@ class Hub:
         self.lock = threading.RLock()
         self.code_hash, self.code_expiry, self.code_attempts = None, 0, 0
         self.failures = 0
+        self.host_locked = False
         self.pending, self.devices, self.sessions = {}, {}, {}
         self.inbox = os.path.join(cwd, "Honeycomb", files.INBOX)
 
@@ -158,7 +159,18 @@ class Hub:
             with open(self.audit_path, "a") as f:
                 f.write(json.dumps({"ts": int(self.clock()), "event": event, "device": device}) + "\n")
 
+    def lock_host(self):
+        """Account revoked this Mac: end every device session and refuse new pairing."""
+        with self.lock:
+            self.host_locked, self.code_hash = True, None
+            ids = [d for d, v in self.devices.items() if not v["revoked"]]
+        for did in ids:
+            self.revoke(did)
+        self.audit("host_revoked_by_account")
+
     def new_code(self):
+        if self.host_locked:
+            raise LanDenied("host_revoked")
         code = "".join(secrets.choice(ALPHABET) for _ in range(8))
         with self.lock:
             self.code_hash, self.code_expiry, self.code_attempts, self.failures = _h(code), self.clock() + CODE_TTL, 0, 0
@@ -168,6 +180,8 @@ class Hub:
     def request_pair(self, code, name):
         name = "".join(ch for ch in str(name)[:40] if ch.isprintable()).strip() or "Unnamed device"
         with self.lock:
+            if self.host_locked:
+                raise LanDenied("host_revoked")
             if self.code_hash is None or self.clock() > self.code_expiry or self.failures >= GLOBAL_FAILURES:
                 self.audit("pair_denied_no_code")
                 raise LanDenied("code_expired")
