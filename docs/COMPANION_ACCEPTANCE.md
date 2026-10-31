@@ -15,7 +15,7 @@ secret-free audit log, file Inbox separate from shell.
 
 Not built: account-device enrollment (the Mac is not linked to a Honeycomb account; Mac console
 approval is the only authority, and website "Remove" does not revoke on the Mac), relay for
-cellular/different networks, signed/notarized installer, Windows/Linux helpers, biometric unlock, website-side online probe. QR pairing IS built (2026-10-31): the Mac window prints a real QR of https://<private IP>:<port>/#pair=CODE (fragment never sent to a server; 120 s, single use, new `code` invalidates old, Mac approval still required). The earlier /pair QR was a decorative Demo grid and was removed (browser cannot reach the Mac).
+cellular/different networks, signed/notarized installer, Windows/Linux helpers, biometric unlock, website-side online probe. QR pairing IS built (2026-10-31): the Mac window prints a real QR of https://<private IP>:<port>/#pair=CODE (fragment never sent to a server; 120 s, single use, new `code` invalidates old, Mac approval still required). The earlier /pair QR was a decorative Demo grid and was removed. The website still cannot probe whether the Mac is online.
 
 ### Owner acceptance checklist (Mac + iPhone/iPad on the same Wi-Fi)
 
