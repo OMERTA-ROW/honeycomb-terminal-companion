@@ -9,8 +9,8 @@ async function bodyText(r: Response) { return (await r.text()).slice(0, 2000); }
 export const agentStatus = createServerFn({ method: "POST" })
   .middleware([requireActiveAccount])
   .handler(async () => ({
-    gemini: process.env.LOVABLE_API_KEY ? "ready" : "blocked: AI not enabled",
-    perplexity: process.env.PERPLEXITY_API_KEY ? "ready" : "blocked: no Perplexity connection linked",
+    gemini: process.env['LOVABLE_API_KEY'] ? "ready" : "blocked: AI not enabled",
+    perplexity: process.env['PERPLEXITY_API_KEY'] ? "ready" : "blocked: no Perplexity connection linked",
   }));
 
 export const askAgent = createServerFn({ method: "POST" })
@@ -23,7 +23,7 @@ export const askAgent = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<Result> => {
     const signal = AbortSignal.timeout(45000);
     if (data.provider === "gemini") {
-      const key = process.env.LOVABLE_API_KEY;
+      const key = process.env['LOVABLE_API_KEY'];
       if (!key) return { ok: false, text: "BLOCKED: AI is not enabled for this project.", source: "gemini" };
       const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST", signal,
@@ -38,10 +38,10 @@ export const askAgent = createServerFn({ method: "POST" })
       const j = (await r.json()) as { choices?: { message?: { content?: string } }[] };
       return { ok: true, text: j.choices?.[0]?.message?.content?.trim() || "(empty reply)", source: "Gemini via Lovable AI" };
     }
-    const pkey = process.env.PERPLEXITY_API_KEY;
+    const pkey = process.env['PERPLEXITY_API_KEY'];
     if (!pkey) return { ok: false, text: "BLOCKED: no Perplexity connection is linked to this project. The owner links one under Connectors → Perplexity, then this command works.", source: "perplexity" };
     if (pkey.startsWith("lovc_")) {
-      const lk = process.env.LOVABLE_API_KEY;
+      const lk = process.env['LOVABLE_API_KEY'];
       if (!lk) return { ok: false, text: "BLOCKED: gateway key missing.", source: "perplexity" };
       const r = await fetch("https://connector-gateway.lovable.dev/perplexity/search", {
         method: "POST", signal,
