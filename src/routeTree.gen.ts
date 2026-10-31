@@ -24,6 +24,7 @@ import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as TerminalIndexRouteImport } from './routes/terminal.index'
 import { Route as TerminalHostIdRouteImport } from './routes/terminal.$hostId'
+import { Route as TerminalSandboxRouteImport } from './routes/terminal.sandbox'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -100,6 +101,11 @@ const TerminalHostIdRoute = TerminalHostIdRouteImport.update({
   path: '/terminal/$hostId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TerminalSandboxRoute = TerminalSandboxRouteImport.update({
+  id: '/terminal/sandbox',
+  path: '/terminal/sandbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
+  '/terminal/sandbox': typeof TerminalSandboxRoute
   '/terminal/': typeof TerminalIndexRoute
 }
 export interface FileRoutesByTo {
@@ -133,6 +140,7 @@ export interface FileRoutesByTo {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
+  '/terminal/sandbox': typeof TerminalSandboxRoute
   '/terminal': typeof TerminalIndexRoute
 }
 export interface FileRoutesById {
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
+  '/terminal/sandbox': typeof TerminalSandboxRoute
   '/terminal/': typeof TerminalIndexRoute
 }
 export interface FileRouteTypes {
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/terminal/$hostId'
+    | '/terminal/sandbox'
     | '/terminal/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/terminal/$hostId'
+    | '/terminal/sandbox'
     | '/terminal'
   id:
     | '__root__'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/terminal/$hostId'
+    | '/terminal/sandbox'
     | '/terminal/'
   fileRoutesById: FileRoutesById
 }
@@ -222,6 +234,7 @@ export interface RootRouteChildren {
   TransferRoute: typeof TransferRoute
   WorkspaceRoute: typeof WorkspaceRoute
   TerminalHostIdRoute: typeof TerminalHostIdRoute
+  TerminalSandboxRoute: typeof TerminalSandboxRoute
   TerminalIndexRoute: typeof TerminalIndexRoute
 }
 
@@ -332,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TerminalHostIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terminal/sandbox': {
+      id: '/terminal/sandbox'
+      path: '/terminal/sandbox'
+      fullPath: '/terminal/sandbox'
+      preLoaderRoute: typeof TerminalSandboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -350,6 +370,7 @@ const rootRouteChildren: RootRouteChildren = {
   TransferRoute: TransferRoute,
   WorkspaceRoute: WorkspaceRoute,
   TerminalHostIdRoute: TerminalHostIdRoute,
+  TerminalSandboxRoute: TerminalSandboxRoute,
   TerminalIndexRoute: TerminalIndexRoute,
 }
 export const routeTree = rootRouteImport
