@@ -120,7 +120,8 @@ export function SandboxWorkspace() {
         } else if (opts.length > 1) { write("\r\n" + opts.join("  ") + "\r\n"); }
         lineRef.current = line;
       } else if (ev.type === "submit") {
-        s.transcript += lineRef.current.buf; write("\r\n");
+        // Repaint the full submitted line first: a paste ending in Enter arrives in one chunk and was never drawn.
+        t.write(`\r\x1b[K${termPrompt(s.state)}${ev.line}`); s.transcript += ev.line; write("\r\n");
         const a = parseAgentCommand(ev.line);
         if (a.kind !== "none") { lineRef.current = emptyLine(s.state.history); void runAgent(ev.line, a, s); persist(); if (busyRef.current) return; }
         else {
