@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { searchDestinations } from "@/lib/destinations";
-import { Monitor, Link2, ListChecks, BookOpen, ShieldCheck, Files, Folder, UserRound, Download, SquareTerminal, Search } from "lucide-react";
+import { Monitor, Link2, ListChecks, BookOpen, ShieldCheck, Files, Folder, UserRound, Download, SquareTerminal, Search, Plug } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { TerminalBrand } from "./TerminalBrand";
 import { HiveBackdrop } from "./HiveBackdrop";
@@ -22,6 +22,7 @@ export function AppShell({ children, terminal = false }: { children: ReactNode; 
         <nav className="window-sidebar" aria-label="Main navigation">
           {([
             ["/terminal", "Terminal", SquareTerminal],
+            ["/connectors", "Connectors", Plug],
             ["/", "Computers", Monitor],
             ["/pair", "Pair", Link2],
             ["/jobs", "Jobs", ListChecks],
