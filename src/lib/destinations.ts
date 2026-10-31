@@ -1,10 +1,11 @@
 export type DestinationPath =
-  | "/" | "/terminal" | "/connectors" | "/pair" | "/jobs" | "/transfer" | "/device-care" | "/instructions" | "/install" | "/workspace" | "/account";
+  | "/" | "/terminal/sandbox" | "/terminal" | "/connectors" | "/pair" | "/jobs" | "/transfer" | "/device-care" | "/instructions" | "/install" | "/workspace" | "/account";
 
 export interface Destination { to: DestinationPath; label: string; hint: string; keywords: string[] }
 
 export const DESTINATIONS: Destination[] = [
-  { to: "/terminal", label: "Terminal", hint: "Browser sandbox terminal, or your Mac's real shell (same Wi-Fi)", keywords: ["terminal", "shell", "command", "console", "live", "mac", "ssh"] },
+  { to: "/terminal/sandbox", label: "Terminal", hint: "Full-screen terminal — browser sandbox, opens immediately", keywords: ["terminal", "shell", "command", "console", "sandbox", "ssh"] },
+  { to: "/terminal", label: "Connect Mac", hint: "Optional: your Mac's real shell (same Wi-Fi)", keywords: ["connect", "mac", "live", "quickconnect", "pair mac"] },
   { to: "/connectors", label: "Connectors", hint: "AI agents, MCP, API and service integrations", keywords: ["connectors", "integrations", "agent", "ai", "codex", "claude", "perplexity", "gemini", "google", "mcp", "api"] },
   { to: "/", label: "Computers", hint: "Paired computers and their status", keywords: ["computers", "hosts", "devices", "home"] },
   { to: "/pair", label: "Pair", hint: "Demo pairing walkthrough (simulated); real Mac pairing is in Terminal", keywords: ["pair", "pairing", "qr", "code", "connect"] },
