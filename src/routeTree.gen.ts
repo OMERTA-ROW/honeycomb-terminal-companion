@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as ConnectorsRouteImport } from './routes/connectors'
 import { Route as DeviceCareRouteImport } from './routes/device-care'
@@ -22,6 +23,7 @@ import { Route as PairRouteImport } from './routes/pair'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as TerminalIndexRouteImport } from './routes/terminal.index'
 import { Route as TerminalHostIdRouteImport } from './routes/terminal.$hostId'
@@ -30,6 +32,10 @@ import { Route as TerminalSandboxRouteImport } from './routes/terminal.sandbox'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRoute = AccountRouteImport.update({
@@ -92,6 +98,11 @@ const WorkspaceRoute = WorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   id: '/api/transcribe',
   path: '/api/transcribe',
@@ -127,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
   '/terminal/sandbox': typeof TerminalSandboxRoute
@@ -146,6 +158,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
   '/terminal/sandbox': typeof TerminalSandboxRoute
@@ -154,6 +167,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/account': typeof AccountRoute
   '/connectors': typeof ConnectorsRoute
   '/device-care': typeof DeviceCareRoute
@@ -166,6 +180,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
   '/terminal/sandbox': typeof TerminalSandboxRoute
@@ -187,6 +202,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/transfer'
     | '/workspace'
+    | '/dashboard'
     | '/api/transcribe'
     | '/terminal/$hostId'
     | '/terminal/sandbox'
@@ -206,6 +222,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/transfer'
     | '/workspace'
+    | '/dashboard'
     | '/api/transcribe'
     | '/terminal/$hostId'
     | '/terminal/sandbox'
@@ -213,6 +230,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/account'
     | '/connectors'
     | '/device-care'
@@ -225,6 +243,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/transfer'
     | '/workspace'
+    | '/_authenticated/dashboard'
     | '/api/transcribe'
     | '/terminal/$hostId'
     | '/terminal/sandbox'
@@ -233,6 +252,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AccountRoute: typeof AccountRoute
   ConnectorsRoute: typeof ConnectorsRoute
   DeviceCareRoute: typeof DeviceCareRoute
@@ -258,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account': {
@@ -344,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/transcribe': {
       id: '/api/transcribe'
       path: '/api/transcribe'
@@ -375,8 +409,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AccountRoute: AccountRoute,
   ConnectorsRoute: ConnectorsRoute,
   DeviceCareRoute: DeviceCareRoute,
