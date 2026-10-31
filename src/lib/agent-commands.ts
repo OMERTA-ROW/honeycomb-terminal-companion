@@ -1,11 +1,11 @@
 /** Browser-safe parser for in-terminal agent commands. No network, no credentials. */
 export type ProviderId = "gemini" | "perplexity" | "codex" | "claude" | "mcp" | "api" | "web";
 
-export interface AgentInfo { id: ProviderId; name: string; runtime: string; auth: string; available: boolean; blocker?: string; usage: string }
+export interface AgentInfo { id: ProviderId; name: string; runtime: string; auth: string; available: boolean; needsSetup?: boolean; blocker?: string; usage: string }
 
 export const AGENTS: AgentInfo[] = [
   { id: "gemini", name: "Google Gemini", runtime: "Honeycomb server → Lovable AI (Gemini model)", auth: "Your Honeycomb sign-in; no Google key needed", available: true, usage: "ask gemini <question>" },
-  { id: "perplexity", name: "Perplexity", runtime: "Honeycomb server → Perplexity search", auth: "Owner links a Perplexity connection to the project (managed or own pplx- key)", available: true, usage: "ask perplexity <question>" },
+  { id: "perplexity", name: "Perplexity", runtime: "Honeycomb server → Perplexity search", auth: "Owner links a Perplexity connection to the project (managed or own pplx- key)", available: true, needsSetup: true, usage: "ask perplexity <question>" },
   { id: "mcp", name: "Custom MCP server", runtime: "Honeycomb server → your https MCP endpoint", auth: "Public https endpoint only; no stored tokens yet", available: true, usage: "connect mcp https://example.com/mcp" },
   { id: "api", name: "Custom API", runtime: "Honeycomb server → your https endpoint (GET)", auth: "Public https endpoint only; no stored tokens yet", available: true, usage: "connect api https://api.example.com/health" },
   { id: "codex", name: "Codex CLI", runtime: "Needs a real computer", auth: "OpenAI sign-in on that computer", available: false, blocker: "This terminal runs in your browser and the Honeycomb server cannot start programs. Install Codex on your Mac and run it from the Mac terminal (Connect Mac).", usage: "connect codex" },
@@ -27,7 +27,7 @@ export type AgentCommand =
 const find = (id: string) => AGENTS.find((a) => a.id === id.toLowerCase() || a.name.toLowerCase().startsWith(id.toLowerCase()));
 
 export function agentsText(): string {
-  return AGENTS.map((a) => `${a.available ? "ready  " : "blocked"}  ${a.id.padEnd(10)} ${a.name} — ${a.usage}`).join("\n")
+  return AGENTS.map((a) => `${!a.available ? "blocked" : a.needsSetup ? "setup  " : "ready  "}  ${a.id.padEnd(10)} ${a.name} — ${a.usage}`).join("\n")
     + "\nType connect <name> for setup details.";
 }
 
