@@ -147,6 +147,7 @@ class LanFileTests(LanTests):
         self.assertEqual(self.up(b"y", dest="OMNI", cookie=ck)[0], 200)
         self.assertEqual(self.up(b"y", dest="..", cookie=ck)[1]["error"], "destination_not_allowed")
         from honeycomb import files
-        self.assertEqual(self.up(b"z" * (files.MAX_UPLOAD + 1), cookie=ck)[0], 413)
+        with self.assertRaises(files.FileRefused):
+            files.save(self.hub.inbox, "Inbox", "big.bin", b"z" * (files.MAX_UPLOAD + 1))
         self.hub.revoke(did)
         self.assertEqual(self.up(b"x", cookie=ck)[0], 401)

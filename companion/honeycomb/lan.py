@@ -461,6 +461,8 @@ def make_handler(hub):
             did = hub.device_for(self._token())
             if self.headers.get("Origin") != origin or not did or length > files.MAX_UPLOAD:
                 self.close_connection = True
+                if length <= files.MAX_UPLOAD:
+                    self.rfile.read(length)  # drain so the client sees the reply, not a reset
                 err = "origin_denied" if self.headers.get("Origin") != origin else ("not_paired" if not did else "too_large")
                 return self._json({"origin_denied": 403, "not_paired": 401}.get(err, 413), {"error": err})
             data = self.rfile.read(length)
