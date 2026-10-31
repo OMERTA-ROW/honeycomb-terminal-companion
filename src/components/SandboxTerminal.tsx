@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { Copy, ClipboardPaste, Menu, Plus, X } from "lucide-react";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { AGENTS, parseAgentCommand } from "@/lib/agent-commands";
+import { agentStatus, askAgent, probeEndpoint } from "@/lib/agent.functions";
+import { useAccountUser } from "@/hooks/use-account-user";
+import { Bot, Copy, ClipboardPaste, LogOut, Menu, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DESTINATIONS } from "@/lib/destinations";
 import { exec, newSession, prompt, type ShellState } from "@/lib/sandbox-shell";
@@ -27,6 +31,17 @@ export function SandboxWorkspace() {
   const [height, setHeight] = useState<number | null>(null);
   const outRef = useRef<HTMLDivElement>(null);
   const inRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [launcher, setLauncher] = useState(false);
+  const { user } = useAccountUser();
+  const navigate = useNavigate(); const router = useRouter();
+  const ask = useServerFn(askAgent); const probe = useServerFn(probeEndpoint); const statusFn = useServerFn(agentStatus);
+  // Exit View only leaves the screen; sessions stay saved and nothing is revoked.
+  const exitView = () => { if (window.history.length > 1) router.history.back(); else void navigate({ to: "/" }); };
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape" && !e.defaultPrevented) { if (launcher) setLauncher(false); else if (sidebar) setSidebar(false); else exitView(); } };
+    window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
+  });
 
   // Restore (and migrate the single-session format), or start one session so the shell is ready on open.
   useEffect(() => {
@@ -63,16 +78,35 @@ export function SandboxWorkspace() {
     const next = rest.length ? rest : [makeSession(1)];
     setSessions(next); if (id === active || !rest.length) setActive(next[next.length - 1]!.id);
   }
-  function submit() {
-    if (!cur) return;
-    const before = cur.state; const cmd = input;
+  function append(id: string, add: Line[]) { update(id, (s) => ({ ...s, lines: [...s.lines, ...add] })); }
+  async function submit(cmdIn?: string) {
+    if (!cur || busy) return;
+    const before = cur.state; const cmd = cmdIn ?? input; const id = cur.id;
+    const a = parseAgentCommand(cmd);
+    if (a.kind !== "none") {
+      const echo: Line = { kind: "in", text: `${prompt(before)} ${cmd}` };
+      update(id, (s) => ({ ...s, state: { ...s.state, history: [...s.state.history, cmd.trim()].slice(-200) } }));
+      setInput(""); setCursor(null);
+      if (a.kind === "exit") { append(id, [echo, { kind: "out", text: "Leaving the terminal view. This session stays saved." }]); exitView(); return; }
+      if (a.kind === "text") { append(id, [echo, { kind: "out", text: a.output }]); return; }
+      if (a.kind === "disconnect") { append(id, [echo, { kind: "out", text: `${a.provider}: nothing stored on this device to disconnect. Project-level connections (Perplexity) are removed by the owner in Connectors.` }]); return; }
+      if (!user) { append(id, [echo, { kind: "out", text: "Sign in first (Account) — agent commands run on the Honeycomb server for signed-in members only." }]); return; }
+      append(id, [echo, { kind: "out", text: a.kind === "status" ? "Checking…" : "Working… (server request)" }]); setBusy(true);
+      try {
+        if (a.kind === "status") { const st = await statusFn(); append(id, [{ kind: "out", text: `gemini: ${st.gemini}\nperplexity: ${st.perplexity}\nmcp/api: probe with connect mcp|api <https url>\ncodex/claude: blocked here — run on your Mac\nsession: ${user.email ?? "signed in"}` }]); }
+        else if (a.kind === "ask") { const r = await ask({ data: { provider: a.provider, prompt: a.prompt } }); append(id, [{ kind: "out", text: `[${r.source}${r.ok ? "" : " · error"}]\n${r.text}` }]); }
+        else { const r = await probe({ data: { provider: a.provider, url: a.url } }); append(id, [{ kind: "out", text: `[${a.provider}${r.ok ? " · reachable" : " · failed"}]\n${r.text}` }]); }
+      } catch (e) { append(id, [{ kind: "out", text: `Error: ${e instanceof Error ? e.message : "request failed"}${navigator.onLine ? "" : " (you are offline)"}` }]); }
+      finally { setBusy(false); inRef.current?.focus(); }
+      return;
+    }
     const r = exec(before, cmd);
     update(cur.id, (s) => ({ ...s, state: r.state, lines: r.clear ? [] : [...s.lines, { kind: "in", text: `${prompt(before)} ${cmd}` }, ...(r.output ? [{ kind: "out" as const, text: r.output }] : [])] }));
     setInput(""); setCursor(null); inRef.current?.focus();
   }
   function key(e: React.KeyboardEvent<HTMLInputElement>) {
     if (!cur) return;
-    if (e.key === "Enter") { e.preventDefault(); submit(); }
+    if (e.key === "Enter") { e.preventDefault(); void submit(); }
     else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
       e.preventDefault(); const h = cur.state.history; if (!h.length) return;
       const next = e.key === "ArrowUp" ? Math.max(0, (cursor ?? h.length) - 1) : Math.min(h.length, (cursor ?? h.length) + 1);
@@ -97,7 +131,8 @@ export function SandboxWorkspace() {
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <span role="status" className="rounded-full border border-primary px-2 py-0.5 text-[11px] text-primary">Browser sandbox · running</span>
-          <Button asChild variant="outline" size="sm"><Link to="/terminal">Connect Mac</Link></Button>
+          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex"><Link to="/terminal">Connect Mac</Link></Button>
+          <Button variant="outline" size="sm" onClick={exitView} title="Exit view (Esc). Sessions stay saved."><LogOut className="mr-1 h-3.5 w-3.5" />Exit</Button>
         </div>
       </header>
 
@@ -123,14 +158,25 @@ export function SandboxWorkspace() {
             {cur?.lines.map((l, i) => <div key={i} className={l.kind === "in" ? "text-primary" : ""}>{l.text}</div>)}
           </div>
           <p className="shrink-0 px-3 text-[11px] text-muted-foreground">Real commands on a private file area in this browser — not your Mac, not iOS, no internet.{note && <span className="ml-2 text-primary">{note}</span>}</p>
-          <form className="flex shrink-0 items-center gap-2 border-t border-border p-2" onSubmit={(e) => { e.preventDefault(); submit(); }}>
+          {launcher && (
+            <div role="dialog" aria-label="Agent launcher" className="shrink-0 border-t border-primary bg-card p-2">
+              <p className="mb-1 text-[11px] text-muted-foreground">Pick a tool — it fills the command; nothing runs until you tap Run. Esc closes.</p>
+              <div className="grid grid-cols-2 gap-1 sm:grid-cols-4">
+                {AGENTS.map((a) => (
+                  <button key={a.id} type="button" className="rounded border border-border p-2 text-left text-xs hover:border-primary" onClick={() => { setInput(a.id === "gemini" || a.id === "perplexity" ? `ask ${a.id} ` : a.id === "mcp" || a.id === "api" ? `connect ${a.id} https://` : `connect ${a.id}`); setLauncher(false); inRef.current?.focus(); }}>
+                    <span className="block text-primary">{a.name}</span><span className="text-muted-foreground">{a.available ? "Ready" : "Blocked here"}</span>
+                  </button>))}
+              </div>
+            </div>)}
+          <form className="flex shrink-0 items-center gap-2 border-t border-border p-2" onSubmit={(e) => { e.preventDefault(); void submit(); }}>
             <span className="hidden shrink-0 font-mono text-xs text-primary sm:inline">{cur ? prompt(cur.state) : ""}</span>
             <label className="sr-only" htmlFor="sandbox-in">Command</label>
-            <input id="sandbox-in" ref={inRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={key} autoFocus autoCapitalize="off" autoCorrect="off" autoComplete="off" spellCheck={false} maxLength={2000} enterKeyHint="send"
+            <input id="sandbox-in" ref={inRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={key} disabled={busy} autoFocus autoCapitalize="off" autoCorrect="off" autoComplete="off" spellCheck={false} maxLength={2000} enterKeyHint="send"
               className="min-w-0 flex-1 rounded border border-border bg-card px-2 py-2 font-mono text-base sm:text-sm" placeholder="pwd" />
-            <Button type="submit">Run</Button>
+            <Button type="submit" disabled={busy}>{busy ? "…" : "Run"}</Button>
           </form>
           <div className="flex shrink-0 gap-1 overflow-x-auto px-2 pb-2">
+            <Button type="button" size="sm" onClick={() => setLauncher((v) => !v)} aria-expanded={launcher}><Bot className="mr-1 h-3.5 w-3.5" />Agents</Button>
             {["pwd", "ls", "help", "history", "clear"].map((c) => <Button key={c} type="button" variant="outline" size="sm" className="font-mono" onClick={() => { setInput(c); inRef.current?.focus(); }}>{c}</Button>)}
             <Button type="button" variant="outline" size="sm" onClick={copyOutput}><Copy className="mr-1 h-3.5 w-3.5" />Copy</Button>
             <Button type="button" variant="outline" size="sm" onClick={paste}><ClipboardPaste className="mr-1 h-3.5 w-3.5" />Paste</Button>

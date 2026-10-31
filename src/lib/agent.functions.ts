@@ -28,7 +28,7 @@ export const askAgent = createServerFn({ method: "POST" })
       const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST", signal,
         headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "google/gemini-3-flash-preview", messages: [
+        body: JSON.stringify({ model: "google/gemini-3.8-flash", messages: [
           { role: "system", content: "You answer inside a terminal. Plain text, concise, no markdown tables." },
           { role: "user", content: data.prompt }] }),
       });
