@@ -1,5 +1,8 @@
 # Honeycomb Terminal next work
 
+- [x] Private companion acceptance preparation: network-free local PTY source, encrypted in-process adapter, isolated security/session tests and Mac instructions; private readiness source added, accounts/Demo preserved.
+- [ ] Live Mac/iPad companion acceptance — blocked: authorized Mac hardware, verified host enrollment/key storage, outbound relay, PWA adapter and tmux supervisor not available; no signed native artifact.
+
 - [ ] Private autonomous task workflow: account-authorized goals/status, host/action grants, fixed-code activity, stop/revoke and blocked executor readiness; isolated tests and truthful acceptance evidence.
 
 - [ ] Add quick-access Honeycomb workspace with local-browser projects, exports/downloads and session logs; persistence/export checks, truthful Files/Home Screen guidance and native folder/shortcut prerequisites.

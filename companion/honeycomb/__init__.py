@@ -1,0 +1,1 @@
+"""Local acceptance core. No network listener or remote executor is included."""

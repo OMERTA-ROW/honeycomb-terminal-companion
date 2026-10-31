@@ -1,8 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from '@tanstack/react-start';
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { BUILD_ID, subscribePwa, reloadWithUpdate } from "@/lib/pwa";
+import { useAccountUser } from '@/hooks/use-account-user';
+import { companionReadiness } from '@/lib/companion.functions';
 
 export const Route = createFileRoute("/install")({
   head: () => ({
@@ -28,6 +31,16 @@ function platform() {
 }
 
 function Install() {
+  const { user, ready } = useAccountUser();
+  const loadReadiness = useServerFn(companionReadiness);
+  const [companion, setCompanion] = useState<Awaited<ReturnType<typeof companionReadiness>> | null>(null);
+  const [accessError, setAccessError] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    setCompanion(null); setAccessError(false);
+    if (user) void loadReadiness().then(r => { if (alive) setCompanion(r); }).catch(() => { if (alive) setAccessError(true); });
+    return () => { alive = false; };
+  }, [user?.id]);
   const [plat, setPlat] = useState<string | null>(null);
   const [online, setOnline] = useState(true);
   const [standalone, setStandalone] = useState(false);
@@ -77,7 +90,17 @@ function Install() {
         </section>
         <section className="rounded-md border border-border bg-card p-4 space-y-2 text-sm md:col-span-2">
           <h2 className="font-medium text-primary">Native downloads</h2>
-          <p className="text-muted-foreground">None exist. There is no macOS, Windows or Linux companion, no iPhone/iPad or Android app, and no signed release. The Mac companion is a plan only, so real terminal use is not possible yet.</p>
+          <p className="text-muted-foreground">No signed installers exist. The companion now has runnable local console source and isolated encryption tests, but no account enrollment or remote connection. It does not connect your iPad to your Mac. Windows/Linux releases and native mobile apps remain unavailable.</p>
+          <h3 className="font-medium pt-3">Private companion acceptance</h3>
+          {!ready ? <p>Checking account…</p> : !user ? <Button asChild variant="outline"><Link to="/account" search={{ redirect: '/install' }}>Sign in to check private readiness</Link></Button>
+            : accessError ? <p role="alert" className="text-warning">Private readiness unavailable. An active invited membership is required; check your account.</p>
+              : !companion ? <p>Checking private access…</p> : <dl className="grid gap-2 sm:grid-cols-[auto_1fr]" aria-label="Private companion readiness">
+                <dt>Execution</dt><dd className="text-warning">Blocked — no command can run from this page</dd>
+                <dt>Source</dt><dd>{companion.source}</dd><dt>Host registration</dt><dd>{companion.enrollment}</dd>
+                <dt>Remote connection</dt><dd>{companion.relay}</dd><dt>Reconnect</dt><dd>{companion.persistence}</dd>
+              </dl>}
+          <p className="text-muted-foreground">Owner Mac preparation: Python 3.11 or later, a normal non-root account, and the project source. Follow companion/README.md for the local-only acceptance commands. No ports are opened. Real mobile pairing, host approval and reconnect acceptance are still pending.</p>
+          <Button asChild variant="link"><Link to="/instructions">Connection and keyboard instructions</Link></Button>
         </section>
       </div>
     </AppShell>
