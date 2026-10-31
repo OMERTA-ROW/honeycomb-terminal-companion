@@ -117,7 +117,7 @@ function TerminalHub() {
   );
 }
 
-function ConnectMac({ prefill, prefillName, onSaved }: { prefill: string | null; prefillName?: string; onSaved: (l: MacLink) => void }) {
+function ConnectMac({ prefill, prefillName, onSaved }: { prefill: string | null; prefillName: string | undefined; onSaved: (l: MacLink) => void }) {
   const [address, setAddress] = useState(prefill ?? "");
   const [name, setName] = useState((prefillName ?? "My Mac").slice(0, 40));
   const clean = normalizeAddress(address);
