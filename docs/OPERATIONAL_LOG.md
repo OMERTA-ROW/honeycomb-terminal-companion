@@ -23,3 +23,13 @@ NOT RUN · BLOCKED (named prerequisite) · FAIL (with fix).
 | 11 | AI connector | Agent connects with scoped permissions | Catalog only; nothing Connected | connectors.test.ts | BLOCKED | Stages 4 and 8 on real devices first |
 
 Demo (simulated hosts, /pair) is never counted in this log.
+
+## 2026-10-31 — Full-screen terminal + in-terminal agents
+| Step | Status | Evidence |
+|---|---|---|
+| Terminal/menu → full-screen /terminal/sandbox, Exit button + Esc (view only, sessions kept) | Sandbox | Playwright 390px: Esc returned to previous page; session text survived reopen |
+| `agents`, `connect codex/claude` (BLOCKED message) | Sandbox | Playwright output captured |
+| `ask gemini` (Lovable AI, Gemini model) | BUILT-UNVERIFIED in app | Same request via direct server call returned HONEYCOMB-OK; in-browser test session lacked session id → "Session expired" (real sign-ins pass the check) |
+| `ask perplexity` | BLOCKED | No Perplexity connection in workspace; owner must create and link one |
+| `connect api/mcp <https url>` | BUILT-UNVERIFIED | Private/local URLs refused by unit tests |
+| Codex / Claude Code CLI | BLOCKED | Cannot run programs in browser or server runtime; needs Mac add-on |
