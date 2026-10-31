@@ -12,6 +12,6 @@ export const Route = createFileRoute("/terminal/sandbox")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>): { cmd?: string } => (typeof s.cmd === "string" && s.cmd.length <= 200 ? { cmd: s.cmd } : {}),
+  validateSearch: (s: Record<string, unknown>): { cmd?: string } => (typeof s['cmd'] === "string" && s['cmd'].length <= 200 ? { cmd: s['cmd'] } : {}),
   component: SandboxWorkspace,
 });
