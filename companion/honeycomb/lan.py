@@ -418,13 +418,15 @@ def make_handler(hub):
         def do_POST(self):
             if not self._host_ok():
                 return
-            if self.headers.get("Origin") != origin:
-                return self._json(403, {"error": "origin_denied"})
             length = int(self.headers.get("Content-Length") or 0)
             if length > 4096:
+                self.close_connection = True
                 return self._json(413, {"error": "too_large"})
+            raw_body = self.rfile.read(length)
+            if self.headers.get("Origin") != origin:
+                return self._json(403, {"error": "origin_denied"})
             try:
-                body = json.loads(self.rfile.read(length) or b"{}")
+                body = json.loads(raw_body or b"{}")
             except ValueError:
                 return self._json(400, {"error": "bad_json"})
             path = urlparse(self.path).path
