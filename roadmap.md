@@ -1,8 +1,10 @@
 # Honeycomb Terminal next work
 
 ## Current repair — 2026-11-01
-- [ ] Repair existing code request feedback, approval polling and reconnect/heartbeat races without resetting the installed companion.
-- [ ] Run pairing/security/file-transfer and terminal/dashboard regressions; record exact evidence and physical Mac+iPad/Tailscale prerequisites.
+- [x] Repair existing code request feedback, approval polling and reconnect/heartbeat races without resetting the installed companion.
+- [x] Run pairing/security/file-transfer and terminal/dashboard regressions: 179 app + 67 companion tests, Linux Chromium pairing→pwd→file-save→reconnect→revoke, native paste/README and phone layout; docs/CONNECTION_REPAIR_2026-11-01.md records evidence.
+- [ ] Normal owner sign-in account-code success and two-client account transfer — managed test session rejected by existing session checks; owner normal sign-in required.
+- [ ] Physical Mac+iPad Safari/PWA/keyboard and private Tailscale acceptance — owner hardware and authorized tailnet required.
 
 - [x] Mac download fixed (zip with double-click starter, served at /downloads), Terminal nav + search route, iOS Home Screen steps; 97 app tests, desktop/phone nav + download checks pass.
 - [x] Live local-network terminal (2026-10-31): unsigned .pyz companion, TLS/WSS, code + Mac approval, reconnect, revoke, copy/paste, Test Connection; 37 companion tests + Chromium end-to-end against built file pass.

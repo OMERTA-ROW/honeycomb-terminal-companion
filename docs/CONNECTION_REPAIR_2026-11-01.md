@@ -11,7 +11,7 @@
 - Explicit 100.64.0.0/10 tailnet IPv4 is accepted alongside private LAN; helper must bind the selected local interface. No Tailscale installation/configuration, automatic discovery, DNS proxy, public relay or certificate bypass added. Tailnet ACLs, logged-in devices, TLS and Mac approval are all still required.
 
 ## Exact changed files
-Code: `companion/honeycomb/lan.py`, `companion/honeycomb/lan_page.py`, `src/components/LinkedMacs.tsx`, `src/lib/host-link.functions.ts`, `src/lib/request-sequence.ts`, `src/lib/mac-link.ts`, `src/lib/host-enrollment.ts`, `src/lib/feature-status.ts`, `src/routes/terminal.index.tsx`, `src/routes/_authenticated/dashboard.tsx`, `src/routes/transfer.tsx`.
+Code: `companion/honeycomb/lan.py`, `companion/honeycomb/lan_page.py`, `companion/honeycomb/__main__.py`, `src/components/LinkedMacs.tsx`, `src/lib/host-link.functions.ts`, `src/lib/request-sequence.ts`, `src/lib/mac-link.ts`, `src/lib/host-enrollment.ts`, `src/lib/feature-status.ts`, `src/routes/terminal.index.tsx`, `src/routes/_authenticated/dashboard.tsx`, `src/routes/transfer.tsx`.
 
 Tests: `companion/tests/test_lan.py`, `companion/tests/test_lan_browser.py`, `companion/tests/lan_browser_checks.cjs`, `src/lib/request-sequence.test.ts`, `src/lib/mac-link.test.ts`, `src/lib/host-enrollment.test.ts`, `src/lib/feature-status.test.ts`.
 
@@ -21,7 +21,7 @@ Documentation: `AGENTS.md`, `companion/AGENTS.md`, `roadmap.md`, `docs/SPEC.md`,
 
 ## Evidence
 - 58 focused app tests passed: Mac address validation, host/dashboard truthfulness, refresh ordering, paste/line discipline, sandbox filesystem, routing and transfer integrity.
-- Companion suite: final count recorded in operational log. Covers real Unix PTY reconnect/revoke, TLS hostname verification, wrong Origin/Host, one-use/expiry, heartbeat, first-use Inbox, file scope/mode/no execution, workspace and QR. Five deterministic browser scenarios cover request/JSON errors, approval retry, reconnect event races, heartbeat timeout and revocation.
+- Full suites: 179 app tests (24 files), 67 companion tests. Covers real Unix PTY reconnect/revoke, TLS hostname verification, wrong Origin/Host, one-use/expiry, heartbeat, first-use Inbox, file scope/mode/no execution, workspace and QR. Five deterministic browser scenarios cover request/JSON errors, approval retry, reconnect event races, heartbeat timeout and revocation.
 - Chromium on loopback: actual `/bin/sh` `printf 'CHECK-PWD:'; pwd` read back the isolated Linux directory. Mac-console approval, reload reconnect, file bytes saved without running them, revoke returns pairing; zero page errors. TLS test trusts only the generated fixture SPKI, not all certificates. This is Linux sandbox evidence, not real Mac evidence.
 - Signed-out dashboard redirected to Account. Managed owner test session was rejected by existing session-revocation checks, so code issuance and authenticated transfer success are NOT verified. Dashboard honestly showed Failed account and pending shell/providers; checks were not weakened to force success.
 - Desktop/phone browser terminal layout and preserved keyboard/paste flow checked separately. No Safari, iOS Camera, physical keyboard or PWA certificate persistence claim.

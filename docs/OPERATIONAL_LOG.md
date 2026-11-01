@@ -1,5 +1,19 @@
 # Honeycomb operational onboarding & connection log (living)
 
+## Latest acceptance repair — 2026-11-01
+| Stage | Expected | Actual / evidence | Status / next |
+|---|---|---|---|
+| Pair requests / approval | Single-use, bounded, errors visible | Exact 120-second expiry, 300-second approval expiry, full-device non-consumption, request/JSON failures, approval retry covered | Sandbox; physical Mac+iPad needed |
+| Secure shell / reconnect / revoke | Authenticated host output; one socket; revoke denies access | Chromium + pinned fixture SPKI, real Linux `/bin/sh` pwd read-back, reload history, revoke pairing UI; zero companion page errors | Sandbox, not Mac PASS |
+| First-use file save | Inbox available; bytes only | Authenticated destination creates 0700 Inbox, saved selected text verified, no execution; revoked upload blocked | Sandbox; verify Mac file bytes/mode |
+| Account code request | Normal signed-in member receives code or visible error | Active-account wrapper + serialized issuance; managed test session rejected with visible “Session expired or revoked” | NOT VERIFIED successful issuance; owner normal sign-in required |
+| Dashboard | Unauthorized denied; truthful status | Signed-out redirect; rejected test session displays Failed, shell and Gemini/Claude stay Test Pending | Sandbox; normal owner membership acceptance required |
+| Keyboard / paste / README | Full-screen controls preserved | Native paste event pwd, denied-clipboard Paste box insertion, ls lists README.txt and cat README.txt reads it; 390×844 and 1280×1800 screenshots inspected, no overflow | Sandbox; physical Safari/PWA/keyboard required |
+| Tailscale | Private authorization preserved | Explicit 100.64/10 bind/address allowed, adjacent public ranges rejected; no setup or public relay | NOT RUN on real tailnet |
+| Regression suites / archive | Source tested and packaged | 179 app tests (24 files), 67 companion tests incl. 5 JS scenarios; preview build OK; archive/source checked; doctor exits 0 | Sandbox; installed Mac not touched |
+
+Exact file list and owner steps: `CONNECTION_REPAIR_2026-11-01.md`. No publish, secrets change, auth relaxation or local companion reset. Historical table below is prior-stage evidence, not current physical acceptance.
+
 Rule: a stage is PASS only with evidence from the real path it names. Sandbox,
 mock, Demo, or browser-navigation results are recorded as "Sandbox" and never as
 device PASS. Update this table whenever a stage is attempted.
@@ -19,7 +33,7 @@ NOT RUN · BLOCKED (named prerequisite) · FAIL (with fix).
 | 8 | Reconnect | Reload/lock resumes same session | Reload kept scrollback | run_qr.py | Sandbox | Owner locks phone 30 s |
 | 9 | Revoke (Mac console) | Mac `revoke ID` returns phone to pairing; reconnect refused | Passed | run_qr.py, test_lan.py | Sandbox | Owner revokes on Mac |
 | 10 | Different network | Works over cellular | Not built | — | BLOCKED | Owner-approved private relay |
-| 12 | Browser sandbox terminal | pwd etc. run without a Mac | Real execution on device-local file tree | unit tests + phone-size browser run | Sandbox | Owner opens Terminal on iPhone, taps Start sandbox session, runs pwd |
+| 12 | Browser sandbox terminal | Built-ins run without a Mac | Simulated commands on browser-local file tree, not Unix processes | unit tests + phone-size browser run | Sandbox | Owner opens Terminal on iPhone, starts sandbox session, runs pwd |
 | 11 | AI connector | Agent connects with scoped permissions | Catalog only; nothing Connected | connectors.test.ts | BLOCKED | Stages 4 and 8 on real devices first |
 
 Demo (simulated hosts, /pair) is never counted in this log.
