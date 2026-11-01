@@ -1,13 +1,29 @@
 import { describe, expect, it } from "vitest";
-import { liveUrl, loadComputers, normalizeAddress, quickStatus, removeComputer, saveComputer, terminalStep } from "./mac-link";
+import {
+  liveUrl,
+  loadComputers,
+  normalizeAddress,
+  quickStatus,
+  removeComputer,
+  saveComputer,
+  terminalStep,
+} from "./mac-link";
 
-const mem = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k) }; };
+const mem = () => {
+  const m = new Map<string, string>();
+  return {
+    getItem: (k: string) => m.get(k) ?? null,
+    setItem: (k: string, v: string) => void m.set(k, v),
+    removeItem: (k: string) => void m.delete(k),
+  };
+};
 const mac = (address: string) => ({ address, name: "Mac", savedAt: 1 });
 
 describe("QuickConnect flow", () => {
   it("signed-out users are sent to sign in", () => expect(terminalStep(true, null, [])).toBe("signin"));
   it("first-time signed-in users see Connect Mac", () => expect(terminalStep(true, "a", [])).toBe("connect"));
-  it("returning users see their computers", () => expect(terminalStep(true, "a", [mac("192.168.1.5")])).toBe("reconnect"));
+  it("returning users see their computers", () =>
+    expect(terminalStep(true, "a", [mac("192.168.1.5")])).toBe("reconnect"));
   it("status: permission, offline, setup, ready", () => {
     expect(quickStatus(false, true, 1)).toBe("permission");
     expect(quickStatus(true, false, 1)).toBe("offline");
@@ -20,9 +36,10 @@ describe("QuickConnect flow", () => {
     expect(liveUrl("10.0.0.2")).toBe("https://10.0.0.2:8765/");
   });
   it("preserves explicitly authorized Tailscale IPv4 without allowing public endpoints", () => {
-    expect(normalizeAddress('100.64.0.1:8765')).toBe('100.64.0.1:8765');
-    expect(normalizeAddress('100.127.255.254')).toBe('100.127.255.254');
-    for (const bad of ['100.63.0.1', '100.128.0.1', '192.168.999.1', '10.0.0.1:65536', '10.0.0.1:443']) expect(normalizeAddress(bad)).toBeNull();
+    expect(normalizeAddress("100.64.0.1:8765")).toBe("100.64.0.1:8765");
+    expect(normalizeAddress("100.127.255.254")).toBe("100.127.255.254");
+    for (const bad of ["100.63.0.1", "100.128.0.1", "192.168.999.1", "10.0.0.1:65536", "10.0.0.1:443"])
+      expect(normalizeAddress(bad)).toBeNull();
   });
   it("computers are per account, deduplicated and removable", () => {
     const s = mem();
@@ -37,5 +54,23 @@ describe("QuickConnect flow", () => {
     const s = mem();
     s.setItem("honeycomb.mac-link.a", JSON.stringify(mac("192.168.0.9")));
     expect(loadComputers("a", s)[0]?.address).toBe("192.168.0.9");
+  });
+});
+
+describe("private HTTPS Mac shortcuts", () => {
+  it("opens Tailscale Serve on its certificate hostname and HTTPS port", () => {
+    expect(normalizeAddress("https://vinsons-mac-mini.tailc847eb.ts.net/")).toBe("vinsons-mac-mini.tailc847eb.ts.net");
+    expect(liveUrl("vinsons-mac-mini.tailc847eb.ts.net")).toBe("https://vinsons-mac-mini.tailc847eb.ts.net/");
+  });
+  it("rejects insecure URLs, lookalike domains and embedded credentials", () => {
+    for (const value of [
+      "http://10.0.0.1",
+      "https://user@host.tail.ts.net",
+      "host.tail.ts.net.evil.com",
+      "host.tail.ts.net/path",
+      "host.tail.ts.net?code=123",
+      "host.tail.ts.net:8765",
+    ])
+      expect(normalizeAddress(value)).toBeNull();
   });
 });
