@@ -1,152 +1,152 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useHosts } from "@/hooks/use-hosts";
 import { LinkedMacs } from "@/components/LinkedMacs";
 import { useAccountUser } from "@/hooks/use-account-user";
-import { STATUS_INFO } from "@/lib/terminal";
-import { liveUrl, loadComputers, normalizeAddress, quickStatus, removeComputer, saveComputer, terminalStep, type MacLink, type QuickStatus } from "@/lib/mac-link";
-
+import { liveUrl, loadComputers, normalizeAddress, removeComputer, saveComputer, type MacLink } from "@/lib/mac-link";
 export const Route = createFileRoute("/terminal/")({
   validateSearch: z.object({ add: z.string().optional(), name: z.string().optional() }),
-  head: () => ({
-    meta: [
-      { title: "Terminal · QuickConnect | Honeycomb Terminal" },
-      { name: "description", content: "Sign in, tap your computer, and your private terminal opens." },
-      { property: "og:title", content: "Honeycomb QuickConnect" },
-      { property: "og:description", content: "Your approved computers, one tap to connect." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: TerminalHub,
+  head: () => ({ meta: [{ title: "Mac terminal — Honeycomb" }] }),
+  component: MacTerminal,
 });
-
-const STATUS: Record<QuickStatus, { label: string; tone: string }> = {
-  permission: { label: "Permission needed · sign in", tone: "border-warning text-warning" },
-  offline: { label: "Offline · no network", tone: "border-destructive text-destructive" },
-  setup: { label: "Set up your first computer", tone: "border-primary text-primary" },
-  ready: { label: "Ready to connect", tone: "border-primary text-primary" },
-};
-
-function TerminalHub() {
-  const { user, ready } = useAccountUser();
-  const search = Route.useSearch();
-  const { hosts } = useHosts();
-  const [online, setOnline] = useState(true);
-  const [computers, setComputers] = useState<MacLink[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  const [adding, setAdding] = useState(false);
+function MacTerminal() {
+  const { user, ready } = useAccountUser(),
+    search = Route.useSearch();
+  const [computers, setComputers] = useState<MacLink[]>([]),
+    [loaded, setLoaded] = useState(false);
+  const [address, setAddress] = useState(search.add ?? ""),
+    [name, setName] = useState(search.name ?? "My Mac");
+  const [adding, setAdding] = useState(Boolean(search.add));
   useEffect(() => {
-    setOnline(navigator.onLine);
-    const on = () => setOnline(true), off = () => setOnline(false);
-    addEventListener("online", on); addEventListener("offline", off);
-    return () => { removeEventListener("online", on); removeEventListener("offline", off); };
-  }, []);
-  useEffect(() => { if (ready) { setComputers(user ? loadComputers(user.id) : []); setLoaded(true); } }, [ready, user]);
-  const step = terminalStep(ready && loaded, user?.id ?? null, computers);
-  const status = quickStatus(!!user, online, computers.length);
-  const prefill = search.add ? normalizeAddress(search.add) : null;
-  const showSetup = step === "connect" || adding || (!!prefill && !computers.some((c) => c.address === prefill));
-
+    if (ready) {
+      setComputers(user ? loadComputers(user.id) : []);
+      setLoaded(true);
+    }
+  }, [ready, user?.id]);
+  const clean = normalizeAddress(address);
   return (
-    <AppShell>
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h1 className="text-2xl font-semibold text-primary">Terminal</h1>
-            <p className="text-xs text-muted-foreground">Honeycomb QuickConnect</p>
+    <main className="flex min-h-dvh flex-col bg-background text-foreground">
+      <header className="flex items-center justify-between border-b border-border px-5 py-3">
+        <Link to="/dashboard" className="text-sm font-semibold text-primary">
+          Honeycomb
+        </Link>
+        <span className="text-xs text-muted-foreground">Mac terminal</span>
+        <Link to="/dashboard" className="text-xs underline">
+          Dashboard
+        </Link>
+      </header>
+      <div className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center px-5 py-10">
+        {!ready || !loaded ? (
+          <p role="status">Checking account…</p>
+        ) : !user ? (
+          <div className="space-y-4">
+            <h1 className="text-3xl font-semibold">Your Mac, here.</h1>
+            <p className="text-sm text-muted-foreground">Sign in to open your private terminal.</p>
+            <Button asChild>
+              <Link to="/account" search={{ redirect: "/terminal" }}>
+                Sign in
+              </Link>
+            </Button>
           </div>
-          {step !== "loading" && <span role="status" className={`rounded-full border px-3 py-1 text-xs ${STATUS[status].tone}`}>{STATUS[status].label}</span>}
-        </div>
-        <section className="rounded-md border border-primary bg-card p-4 space-y-2">
-          <h2 className="font-medium text-primary">Browser sandbox terminal</h2>
-          <p className="text-xs text-muted-foreground">Built-in simulated commands on a private file area in this browser — not a Mac shell or iOS shell.</p>
-          <Button asChild size="lg"><Link to="/terminal/sandbox">Open sandbox terminal</Link></Button>
-        </section>
-        <h2 className="pt-2 font-medium text-primary">Connect Mac · optional, real shell</h2>
-        {step === "loading" && <p className="text-sm text-muted-foreground">Checking your sign-in…</p>}
-        {step === "signin" && (
-          <section className="rounded-md border border-primary bg-card p-4 space-y-3">
-            <h2 className="font-medium text-primary">Sign in to see your computers</h2>
-            <p className="text-sm text-muted-foreground">Honeycomb is private and invite-only.</p>
-            <Button asChild><Link to="/account" search={{ redirect: "/terminal" }}>Sign in</Link></Button>
-          </section>
-        )}
-        {user && <LinkedMacs key={user.id} />}
-        {user && computers.length > 0 && (
-          <section aria-labelledby="mine-h" className="space-y-2">
-            <h2 id="mine-h" className="font-medium text-primary">My computers</h2>
-            <ul className="grid gap-2 sm:grid-cols-2">
+        ) : (
+          <>
+            <h1 className="text-3xl font-semibold">Open your Mac terminal</h1>
+            <p className="mt-3 text-sm text-muted-foreground">Choose your Mac. Its shell opens in this screen.</p>
+            <ul className="mt-6 space-y-3">
               {computers.map((c) => (
-                <li key={c.address} className="rounded-md border border-primary bg-card p-4 space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-medium">{c.name}</p>
-                      <p className="text-xs text-muted-foreground">Saved address · connection not checked · added {new Date(c.savedAt).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                  {online
-                    ? <Button asChild size="lg" className="w-full"><a href={liveUrl(c.address)} target="_blank" rel="noopener noreferrer">Connect</a></Button>
-                    : <Button size="lg" className="w-full" disabled>Offline — join Wi-Fi first</Button>}
-                  <div className="flex justify-between gap-2">
-                    <details className="text-xs text-muted-foreground"><summary className="cursor-pointer">Advanced</summary>Address {c.address} · encrypted (TLS) · this device's access is approved and revoked on the Mac.</details>
-                    <Button variant="outline" size="sm" aria-label={`Remove ${c.name}`} onClick={() => setComputers(removeComputer(user.id, c.address))}>Remove</Button>
+                <li key={c.address} className="rounded-xl border border-border p-4">
+                  <a href={liveUrl(c.address)} className="block">
+                    <span className="block font-medium text-primary">{c.name} →</span>
+                    <span className="mt-1 block break-all text-xs text-muted-foreground">{c.address}</span>
+                  </a>
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Access verified when opened</span>
+                    <button
+                      className="text-xs underline"
+                      onClick={() => setComputers(removeComputer(user.id, c.address))}
+                    >
+                      Remove shortcut
+                    </button>
                   </div>
                 </li>
               ))}
             </ul>
-            <p className="text-xs text-muted-foreground">The terminal shows Searching, Pairing, Connected, Offline or Permission needed. To fully revoke a phone, type <code>devices</code> then <code>revoke</code> in the Mac's Honeycomb window. Paste / Add File on the terminal saves files to the Mac and never runs them.</p>
-            {!showSetup && <Button variant="outline" onClick={() => setAdding(true)}>Add another computer</Button>}
-          </section>
+            {!computers.length || adding ? (
+              <form
+                className="mt-5 space-y-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!clean) return;
+                  setComputers(
+                    saveComputer(user.id, { address: clean, name: name.trim() || "My Mac", savedAt: Date.now() }),
+                  );
+                  window.location.assign(liveUrl(clean));
+                }}
+              >
+                <label className="block text-sm">
+                  Computer name
+                  <input
+                    className="mt-1 w-full rounded-lg border border-border bg-card p-3"
+                    value={name}
+                    maxLength={40}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </label>
+                <label className="block text-sm">
+                  Mac address
+                  <input
+                    className="mt-1 w-full rounded-lg border border-border bg-card p-3"
+                    value={address}
+                    placeholder="https://computer.tailnet.ts.net"
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
+                </label>
+                {address && !clean && (
+                  <p role="alert" className="text-xs text-warning">
+                    Enter a private IPv4 address and port, or your Tailscale HTTPS hostname. No passwords, codes or
+                    extra paths.
+                  </p>
+                )}
+                <Button className="w-full" disabled={!clean} type="submit">
+                  Open Mac terminal
+                </Button>
+              </form>
+            ) : (
+              <Button variant="outline" className="mt-4" onClick={() => setAdding(true)}>
+                Add Mac address
+              </Button>
+            )}
+            <details className="mt-7 border-t border-border pt-4">
+              <summary className="cursor-pointer text-sm">Connection help</summary>
+              <ol className="mt-3 space-y-2 text-sm text-muted-foreground">
+                <li>Start the installed Honeycomb helper on your Mac and keep its window open.</li>
+                <li>
+                  Use the private address it shows. For Tailscale, both devices must be on your authorized private
+                  network.
+                </li>
+                <li>
+                  For a new browser, type code in the helper, enter the 8-character code within two minutes, and approve
+                  that device on the Mac.
+                </li>
+                <li>
+                  After a helper restart or 12-hour session expiry, pair again. Account linking is separate and normally
+                  needed only once.
+                </li>
+              </ol>
+              <a href="/downloads/honeycomb-companion-mac.zip" download className="mt-3 block text-xs underline">
+                Download helper if not installed
+              </a>
+            </details>
+            <details className="mt-4">
+              <summary className="cursor-pointer text-sm">Account-linked Macs</summary>
+              <div className="mt-3">
+                <LinkedMacs key={user.id} />
+              </div>
+            </details>
+          </>
         )}
-        {user && showSetup && (
-          <ConnectMac key={prefill ?? "new"} prefill={prefill} prefillName={search.name}
-            onSaved={(l) => { setComputers(saveComputer(user.id, l)); setAdding(false); }} />
-        )}
-        <details className="rounded-md border border-border bg-card p-4">
-          <summary className="cursor-pointer font-medium text-warning">Demo · simulated, nothing runs</summary>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {hosts.map((h) => (
-              <li key={h.id} className="rounded border border-border p-3 text-sm">
-                <div className="flex justify-between gap-2"><span>{h.name}</span><span className="text-xs text-muted-foreground">Demo · {STATUS_INFO[h.status].label}</span></div>
-                {STATUS_INFO[h.status].canOpen
-                  ? <Link to="/terminal/$hostId" params={{ hostId: h.id }} className="text-primary underline text-xs">Open Demo session</Link>
-                  : <p className="text-xs text-muted-foreground">{STATUS_INFO[h.status].next}</p>}
-              </li>
-            ))}
-          </ul>
-        </details>
       </div>
-    </AppShell>
-  );
-}
-
-function ConnectMac({ prefill, prefillName, onSaved }: { prefill: string | null; prefillName: string | undefined; onSaved: (l: MacLink) => void }) {
-  const [address, setAddress] = useState(prefill ?? "");
-  const [name, setName] = useState((prefillName ?? "My Mac").slice(0, 40));
-  const clean = normalizeAddress(address);
-  return (
-    <section className="rounded-md border border-primary bg-card p-4 space-y-4" aria-labelledby="connect-h">
-      <h2 id="connect-h" className="font-medium text-primary">Connect a computer · one time</h2>
-      <ol className="space-y-3 text-sm">
-        <li><strong className="text-primary">1. On your Mac, once:</strong> a browser can't open a Mac terminal by itself, so the Mac needs the small Honeycomb app.{" "}
-          <a href="/downloads/honeycomb-companion-mac.zip" download className="text-primary underline">Download for Mac</a>, unzip, Control-click “Start Honeycomb” → Open. It's an unsigned test build, so macOS asks once.</li>
-        <li><strong className="text-primary">2. {prefill ? "Computer found from your Mac's link" : "Enter the address"}</strong>{prefill ? "." : " your Mac's Honeycomb window shows."}</li>
-      </ol>
-      <div className="flex flex-wrap gap-2">
-        <Input aria-label="Computer name" className="max-w-[12rem]" value={name} onChange={(e) => setName(e.target.value)} />
-        <Input aria-label="Mac address" className="max-w-xs" placeholder="192.168.1.20:8765" value={address} onChange={(e) => setAddress(e.target.value)} />
-      </div>
-      {address && !clean && <p className="text-xs text-warning">Use a valid private IPv4 address printed on the Mac (192.168, 10., 172.16–31, or your Tailscale 100.64–127 address) and port 1024–65535.</p>}
-      <p className="text-sm"><strong className="text-primary">3. Approve:</strong> enter the short code from the Mac window, then type approve on the Mac. Next time, just tap Connect.</p>
-      {clean
-        ? <Button asChild size="lg"><a href={liveUrl(clean)} target="_blank" rel="noopener noreferrer" onClick={() => onSaved({ address: clean, name: name.trim() || "My Mac", savedAt: Date.now() })}>Connect</a></Button>
-        : <Button size="lg" disabled>Connect</Button>}
-      <p className="text-xs text-muted-foreground">Use the same private Wi-Fi or an already authorized Tailscale network with the helper bound to the Mac's Tailscale IPv4 address. Tailscale does not replace certificate verification or Mac approval; cross-network device acceptance is pending. No public relay or Bluetooth shell. <Link to="/install" className="text-primary underline">Troubleshooting</Link></p>
-    </section>
+    </main>
   );
 }
