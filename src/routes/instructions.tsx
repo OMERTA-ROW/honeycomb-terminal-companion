@@ -1,57 +1,50 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { simulate } from "@/lib/terminal";
-
-export const Route = createFileRoute("/instructions")({
-  head: () => ({
-    meta: [
-      { title: "Instructions — Honeycomb Terminal" },
-      { name: "description", content: "How to pair, open, and use your remote terminal." },
-      { property: "og:title", content: "Instructions — Honeycomb Terminal" },
-      { property: "og:description", content: "How to pair, open, and use your remote terminal." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: Instructions,
-});
-
-const sections: [string, string[]][] = [
-  ["Getting started", ["Sign in with your private invited account. Account membership does not grant access to a computer.", "The companion local-console source is available for owner testing; no signed installer or remote shell connection exists yet.", "Real mobile pairing still requires verified host registration, encrypted relay and explicit approval on the Mac.", "Until those checks pass, computers and terminal commands in the hive remain Demo."]],
-  ["Keyboard", ["Esc cancels a terminal action; this preview displays an Escape marker.", "Ctrl is sticky: tap Ctrl, then C to cancel the line, L to clear the screen, or U to erase the line.", "Tab completes a partial command in this simulation.", "↑ and ↓ recall commands; returning below the newest restores your draft. ← and → move the cursor or collapse a selection.", "Supported external keyboard keys use the same simulated actions; physical keyboard checks are still pending."]],
-  ["Shortcuts", ["Tap ★ to manage shortcuts.", "Every shortcut shows the command before it runs.", "Risky commands (like deleting files) always ask you to confirm."]],
-  ["Copy & paste", ["Press and hold or drag over terminal text to select, then use Copy. With no selection, Copy uses the displayed output.", "Paste inserts at the cursor or replaces selected command text. Your browser may ask for clipboard permission."]],
-  ["When something's wrong", ["Asleep: wake the computer.", "Offline: make sure it's on, online, and the companion is running.", "Needs permission: allow terminal access in the companion app.", "Revoked: pair again from the computer."]],
-  ["Good to know", ["A real connection will require your computer to be awake and reachable, and its owner to approve this device.", "In the planned product, commands run in the computer’s own shell, not on this device or hosted compute.", "Private account sign-in and selected-file transfer are separate real features. Terminal commands and host pairing are still Demo; local companion tests do not establish remote connectivity."]],
-];
-
+export const Route = createFileRoute("/instructions")({ component: Instructions });
 function Instructions() {
-  const [example, setExample] = useState<string | null>(null);
   return (
     <AppShell>
-      <h1 className="text-2xl font-semibold mb-6">Instructions</h1>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {sections.map(([t, items]) => (
-          <section key={t} className="border-t py-5">
-            <h2 className="font-medium text-primary mb-2">{t}</h2>
-            <ul className="text-sm text-muted-foreground space-y-1.5 list-disc pl-4">{items.map((i) => <li key={i}>{i}</li>)}</ul>
-          </section>
-        ))}
-      </div>
-      <section className="border-t mt-4 py-5">
-        <h2 className="font-medium text-primary mb-3">Safe command examples · simulated</h2>
-        <ul className="space-y-3">
-          {([["pwd", "Show the current folder"], ["ls -la", "List files"], ["whoami", "Show the shell user"], ["git status", "Check project changes"]] as const).map(([command, label]) => (
-            <li key={command} className="flex flex-wrap gap-3 items-center justify-between text-sm">
-              <span><code className="font-mono">{command}</code> — {label}</span>
-              <Button variant="outline" onClick={() => setExample(command)}>Try {command}</Button>
-            </li>
-          ))}
-        </ul>
-        {example && <pre role="status" className="mt-4 p-3 bg-terminal text-terminal-foreground whitespace-pre-wrap font-mono text-sm">{`[simulated demonstration — nothing executed]\n$ ${example}\n${simulate(example)}`}</pre>}
-      </section>
+      <article className="max-w-2xl space-y-5">
+        <h1 className="text-2xl font-semibold">Using Honeycomb</h1>
+        <section>
+          <h2 className="font-medium text-primary">Open your Mac</h2>
+          <p className="mt-2 text-sm leading-6">
+            Keep the Honeycomb helper running on your Mac. Open Mac terminal, enter the private address it shows, and
+            approve this browser using a fresh eight-character code. Your account link is separate and normally needed
+            only once.
+          </p>
+          <Link to="/terminal" className="mt-2 block text-sm underline">
+            Open Mac terminal
+          </Link>
+        </section>
+        <section>
+          <h2 className="font-medium text-primary">One terminal screen</h2>
+          <p className="mt-2 text-sm leading-6">
+            Type in the command field and press Enter or Send. Use the key row for control keys. Tools contains copy,
+            paste, connection testing and unpairing. Files saves selected bytes to the Mac inbox. The current text
+            renderer is best for line commands; full-screen terminal programs may not display correctly.
+          </p>
+        </section>
+        <section>
+          <h2 className="font-medium text-primary">Agents and websites</h2>
+          <p className="mt-2 text-sm leading-6">
+            Use the dashboard to ask configured AI models a question or open a website. AI questions use provider
+            credits. Codex and Claude Code run on the paired Mac in the project folder you choose; sign in to those
+            providers on the Mac. Opening a website does not give an agent permission to operate it.
+          </p>
+          <Link to="/dashboard" className="mt-2 block text-sm underline">
+            Open dashboard
+          </Link>
+        </section>
+        <section>
+          <h2 className="font-medium text-primary">Reconnect</h2>
+          <p className="mt-2 text-sm leading-6">
+            A page reload can reattach to your existing shell. If the helper restarts or approval expires, pair again. A
+            saved address or account heartbeat alone does not prove shell access. Keep both devices on the same private
+            network or your authorized Tailscale network.
+          </p>
+        </section>
+      </article>
     </AppShell>
   );
 }
