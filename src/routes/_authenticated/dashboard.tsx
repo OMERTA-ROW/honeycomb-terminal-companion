@@ -267,8 +267,6 @@ function Dashboard() {
                     <a
                       key={c.address}
                       href={liveUrl(c.address)}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className="flex items-center justify-between gap-3 rounded-xl border border-border p-4 transition-colors hover:border-primary"
                     >
                       <span className="min-w-0">
@@ -332,32 +330,22 @@ function Dashboard() {
             </section>
           </div>
         </div>
-        <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5">
-          <div className="flex items-center gap-3">
-            <Terminal className="h-5 w-5 text-muted-foreground" />
-            <div>
-              <h2 className="text-sm font-medium">Browser sandbox</h2>
-              <p className="text-xs text-muted-foreground">Practice commands in browser storage. No Mac access.</p>
-            </div>
-          </div>
-          <Button asChild variant="outline">
-            <Link to="/terminal/sandbox">Open sandbox</Link>
-          </Button>
-        </section>
         <details className="rounded-2xl border border-border p-5">
           <summary className="cursor-pointer text-sm font-medium">Connection details & troubleshooting</summary>
           <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-            {rows.map((r) => (
-              <li key={r.id} className="text-sm">
-                <p className="font-medium">{r.name}</p>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">{r.evidence}</p>
-                {r.to && (
-                  <Link to={r.to} className="mt-1 block text-xs text-primary underline">
-                    {r.next}
-                  </Link>
-                )}
-              </li>
-            ))}
+            {rows
+              .filter((r) => r.id !== "sandbox")
+              .map((r) => (
+                <li key={r.id} className="text-sm">
+                  <p className="font-medium">{r.name}</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{r.evidence}</p>
+                  {r.to && (
+                    <Link to={r.to} className="mt-1 block text-xs text-primary underline">
+                      {r.next}
+                    </Link>
+                  )}
+                </li>
+              ))}
           </ul>
           {input && (
             <p className="mt-4 text-xs text-muted-foreground">
