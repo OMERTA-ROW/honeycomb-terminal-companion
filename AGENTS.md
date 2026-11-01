@@ -33,3 +33,4 @@
 - Voice actions: pure intent registry in src/lib/voice-actions.ts, browser capture in src/lib/voice-client.ts, signed-in /api/transcribe route; intents execute only through existing terminal/router handlers with read vs confirm risk. Why: voice can never exceed what a tap can do and the contract ports to other projects (docs/VOICE_ACTIONS.md).
 - Owner dashboard (/dashboard under the client-only _authenticated gate redirecting to /account) derives every status from server evidence via pure src/lib/feature-status.ts; why: only fresh backend proof may show Live Connected, browser sandbox is always Simulated.
 - Subdirectories (e.g. companion/) have their own AGENTS.md; read it before changing files there.
+- Account host UI calls active-account server functions; async refreshes use request-sequence guards, and heartbeat freshness is shared in host-enrollment, so stale responses and convenience addresses cannot imply live shell authority.

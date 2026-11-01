@@ -1,5 +1,12 @@
 # Implementation checklist
 
+## Existing connection repair — 2026-11-01
+- [x] Bounded pairing requests, visible errors, approval retry/backoff, duplicate/race guards and exact expiry.
+- [x] Authenticated ready/pong, socket timeout and safe reconnect; first-use Inbox and post-read authorization.
+- [x] Account-link server boundary, serialized issuance, shared truthful freshness and stale refresh rejection.
+- [x] Existing private IPv4/tailnet-only address validation; no public shell or provider success claim.
+- [ ] Real Mac+iPad Safari/PWA, normal owner sign-in code issuance, cellular tailnet and physical keyboard/clipboard acceptance — owner hardware/session required. See `CONNECTION_REPAIR_2026-11-01.md`.
+
 ## Current companion acceptance status — 2026-10-31 (overrides historical skeleton entries)
 - [x] Local dedicated desktop workspace creation/persistence source with console consent; no browser-to-host folder connection.
 - [x] Local export-only exact duplicate scan, individually consented reversible review/restore; zero space recovery claimed, originals preserved.

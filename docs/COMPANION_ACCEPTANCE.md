@@ -1,5 +1,8 @@
 # Private companion acceptance report — 2026-10-31
 
+## Latest repair evidence — 2026-11-01
+See `CONNECTION_REPAIR_2026-11-01.md` for current changes, tests and owner acceptance steps. Linux loopback real PTY pairing/reconnect/revoke/file-save was verified; physical Mac+iPad remains NOT RUN. Account-link source exists; normal authenticated code issuance remains unverified because the managed test session is rejected. Existing installed Mac state was not touched. Historical unavailable claims below are superseded by this entry and the living operational log.
+
 ## Secure Device Link — current live path (supersedes older BLOCKED rows below)
 
 One common macOS companion: `public/downloads/honeycomb-companion-mac.zip` (served at
