@@ -1,5 +1,10 @@
 # Honeycomb Terminal Companion — private local acceptance core
 
+## Current repair — 2026-11-01 (supersedes historical status below)
+Private TLS `lan-serve` with Mac-console one-use pairing, real PTY, reconnect, heartbeat and Inbox is implemented; Linux sandbox checks are not Mac acceptance. Account-link code is separate from device shell code. Preserve existing installed state/keys; no automatic reset/update. Full repair report: `../docs/CONNECTION_REPAIR_2026-11-01.md`.
+
+An already authorized Tailscale network may use explicitly selected `--bind 100.x.x.x` (100.64.0.0/10); the address must belong to this Mac. Binding remains one interface, TLS and Mac approval remain required. Do not use public Serve/Funnel or port-forwarding. No auto-discovery or Tailscale configuration is performed, and physical cross-network acceptance is pending.
+
 Status, 2026-10-31: **runnable source, not a remote companion release.** No
 macOS build/hardware verification, signed binary, installer or download exists.
 The web terminal still runs Demo commands. This code opens no sockets, serves

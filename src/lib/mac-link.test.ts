@@ -19,6 +19,11 @@ describe("QuickConnect flow", () => {
     expect(normalizeAddress("8.8.8.8")).toBeNull();
     expect(liveUrl("10.0.0.2")).toBe("https://10.0.0.2:8765/");
   });
+  it("preserves explicitly authorized Tailscale IPv4 without allowing public endpoints", () => {
+    expect(normalizeAddress('100.64.0.1:8765')).toBe('100.64.0.1:8765');
+    expect(normalizeAddress('100.127.255.254')).toBe('100.127.255.254');
+    for (const bad of ['100.63.0.1', '100.128.0.1', '192.168.999.1', '10.0.0.1:65536', '10.0.0.1:443']) expect(normalizeAddress(bad)).toBeNull();
+  });
   it("computers are per account, deduplicated and removable", () => {
     const s = mem();
     saveComputer("a", mac("10.0.0.2"), s);

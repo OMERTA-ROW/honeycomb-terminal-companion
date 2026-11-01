@@ -64,7 +64,7 @@ function TerminalHub() {
         </div>
         <section className="rounded-md border border-primary bg-card p-4 space-y-2">
           <h2 className="font-medium text-primary">Browser sandbox terminal</h2>
-          <p className="text-xs text-muted-foreground">Opens full screen right away — no Mac needed. Real commands on a private file area in this browser; not your Mac, not iOS.</p>
+          <p className="text-xs text-muted-foreground">Built-in simulated commands on a private file area in this browser — not a Mac shell or iOS shell.</p>
           <Button asChild size="lg"><Link to="/terminal/sandbox">Open sandbox terminal</Link></Button>
         </section>
         <h2 className="pt-2 font-medium text-primary">Connect Mac · optional, real shell</h2>
@@ -76,7 +76,7 @@ function TerminalHub() {
             <Button asChild><Link to="/account" search={{ redirect: "/terminal" }}>Sign in</Link></Button>
           </section>
         )}
-        {user && <LinkedMacs />}
+        {user && <LinkedMacs key={user.id} />}
         {user && computers.length > 0 && (
           <section aria-labelledby="mine-h" className="space-y-2">
             <h2 id="mine-h" className="font-medium text-primary">My computers</h2>
@@ -86,7 +86,7 @@ function TerminalHub() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="font-medium">{c.name}</p>
-                      <p className="text-xs text-muted-foreground">Live · same Wi-Fi · added {new Date(c.savedAt).toLocaleDateString()}</p>
+                      <p className="text-xs text-muted-foreground">Saved address · connection not checked · added {new Date(c.savedAt).toLocaleDateString()}</p>
                     </div>
                   </div>
                   {online
@@ -141,12 +141,12 @@ function ConnectMac({ prefill, prefillName, onSaved }: { prefill: string | null;
         <Input aria-label="Computer name" className="max-w-[12rem]" value={name} onChange={(e) => setName(e.target.value)} />
         <Input aria-label="Mac address" className="max-w-xs" placeholder="192.168.1.20:8765" value={address} onChange={(e) => setAddress(e.target.value)} />
       </div>
-      {address && !clean && <p className="text-xs text-warning">Use the private address printed on the Mac (starts 192.168, 10. or 172.16–31).</p>}
+      {address && !clean && <p className="text-xs text-warning">Use a valid private IPv4 address printed on the Mac (192.168, 10., 172.16–31, or your Tailscale 100.64–127 address) and port 1024–65535.</p>}
       <p className="text-sm"><strong className="text-primary">3. Approve:</strong> enter the short code from the Mac window, then type approve on the Mac. Next time, just tap Connect.</p>
       {clean
         ? <Button asChild size="lg"><a href={liveUrl(clean)} target="_blank" rel="noopener noreferrer" onClick={() => onSaved({ address: clean, name: name.trim() || "My Mac", savedAt: Date.now() })}>Connect</a></Button>
         : <Button size="lg" disabled>Connect</Button>}
-      <p className="text-xs text-muted-foreground">Mac is the first supported computer; Linux, Windows and cloud computers are planned. Same Wi-Fi only for now — cellular needs a private relay that isn't set up, and Bluetooth isn't available in iPhone/iPad browsers. <Link to="/install" className="text-primary underline">Troubleshooting</Link></p>
+      <p className="text-xs text-muted-foreground">Use the same private Wi-Fi or an already authorized Tailscale network with the helper bound to the Mac's Tailscale IPv4 address. Tailscale does not replace certificate verification or Mac approval; cross-network device acceptance is pending. No public relay or Bluetooth shell. <Link to="/install" className="text-primary underline">Troubleshooting</Link></p>
     </section>
   );
 }

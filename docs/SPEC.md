@@ -1,5 +1,8 @@
 # Honeycomb Terminal — Product Specification
 
+## Current repair override — 2026-11-01
+Existing private TLS Mac companion, account-link source and browser sandbox remain separate. Pairing/reconnect/heartbeat and first-use Inbox defects repaired; exact files, tests and physical acceptance are in `CONNECTION_REPAIR_2026-11-01.md`. Explicit existing tailnet IPv4 selection retains TLS and Mac approval; no public relay or automatic Tailscale setup. Historical blocked/skeleton statements below are not current implementation evidence. No installed companion was reset or app publicly deployed.
+
 ## Current override — private companion acceptance, 2026-10-31
 Latest remaining-update scope: local console now supports explicit dedicated desktop
 workspace creation/open, export-only consent diagnostics, reversible exact-duplicate

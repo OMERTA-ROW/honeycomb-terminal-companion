@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { requestSequence } from '@/lib/request-sequence';
 import { AppShell } from '@/components/AppShell';
 import { Button } from '@/components/ui/button';
 import { accountStatus, myHosts } from '@/lib/members.functions';
@@ -16,15 +17,17 @@ const TONE: Record<FeatureState, string> = { live: 'border-primary text-primary'
 function Dashboard() {
   const status = useServerFn(accountStatus), hostsFn = useServerFn(myHosts);
   const [input, setInput] = useState<StatusInput | null>(null);
+  const sequence = useRef(requestSequence());
   async function refresh() {
+    const id = sequence.current.begin();
     setInput(null);
     let membership: StatusInput['membership'] = 'error', role: string | null = null;
     try { const s = await status(); membership = s.state === 'member' ? 'member' : s.state === 'revoked' ? 'revoked' : 'none'; if (s.state === 'member') role = s.role; } catch { /* stays error */ }
     let hosts: HostRecord[] | null = null, hostsError = false;
     if (membership === 'member') { try { hosts = await hostsFn(); } catch { hostsError = true; } }
-    setInput({ membership, role, hosts, hostsError, now: Date.now() });
+    if (sequence.current.isCurrent(id)) setInput({ membership, role, hosts, hostsError, now: Date.now() });
   }
-  useEffect(() => { void refresh(); }, []);
+  useEffect(() => { void refresh(); const t = setInterval(() => setInput(i => i ? { ...i, now: Date.now() } : i), 15000); return () => { sequence.current.invalidate(); clearInterval(t); }; }, []);
   const rows = input ? deriveStatuses(input) : [];
   return (
     <AppShell>

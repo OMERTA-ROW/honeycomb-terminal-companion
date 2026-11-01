@@ -38,7 +38,8 @@ def main():
     if args.command == "doctor":
         print("Local PTY core: source available")
         print("Platform:", "macOS" if platform.system() == "Darwin" else "not macOS (sandbox checks only)")
-        print("Local-network live shell: AVAILABLE via lan-serve (same Wi-Fi only). Internet relay / account enrollment: BLOCKED")
+        print("Private-network live shell: AVAILABLE via lan-serve (LAN or explicitly selected authorized tailnet IPv4). Public relay: NOT BUILT")
+        print("Account enrollment: source available via link CODE; normal owner sign-in and physical acceptance must be verified")
         print("Signed installer: NOT AVAILABLE")
         print("Network listeners: NONE unless you run lan-serve (private local network, TLS, pairing code + Mac approval)")
         print("VS Code CLI:", "detected (not launched)" if shutil.which("code") else "unavailable; install code in PATH from VS Code")
