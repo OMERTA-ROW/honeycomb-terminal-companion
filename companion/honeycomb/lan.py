@@ -27,6 +27,8 @@ from . import lan_page
 from . import files
 
 CODE_TTL = 120
+APPROVAL_TTL = 300
+HEARTBEAT_TIMEOUT = 45
 CODE_ATTEMPTS = 5
 GLOBAL_FAILURES = 20
 SESSION_TTL = 12 * 3600
@@ -44,7 +46,8 @@ class LanDenied(Exception):
 
 def check_bind(address):
     ip = ipaddress.ip_address(address)
-    if ip.is_unspecified or ip.is_multicast or not (ip.is_private or ip.is_loopback) or ip.version != 4:
+    tailnet = ip.version == 4 and ip in ipaddress.ip_network('100.64.0.0/10')
+    if ip.is_unspecified or ip.is_multicast or not (ip.is_private or ip.is_loopback or tailnet) or ip.version != 4:
         raise LanDenied("bind_must_be_private_ipv4")
     return str(ip)
 
@@ -169,10 +172,10 @@ class Hub:
         self.audit("host_revoked_by_account")
 
     def new_code(self):
-        if self.host_locked:
-            raise LanDenied("host_revoked")
         code = "".join(secrets.choice(ALPHABET) for _ in range(8))
         with self.lock:
+            if self.host_locked:
+                raise LanDenied("host_revoked")
             self.code_hash, self.code_expiry, self.code_attempts, self.failures = _h(code), self.clock() + CODE_TTL, 0, 0
         self.audit("pair_code_issued")
         return code
@@ -182,7 +185,7 @@ class Hub:
         with self.lock:
             if self.host_locked:
                 raise LanDenied("host_revoked")
-            if self.code_hash is None or self.clock() > self.code_expiry or self.failures >= GLOBAL_FAILURES:
+            if self.code_hash is None or self.clock() >= self.code_expiry or self.failures >= GLOBAL_FAILURES:
                 self.audit("pair_denied_no_code")
                 raise LanDenied("code_expired")
             if not hmac.compare_digest(_h(str(code).strip().upper().replace("-", "")), self.code_hash):
@@ -192,9 +195,9 @@ class Hub:
                     self.code_hash = None
                 self.audit("pair_denied_wrong_code")
                 raise LanDenied("code_invalid")
-            self.code_hash = None  # single use
             if len([d for d in self.devices.values() if not d["revoked"]]) >= MAX_DEVICES:
                 raise LanDenied("device_limit")
+            self.code_hash = None  # consume only a successful request
             rid, secret = secrets.token_hex(4), secrets.token_urlsafe(24)
             self.pending[rid] = {"name": name, "secret": _h(secret), "status": "pending", "token": None, "at": self.clock()}
         self.audit("pair_requested", rid)
@@ -206,7 +209,7 @@ class Hub:
             p = self.pending.get(rid)
             if not p or not hmac.compare_digest(_h(secret), p["secret"]):
                 raise LanDenied("unknown_request")
-            if p["status"] == "pending" and self.clock() - p["at"] > 300:
+            if p["status"] == "pending" and self.clock() - p["at"] >= APPROVAL_TTL:
                 p["status"] = "expired"
             if p["status"] == "approved":
                 token, p["token"], p["status"] = p["token"], None, "delivered"
@@ -218,6 +221,11 @@ class Hub:
             p = self.pending.get(rid)
             if not p or p["status"] != "pending":
                 raise LanDenied("no_pending_request")
+            if self.host_locked or self.clock() - p["at"] >= APPROVAL_TTL:
+                p["status"] = "expired"
+                raise LanDenied("request_expired")
+            if approve and len([d for d in self.devices.values() if not d["revoked"]]) >= MAX_DEVICES:
+                raise LanDenied("device_limit")
             if not approve:
                 p["status"] = "denied"
                 self.audit("pair_denied_by_host", rid)
@@ -235,7 +243,7 @@ class Hub:
         with self.lock:
             for did, d in self.devices.items():
                 if hmac.compare_digest(d["token"], th):
-                    if d["revoked"] or self.clock() > d["expires"]:
+                    if self.host_locked or d["revoked"] or self.clock() >= d["expires"]:
                         return None
                     return did
         return None
@@ -243,7 +251,7 @@ class Hub:
     def active(self, did):
         with self.lock:
             d = self.devices.get(did)
-            return bool(d and not d["revoked"] and self.clock() <= d["expires"])
+            return bool(d and not self.host_locked and not d["revoked"] and self.clock() < d["expires"])
 
     def revoke(self, did):
         with self.lock:
@@ -258,6 +266,8 @@ class Hub:
 
     def session_for(self, did):
         with self.lock:
+            if not self.active(did):
+                raise LanDenied("not_paired")
             s = self.sessions.get(did)
             if s is None or s.ended:
                 s = LiveSession(self, did, self.shell_argv, self.cwd)
@@ -414,7 +424,7 @@ def make_handler(hub):
                 self._headers(200, "application/x-x509-ca-cert", {"Content-Disposition": "attachment; filename=honeycomb-lan.cer"})
             elif url.path == "/api/state":
                 did = hub.device_for(self._token())
-                return self._json(200, {"paired": bool(did), "mode": "live-lan", "fingerprint": self.server.fingerprint})
+                return self._json(200, {"paired": bool(did), "locked": hub.host_locked, "mode": "live-lan", "fingerprint": self.server.fingerprint})
             elif url.path == "/api/pair/status":
                 q = parse_qs(url.query)
                 try:
@@ -451,6 +461,8 @@ def make_handler(hub):
                 body = json.loads(raw_body or b"{}")
             except ValueError:
                 return self._json(400, {"error": "bad_json"})
+            if not isinstance(body, dict):
+                return self._json(400, {"error": "bad_json"})
             path = urlparse(self.path).path
             if path == "/api/pair":
                 try:
@@ -480,6 +492,8 @@ def make_handler(hub):
                 err = "origin_denied" if self.headers.get("Origin") != origin else ("not_paired" if not did else "too_large")
                 return self._json({"origin_denied": 403, "not_paired": 401}.get(err, 413), {"error": err})
             data = self.rfile.read(length)
+            if len(data) != length or not hub.active(did):
+                return self._json(401, {"error": "not_paired"})
             q = parse_qs(urlparse(self.path).query)
             try:
                 os.makedirs(hub.inbox, mode=0o700, exist_ok=True)
@@ -507,8 +521,14 @@ def make_handler(hub):
             if not did:
                 client.close(4401)
                 return
-            session = hub.session_for(did)
+            try:
+                session = hub.session_for(did)
+            except LanDenied:
+                client.close(4401)
+                return
             session.attach(client)
+            self.connection.settimeout(HEARTBEAT_TIMEOUT)
+            client.send(json.dumps({"t": "ready"}), text=True)
             hub.audit("socket_attached", did)
             try:
                 while not client.closed:
@@ -516,13 +536,18 @@ def make_handler(hub):
                     if not hub.active(did):
                         client.close(4401)
                         break
+                    if not isinstance(msg, dict):
+                        raise ValueError("bad_frame")
                     if msg.get("t") == "i":
                         session.pty.write(str(msg.get("d", "")).encode())
                     elif msg.get("t") == "r":
                         session.pty.resize(int(msg.get("rows", 24)), int(msg.get("cols", 80)))
+                    elif msg.get("t") == "ping":
+                        client.send(json.dumps({"t": "pong"}), text=True)
             except (ConnectionError, OSError, ValueError, TimeoutError):
                 pass
             finally:
+                client.close(1001)
                 session.detach(client)
                 hub.audit("socket_detached", did)
 
