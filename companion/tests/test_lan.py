@@ -67,6 +67,9 @@ class LanTests(unittest.TestCase):
         for bad in ("0.0.0.0", "8.8.8.8", "::1"):
             with self.assertRaises((LanDenied, ValueError)): check_bind(bad)
         self.assertEqual(check_bind("192.168.1.20"), "192.168.1.20")
+        self.assertEqual(check_bind("100.64.0.1"), "100.64.0.1")
+        for bad in ('100.63.0.1', '100.128.0.1'):
+            with self.assertRaises(LanDenied): check_bind(bad)
 
     def test_unpaired_cannot_get_shell_or_test(self):
         self.assertEqual(self.req("POST", "/api/test", {})[0], 401)
@@ -93,6 +96,37 @@ class LanTests(unittest.TestCase):
         self.hub.decide(j["id"], False)
         s, st, ck = self.req("GET", "/api/pair/status?id=%s&secret=%s" % (j["id"], j["secret"]))
         self.assertEqual(st["status"], "denied"); self.assertIsNone(ck)
+
+    def test_code_and_approval_exact_expiry(self):
+        clock = [1000]
+        hub = Hub(self.auth, ['/bin/sh'], self.dir, clock=lambda: clock[0], on_event=lambda *_: None)
+        code = hub.new_code(); clock[0] += 120
+        with self.assertRaisesRegex(LanDenied, 'code_expired'): hub.request_pair(code, 'iPad')
+        code = hub.new_code(); rid, secret = hub.request_pair(code, 'iPad'); clock[0] += 300
+        with self.assertRaisesRegex(LanDenied, 'request_expired'): hub.decide(rid, True)
+        self.assertEqual(hub.pair_status(rid, secret), ('expired', None))
+        self.assertEqual(hub.devices, {})
+
+    def test_device_limit_does_not_burn_valid_code(self):
+        hub = Hub(self.auth, ['/bin/sh'], self.dir, on_event=lambda *_: None)
+        for i in range(5): hub.devices[str(i)] = {'revoked': False}
+        code = hub.new_code()
+        with self.assertRaisesRegex(LanDenied, 'device_limit'): hub.request_pair(code, 'iPad')
+        hub.revoke('0')
+        rid, secret = hub.request_pair(code, 'iPad')
+        self.assertEqual(hub.pair_status(rid, secret), ('pending', None))
+        with self.assertRaisesRegex(LanDenied, 'code_expired'): hub.request_pair(code, 'again')
+
+    def test_malformed_pair_body_is_visible_error(self):
+        self.assertEqual(self.req('POST', '/api/pair', [1, 2])[1], {'error': 'bad_json'})
+
+    def test_heartbeat_is_authenticated_and_revoke_blocks_session_creation(self):
+        did, cookie = self.pair('Heartbeat')
+        s = self.ws(cookie); s.sendall(ws_frame({'t': 'ping'}))
+        self.assertIn(b'"t": "pong"', self.read_until(s, b'"t": "pong"'))
+        self.hub.revoke(did)
+        with self.assertRaisesRegex(LanDenied, 'not_paired'): self.hub.session_for(did)
+        s.close()
 
     def test_live_shell_io_reconnect_and_revoke(self):
         did, cookie = self.pair()
