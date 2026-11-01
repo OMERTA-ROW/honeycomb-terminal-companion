@@ -1,5 +1,9 @@
 # Honeycomb Terminal next work
 
+## Current repair — 2026-11-01
+- [ ] Repair existing code request feedback, approval polling and reconnect/heartbeat races without resetting the installed companion.
+- [ ] Run pairing/security/file-transfer and terminal/dashboard regressions; record exact evidence and physical Mac+iPad/Tailscale prerequisites.
+
 - [x] Mac download fixed (zip with double-click starter, served at /downloads), Terminal nav + search route, iOS Home Screen steps; 97 app tests, desktop/phone nav + download checks pass.
 - [x] Live local-network terminal (2026-10-31): unsigned .pyz companion, TLS/WSS, code + Mac approval, reconnect, revoke, copy/paste, Test Connection; 37 companion tests + Chromium end-to-end against built file pass.
 - [ ] Mac/iPad physical acceptance of LAN mode — blocked: owner must run on their Mac/iPad and record the 8 checks.
