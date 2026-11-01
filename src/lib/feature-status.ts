@@ -1,4 +1,5 @@
 /** Pure, browser-safe truthful status derivation for the owner dashboard. Only real backend evidence can produce "live". */
+import { ONLINE_WINDOW_MS } from './host-enrollment';
 export type FeatureState = 'live' | 'pending' | 'simulated' | 'failed';
 export interface FeatureStatus { id: string; name: string; state: FeatureState; evidence: string; next: string; to?: '/terminal' | '/terminal/sandbox' | '/connectors' | '/account' | '/transfer' | '/install' }
 export interface HostRecord { id: string; name: string; os: string; last_seen: string | null; revoked_at: string | null }
@@ -6,12 +7,13 @@ export interface StatusInput { membership: 'member' | 'revoked' | 'none' | 'erro
 
 export const STATE_LABEL: Record<FeatureState, string> = { live: 'Live Connected', pending: 'Test Pending', simulated: 'Simulated / Unavailable', failed: 'Failed' };
 /** A host heartbeat older than this is not treated as live. */
-export const HEARTBEAT_FRESH_MS = 2 * 60 * 1000;
+export const HEARTBEAT_FRESH_MS = ONLINE_WINDOW_MS;
 
 export function hostState(h: HostRecord, now: number): FeatureState {
   if (h.revoked_at) return 'failed';
   if (!h.last_seen) return 'pending';
-  return now - Date.parse(h.last_seen) <= HEARTBEAT_FRESH_MS ? 'live' : 'pending';
+  const age = now - Date.parse(h.last_seen);
+  return Number.isFinite(age) && age >= 0 && age <= HEARTBEAT_FRESH_MS ? 'live' : 'pending';
 }
 
 export function deriveStatuses(i: StatusInput): FeatureStatus[] {
@@ -23,7 +25,7 @@ export function deriveStatuses(i: StatusInput): FeatureStatus[] {
   const live = (i.hosts ?? []).filter((h) => hostState(h, i.now) === 'live');
   const active = (i.hosts ?? []).filter((h) => !h.revoked_at);
   const mac: FeatureStatus = i.hostsError ? { id: 'mac', name: 'Mac link (account enrollment)', state: 'failed', evidence: 'Could not load your enrolled computers.', next: 'Reload; if it persists, sign in again.', to: '/terminal' }
-    : live.length ? { id: 'mac', name: 'Mac link (account enrollment)', state: 'live', evidence: `${live.map((h) => h.name).join(', ')} sent a heartbeat within the last 2 minutes.`, next: 'Open Connect Mac and run pwd on the Mac window.', to: '/terminal' }
+    : live.length ? { id: 'mac', name: 'Mac link (account enrollment)', state: 'live', evidence: `${live.map((h) => h.name).join(', ')} sent an account heartbeat within the last 150 seconds. This is not proof of a reachable shell.`, next: 'Open Connect Mac and run pwd on the Mac window.', to: '/terminal' }
     : active.length ? { id: 'mac', name: 'Mac link (account enrollment)', state: 'pending', evidence: `${active.length} enrolled, no recent heartbeat.`, next: 'Start the Honeycomb helper on your Mac, then refresh.', to: '/terminal' }
     : { id: 'mac', name: 'Mac link (account enrollment)', state: 'pending', evidence: 'No Mac enrolled to this account yet.', next: 'Open Connect Mac and follow the one-time setup.', to: '/terminal' };
   return [account, mac,

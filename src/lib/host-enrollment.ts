@@ -14,7 +14,7 @@ export function enrollmentCode(rand: (n: number) => Uint8Array = (n) => crypto.g
 
 export function hostState(h: AccountHost, now: number) {
   if (h.revoked_at) return { label: "Revoked", tone: "text-destructive", detail: "Removed from your account. The helper refuses all phones." };
-  const seen = h.last_seen ? Date.parse(h.last_seen) : 0;
-  if (now - seen <= ONLINE_WINDOW_MS) return { label: "Helper online", tone: "text-primary", detail: "Checked in recently. Connect on the same Wi-Fi below." };
-  return { label: "Helper offline", tone: "text-warning", detail: "No recent check-in. Wake the Mac and start Honeycomb." };
+  const seen = h.last_seen ? Date.parse(h.last_seen) : NaN;
+  if (Number.isFinite(seen) && now - seen >= 0 && now - seen <= ONLINE_WINDOW_MS) return { label: "Helper online", tone: "text-primary", detail: "Recent account check-in only; shell reachability is checked when you connect." };
+  return { label: "Status unknown", tone: "text-warning", detail: "No recent account check-in; this does not prove sleep or offline. Check the Mac, helper and private network." };
 }

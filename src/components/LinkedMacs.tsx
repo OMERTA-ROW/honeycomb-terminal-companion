@@ -1,15 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
-import { enrollmentCode, hostState, type AccountHost } from "@/lib/host-enrollment";
-
-async function sha256Hex(text: string) {
-  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-  return Array.from(new Uint8Array(d), (b) => b.toString(16).padStart(2, "0")).join("");
-}
+import { hostState, type AccountHost } from "@/lib/host-enrollment";
+import { createHostLink, linkedHosts, revokeLinkedHost } from "@/lib/host-link.functions";
+import { requestSequence } from "@/lib/request-sequence";
 
 /** Account-linked Macs from the backend. Status reflects the Mac helper's own check-ins, never a guess. */
 export function LinkedMacs() {
+  const list = useServerFn(linkedHosts), issue = useServerFn(createHostLink), revokeHost = useServerFn(revokeLinkedHost);
+  const sequence = useRef(requestSequence()), creating = useRef(false), alive = useRef(true);
   const [hosts, setHosts] = useState<AccountHost[] | null>(null);
   const [code, setCode] = useState<{ value: string; expires: string } | null>(null);
   const [error, setError] = useState("");
@@ -17,25 +16,27 @@ export function LinkedMacs() {
   const [now, setNow] = useState(() => Date.now());
 
   const refresh = useCallback(async () => {
-    const { data, error } = await supabase.rpc("hc_my_hosts");
-    if (error) { setError("Couldn't load your linked computers. Check your connection and sign-in."); return; }
-    setHosts((data ?? []) as AccountHost[]);
-  }, []);
-  useEffect(() => { void refresh(); const t = setInterval(() => { setNow(Date.now()); void refresh(); }, 15000); return () => clearInterval(t); }, [refresh]);
+    const id = sequence.current.begin();
+    try { const data = await list(); if (sequence.current.isCurrent(id) && alive.current) setHosts(data); }
+    catch { if (sequence.current.isCurrent(id) && alive.current) setError("Couldn't load your linked computers. Check your connection and sign-in."); }
+  }, [list]);
+  useEffect(() => { alive.current = true; void refresh(); const t = setInterval(() => { setNow(Date.now()); void refresh(); }, 15000); return () => { alive.current = false; sequence.current.invalidate(); clearInterval(t); }; }, [refresh]);
 
   async function create() {
+    if (creating.current) return;
+    creating.current = true;
     setBusy(true); setError("");
-    const value = enrollmentCode();
-    const { data, error } = await supabase.rpc("hc_create_host_enrollment", { p_code_hash: await sha256Hex(value) });
-    setBusy(false);
-    if (error) { setError("Couldn't create a link code. Your account may need an invitation or a fresh sign-in."); return; }
-    setCode({ value, expires: data as string });
+    setCode(null);
+    try { const result = await issue(); if (alive.current) setCode(result); }
+    catch (e) { if (alive.current) setError(e instanceof Error ? e.message : "Code request failed. Try again."); }
+    finally { creating.current = false; if (alive.current) setBusy(false); }
   }
   async function revoke(h: AccountHost) {
     if (!confirm(`Revoke ${h.name}? Its Honeycomb helper disconnects every phone within about a minute and stops pairing.`)) return;
-    const { error } = await supabase.rpc("hc_revoke_host", { p_host: h.id });
-    if (error) setError("Revoke failed. Try again.");
-    await refresh();
+    setBusy(true); setError("");
+    try { await revokeHost({ data: { id: h.id } }); await refresh(); }
+    catch (e) { if (alive.current) setError(e instanceof Error ? e.message : "Revoke failed. Try again."); }
+    finally { if (alive.current) setBusy(false); }
   }
 
   const active = (hosts ?? []).filter((h) => !h.revoked_at);
@@ -55,7 +56,7 @@ export function LinkedMacs() {
               </div>
               <p className="text-xs text-muted-foreground">{st.detail}</p>
               <details className="text-xs text-muted-foreground"><summary className="cursor-pointer">Advanced</summary>Certificate SHA-256 {h.fingerprint} — must match Safari's certificate details and the Mac window.</details>
-              {!h.revoked_at && <Button variant="outline" size="sm" onClick={() => void revoke(h)}>Revoke this Mac</Button>}
+              {!h.revoked_at && <Button disabled={busy} variant="outline" size="sm" onClick={() => void revoke(h)}>Revoke this Mac</Button>}
             </li>
           );
         })}
@@ -63,13 +64,15 @@ export function LinkedMacs() {
       {code ? (
         <div className="rounded border border-primary p-3 space-y-1">
           <p className="text-sm">In the Mac's Honeycomb window type:</p>
-          <p className="font-mono text-lg text-primary break-all">link {code.value}</p>
-          <p className="text-xs text-muted-foreground">One use · expires {new Date(code.expires).toLocaleTimeString()}. Then refresh this list.</p>
+          {Date.parse(code.expires) > now ? <p className="font-mono text-lg text-primary break-all">link {code.value}</p> : <p role="status" className="text-sm text-warning">Account link code expired — request a new one.</p>}
+          <p className="text-xs text-muted-foreground">Account link only · one use · expires {new Date(code.expires).toLocaleTimeString()}. This is not the 8-character Mac shell pairing code.</p>
           <Button variant="outline" size="sm" onClick={() => void refresh()}>I typed it — refresh</Button>
+          <Button disabled={busy} variant="outline" size="sm" onClick={() => void create()}>Request new link code</Button>
         </div>
       ) : (
-        <Button disabled={busy} onClick={() => void create()}>Link this Mac</Button>
+        <Button disabled={busy} onClick={() => void create()}>{busy ? "Requesting code…" : "Link this Mac"}</Button>
       )}
+      {busy && <p role="status" className="text-sm text-muted-foreground">Waiting for account confirmation…</p>}
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
     </section>
   );

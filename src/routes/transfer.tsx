@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { deviceChallenge, guardianAction, registerDevice } from '@/lib/transfer.functions';
 import { revokeAccountSessions } from '@/lib/account.functions';
+import { requestSequence } from '@/lib/request-sequence';
 import { loadIdentity, saveIdentity, signAction, type DeviceIdentity } from '@/lib/device-key';
 import { base64ToBytes, bytesToBase64, sha256, verifyIntegrity, CHUNK_SIZE, FILE_LIMIT, type TransferState, type Transfer } from '@/lib/transfer-shared';
 
@@ -20,8 +21,9 @@ function Transfers(){
  const activeOwner=useRef<string|null>(null),generation=useRef(0);
  useEffect(()=>{let alive=true;async function refreshOwner(){const {data}=await supabase.auth.getUser();if(!alive)return;const id=data.user?.id??null;if(id===activeOwner.current)return;activeOwner.current=id;generation.current++;stop.current=true;current.current=null;setOwner(id);setIdentity(null);setState(empty);setRecipient('');setFile(null);setApproved(false);setDownload(null);setIssued('');setQr('');setCode('');setExpiry('');setProgress(0);setError('');setNote('');if(id){try{const local=await loadIdentity(id);if(alive&&activeOwner.current===id)setIdentity(local);}catch{if(alive)setError('Device storage unavailable.');}}}void refreshOwner();window.addEventListener('honeycomb-auth-change',refreshOwner);return()=>{alive=false;generation.current++;stop.current=true;window.removeEventListener('honeycomb-auth-change',refreshOwner);};},[]);
  async function call(op: Parameters<typeof action>[0]['data']['op'],payload:Record<string,unknown>={}) {if(!identity||identity.owner!==activeOwner.current)throw new Error('Register this device first.');const g=generation.current;const {proof}=await challenge({data:{device:identity.id}});if(g!==generation.current)throw new Error('Account changed.');const result=await action({data:{device:identity.id,proof,op,payload,signature:await signAction(identity,proof,op,payload)}});if(g!==generation.current)throw new Error('Account changed.');return result;}
- async function refresh(){setState(await call('list') as unknown as TransferState);}
- useEffect(()=>{if(!identity)return;refresh().catch(e=>setError(e.message));const timer=setInterval(()=>refresh().catch(e=>setError(e.message)),10000);return()=>clearInterval(timer);},[identity]);
+ const refreshSequence=useRef(requestSequence());
+ async function refresh(){const g=generation.current,id=refreshSequence.current.begin();try{const result=await call('list') as unknown as TransferState;if(g===generation.current&&refreshSequence.current.isCurrent(id))setState(result);}catch(e){if(g===generation.current&&refreshSequence.current.isCurrent(id))setError(e instanceof Error?e.message:'Refresh failed.');}}
+ useEffect(()=>{if(!identity)return;void refresh();const timer=setInterval(()=>void refresh(),10000);return()=>{refreshSequence.current.invalidate();clearInterval(timer);};},[identity]);
  useEffect(()=>()=>{if(download)URL.revokeObjectURL(download.url);},[download]);
  async function run(fn:()=>Promise<void>){setError('');setBusy(true);try{await fn();}catch(e){setError(e instanceof Error?e.message:'Request failed.');}finally{setBusy(false);}}
  async function enroll(){if(!owner)return;const keys=await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},false,['sign','verify']);const jwk=await crypto.subtle.exportKey('jwk',keys.publicKey);const registered=await register({data:{name,key:{kty:'EC',crv:'P-256',x:jwk.x??'',y:jwk.y??''}}});const local={id:registered.id,owner,privateKey:keys.privateKey};await saveIdentity(local);setIdentity(local);}
