@@ -12,9 +12,9 @@ type Store = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 export function normalizeAddress(raw: string): string | null {
   const clean = raw.trim().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
   const parts = /^(\d{1,3}(?:\.\d{1,3}){3})(?::(\d{1,5}))?$/.exec(clean);
-  if (!parts) return null;
+  if (!parts?.[1]) return null;
   const octets = parts[1].split('.').map(Number), [a, b] = octets;
-  if (octets.some(n => n > 255)) return null;
+  if (a === undefined || b === undefined || octets.some(n => n > 255)) return null;
   const privateIP = a === 10 || a === 192 && b === 168 || a === 172 && b >= 16 && b <= 31;
   const tailnetIP = a === 100 && b >= 64 && b <= 127;
   const port = parts[2] ? Number(parts[2]) : 8765;
