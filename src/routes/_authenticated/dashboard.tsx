@@ -109,20 +109,16 @@ function Dashboard() {
   return (
     <AppShell>
       <div className="mx-auto max-w-6xl space-y-6 pb-8">
-        <header className="relative overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/15 via-card to-background p-6 sm:p-9">
+        <header className="py-2">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">
-              Honeycomb / Command center
-            </span>
+            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Workspace</span>
             <Button variant="outline" size="sm" disabled={checking} onClick={() => void refresh()}>
               <RefreshCw className={`mr-2 h-3 w-3 ${checking ? "animate-spin" : ""}`} />
               Refresh status
             </Button>
           </div>
-          <h1 className="mt-7 text-4xl font-semibold tracking-tight sm:text-5xl">Your work. One hive.</h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
-            Connect your Mac, talk to your agents, and open your tools. Pick up where you left off.
-          </p>
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Your Mac, agents and web tools.</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild size="lg">
               <Link to="/terminal">
