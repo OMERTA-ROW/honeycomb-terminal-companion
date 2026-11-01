@@ -185,3 +185,14 @@ class LanFileTests(LanTests):
             files.save(self.hub.inbox, "Inbox", "big.bin", b"z" * (files.MAX_UPLOAD + 1))
         self.hub.revoke(did)
         self.assertEqual(self.up(b"x", cookie=ck)[0], 401)
+
+    def test_first_paired_file_view_creates_inbox(self):
+        _, ck = self.pair('Fresh Inbox')
+        old = self.hub.inbox
+        try:
+            self.hub.inbox = os.path.join(tempfile.mkdtemp(), 'Honeycomb', 'Inbox')
+            self.assertFalse(os.path.exists(self.hub.inbox))
+            self.assertEqual(self.req('GET', '/api/files/destinations', cookie=ck)[1]['destinations'], ['Inbox'])
+            self.assertEqual(os.stat(self.hub.inbox).st_mode & 0o777, 0o700)
+        finally:
+            self.hub.inbox = old

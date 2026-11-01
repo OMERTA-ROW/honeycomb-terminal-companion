@@ -436,6 +436,10 @@ def make_handler(hub):
             elif url.path == "/api/files/destinations":
                 if not hub.device_for(self._token()):
                     return self._json(401, {"error": "not_paired"})
+                try:
+                    os.makedirs(hub.inbox, mode=0o700, exist_ok=True)
+                except OSError:
+                    return self._json(400, {"error": "inbox_unavailable"})
                 return self._json(200, {"destinations": files.destinations(hub.inbox), "max": files.MAX_UPLOAD, "folder": "~/Honeycomb/Inbox"})
             elif url.path == "/ws":
                 return self._websocket()
