@@ -10,18 +10,34 @@ const legacyKey = (accountId: string) => `honeycomb.mac-link.${accountId}`;
 type Store = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
 export function normalizeAddress(raw: string): string | null {
-  const clean = raw.trim().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  const input = raw.trim();
+  // Accept only an HTTPS root URL or a bare authority. Never silently discard
+  // credentials, query strings, fragments, paths or an insecure scheme.
+  if (/^http:\/\//i.test(input)) return null;
+  const clean = input
+    .replace(/^https:\/\//i, "")
+    .replace(/\/$/, "")
+    .toLowerCase();
+  if (/[\s/@?#\\]/.test(clean)) return null;
+  // Tailscale Serve terminates trusted HTTPS on 443; the helper still requires
+  // its own one-use code and Mac-console approval. This is only a shortcut.
+  const tailnet =
+    /^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.ts\.net)(?::443)?$/.exec(clean);
+  if (tailnet) return tailnet[1]!;
   const parts = /^(\d{1,3}(?:\.\d{1,3}){3})(?::(\d{1,5}))?$/.exec(clean);
   if (!parts?.[1]) return null;
-  const octets = parts[1].split('.').map(Number), [a, b] = octets;
-  if (a === undefined || b === undefined || octets.some(n => n > 255)) return null;
-  const privateIP = a === 10 || a === 192 && b === 168 || a === 172 && b >= 16 && b <= 31;
+  const octets = parts[1].split(".").map(Number),
+    [a, b] = octets;
+  if (a === undefined || b === undefined || octets.some((n) => n > 255)) return null;
+  const privateIP = a === 10 || (a === 192 && b === 168) || (a === 172 && b >= 16 && b <= 31);
   const tailnetIP = a === 100 && b >= 64 && b <= 127;
   const port = parts[2] ? Number(parts[2]) : 8765;
   return (privateIP || tailnetIP) && port >= 1024 && port <= 65535 ? clean : null;
 }
 export function liveUrl(address: string): string {
-  return `https://${address.includes(":") ? address : `${address}:8765`}/`;
+  const clean = normalizeAddress(address);
+  if (!clean) throw new Error("Invalid private Mac address");
+  return `https://${clean.endsWith(".ts.net") || clean.includes(":") ? clean : `${clean}:8765`}/`;
 }
 export function terminalStep(ready: boolean, accountId: string | null, computers: MacLink[]): TerminalStep {
   if (!ready) return "loading";
@@ -42,9 +58,12 @@ export function loadComputers(accountId: string, store: Store = localStorage): M
     return all.filter((c) => {
       const a = c && typeof c.address === "string" ? normalizeAddress(c.address) : null;
       if (!a || seen.has(a)) return false;
-      seen.add(a); return true;
+      seen.add(a);
+      return true;
     });
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 export function saveComputer(accountId: string, link: MacLink, store: Store = localStorage): MacLink[] {
   const next = [link, ...loadComputers(accountId, store).filter((c) => c.address !== link.address)].slice(0, 10);
