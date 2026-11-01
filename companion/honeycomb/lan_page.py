@@ -24,7 +24,7 @@ button{cursor:pointer;min-height:40px}button.primary{background:var(--gold);colo
 .hidden{display:none}code{color:var(--gold2)}
 </style></head><body>
 <header><h1>⬡ HONEYCOMB TERMINAL</h1><span id="status" class="pill">Checking…</span></header>
-<p class="muted" id="mode">LIVE · your Mac's real shell over this local network (TLS). Not Demo. Basic text renderer: full-screen apps like vim/top display poorly.</p>
+<p class="muted" id="mode">Mac shell · encrypted private network. Connection is verified below, not by this label. Basic text renderer: full-screen apps like vim/top display poorly.</p>
 <section id="pair" class="panel hidden">
 <h2 style="margin-top:0;color:var(--gold2);font-size:16px">Pair this device</h2>
 <p class="muted">Enter the 8-character code shown in the Mac's Terminal window (valid 120 s, single use). Then type the approval on the Mac.</p>
@@ -58,46 +58,51 @@ button{cursor:pointer;min-height:40px}button.primary{background:var(--gold);colo
 <script src="/app.js"></script></body></html>"""
 
 JS = r"""
-const $=id=>document.getElementById(id);let ws=null,retry=0,stopped=false,buf='',dec=new TextDecoder();
+const $=id=>document.getElementById(id);let ws=null,retry=0,stopped=false,paired=false,buf='',dec=new TextDecoder(),retryTimer=null,beatTimer=null,lastPong=0,pairBusy=false,pollTimer=null,pollFailures=0;
+async function request(path,options={}){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);try{const r=await fetch(path,{...options,cache:'no-store',signal:controller.signal});let j;try{j=await r.json()}catch{throw new Error('The Mac returned an unreadable response. Retry; check the Honeycomb window.')}if(!r.ok)throw new Error(j.error||'Request refused ('+r.status+').');return j}finally{clearTimeout(timer)}}
+function clearRetry(){clearTimeout(retryTimer);retryTimer=null}
+function scheduleRetry(){clearRetry();if(stopped||!paired)return;retry++;status('Mac not responding — sleep, network, certificate or helper may be unavailable. Retrying…','bad');retryTimer=setTimeout(()=>{retryTimer=null;connect()},Math.min(15000,1000*2**Math.min(retry,4)))}
 const DANGER=/(^|[;&|]\s*)(sudo\b|rm\s+-[a-z]*[rf]|mkfs|dd\s+if=|shutdown|reboot|diskutil\s+erase|chmod\s+-R|chown\s+-R|>\s*\/dev\/|git\s+push\s+.*--force|killall)/i;
 function status(t,c){const s=$('status');s.textContent=t;s.className='pill '+(c||'')}
 function render(chunk){let s=chunk.replace(/\x1b\][^\x07\x1b]*(\x07|\x1b\\)/g,'').replace(/\x1b\[[0-9;?]*[ -\/]*[@-~]/g,'').replace(/\x1b[()][0-9A-Za-z]|\x1b[=>78]/g,'').replace(/\x07/g,'').replace(/\r\n/g,'\n');
  for(const ch of s){if(ch==='\b'){buf=buf.slice(0,-1)}else if(ch==='\r'){buf=buf.slice(0,buf.lastIndexOf('\n')+1)}else buf+=ch}
  if(buf.length>200000)buf=buf.slice(-150000);const t=$('term');const atEnd=t.scrollTop+t.clientHeight>=t.scrollHeight-30;t.textContent=buf;if(atEnd)t.scrollTop=t.scrollHeight}
-function send(d){if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'i',d}));else status('Not connected — input not sent','bad')}
+function send(d){if(ws&&ws.readyState===1&&lastPong){ws.send(JSON.stringify({t:'i',d}));return true}status('Not connected — input not sent','bad');return false}
 function size(){const t=$('term');const cols=Math.max(20,Math.floor(t.clientWidth/7.8)),rows=Math.max(5,Math.floor(t.clientHeight/17.5));if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'r',rows,cols}))}
-function connect(){if(stopped)return;if(!navigator.onLine){status('Offline — no network','bad');return}
- status(retry?'Searching for your Mac…':'Searching…');ws=new WebSocket('wss://'+location.host+'/ws');ws.binaryType='arraybuffer';
- ws.onopen=()=>{retry=0;status('Connected · live Mac shell','live');buf='';size()};
- ws.onmessage=e=>{if(typeof e.data==='string'){const m=JSON.parse(e.data);if(m.t==='exit')render('\n[shell exited — reconnect starts a new shell]\n');return}render(dec.decode(e.data,{stream:true}))};
- ws.onclose=e=>{if(e.code===4401){stopped=true;status('Permission needed — pair again','bad');setTimeout(()=>location.reload(),1500);return}
-  retry++;const wait=Math.min(15000,1000*2**Math.min(retry,4));status('Mac unreachable (asleep, offline, different network or host stopped). Retrying…','bad');setTimeout(connect,wait)}}
-async function init(){let st;try{st=await (await fetch('/api/state',{cache:'no-store'})).json()}catch{status('Mac unreachable','bad');return setTimeout(init,4000)}
- $('fp').textContent=st.fingerprint.match(/.{2}/g).join(':');if(!st.paired){$('pair').classList.remove('hidden');status('Pairing · approval needed');return}
- $('app').classList.remove('hidden');$('files').classList.remove('hidden');loadDest();connect()}
+function connect(){clearRetry();if(stopped||!paired||ws&&ws.readyState<2)return;if(!navigator.onLine){status('Offline — no network','bad');return}
+ status(retry?'Searching for your Mac…':'Searching…');let socket;try{socket=new WebSocket('wss://'+location.host+'/ws')}catch{scheduleRetry();return}ws=socket;socket.binaryType='arraybuffer';lastPong=0;
+ const watchdog=setTimeout(()=>{if(ws===socket&&!lastPong){socket.close();scheduleRetry()}},10000);
+ socket.onopen=()=>{if(ws!==socket)return;buf='';dec=new TextDecoder();size();socket.send(JSON.stringify({t:'ping'}))};
+ socket.onmessage=e=>{if(ws!==socket)return;if(typeof e.data==='string'){let m;try{m=JSON.parse(e.data)}catch{status('Invalid Mac response','bad');socket.close();return}if(m.t==='ready'||m.t==='pong'){lastPong=Date.now();retry=0;clearTimeout(watchdog);status('Connected · live Mac shell','live');if(!beatTimer)beatTimer=setInterval(()=>{if(ws!==socket)return;if(Date.now()-lastPong>35000){status('Connection check timed out — reconnecting','bad');socket.close();return}if(socket.readyState===1)socket.send(JSON.stringify({t:'ping'}))},10000)}if(m.t==='exit')render('\n[shell exited — reconnect starts a new shell]\n');return}render(dec.decode(e.data,{stream:true}))};
+ socket.onerror=()=>{if(ws===socket)status('Connection failed — check the Mac, private network and certificate','bad')};
+ socket.onclose=e=>{clearTimeout(watchdog);if(ws!==socket)return;ws=null;lastPong=0;clearInterval(beatTimer);beatTimer=null;if(e.code===4401){stopped=true;paired=false;clearRetry();$('app').classList.add('hidden');$('files').classList.add('hidden');$('pair').classList.remove('hidden');status('Permission needed — revoked or expired; pair again','bad');return}scheduleRetry()}}
+async function init(){let st;try{st=await request('/api/state')}catch(e){status(e.message,'bad');clearRetry();retryTimer=setTimeout(init,4000);return}
+ $('fp').textContent=(st.fingerprint.match(/.{2}/g)||[]).join(':');paired=st.paired;if(st.locked){stopped=true;status('Mac revoked from its account — access blocked','bad');return}if(!paired){$('pair').classList.remove('hidden');status('Pairing · approval needed');return}
+ stopped=false;$('pair').classList.add('hidden');$('app').classList.remove('hidden');$('files').classList.remove('hidden');loadDest();connect()}
 (()=>{const m=/^#pair=([A-Z0-9]{8})$/.exec(location.hash);if(m){$('code').value=m[1];history.replaceState(null,'',location.pathname);$('pairMsg').textContent='Code filled in from the QR. Check the certificate fingerprint below matches the Mac, add a device name, then tap Request access.'}else if(location.hash){history.replaceState(null,'',location.pathname);$('pairMsg').textContent='That link is not a valid Honeycomb pairing QR. On the Mac type: code'}})();
-$('pairBtn').onclick=async()=>{$('pairMsg').textContent='Sending…';let r;try{r=await fetch('/api/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:$('code').value,name:$('name').value})})}catch(e){$('pairMsg').textContent='Mac unreachable. Check it is awake, Honeycomb is running and you are on the same Wi-Fi.';return}const j=await r.json();
- if(!r.ok){$('pairMsg').textContent={code_invalid:'Wrong code.',code_expired:'Code expired or used. On the Mac type: code',device_limit:'Too many devices; revoke one on the Mac.'}[j.error]||'Refused.';return}
- $('pairMsg').textContent='Waiting for approval on the Mac… type: approve '+j.id;const poll=async()=>{const s=await (await fetch('/api/pair/status?id='+j.id+'&secret='+encodeURIComponent(j.secret),{cache:'no-store'})).json();
- if(s.status==='approved')location.reload();else if(s.status==='denied'||s.status==='expired'||s.error)$('pairMsg').textContent='Not approved ('+(s.status||s.error)+').';else setTimeout(poll,1500)};poll()};
+function finishPair(message){pairBusy=false;clearTimeout(pollTimer);$('pairBtn').disabled=false;$('pairMsg').textContent=message}
+$('pairBtn').onclick=async()=>{if(pairBusy)return;pairBusy=true;$('pairBtn').disabled=true;$('pairMsg').textContent='Sending request — this does not generate a code. Use the 8-character code from the Mac.';let j;try{j=await request('/api/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:$('code').value,name:$('name').value})})}catch(e){finishPair(({code_invalid:'Wrong code. Use the 8-character Mac code, not the 12-character account link code.',code_expired:'Code expired, used, or replaced. On the Mac type: code. Scan the new QR.',device_limit:'Too many devices; revoke one on the Mac.',host_revoked:'Mac revoked from its account.'})[e.message]||'Request failed: '+e.message+' Check the Mac and your private network; retry with a new Mac code if the request may have reached it.');return}
+ pollFailures=0;const deadline=Date.now()+300000;const poll=async()=>{try{const s=await request('/api/pair/status?id='+encodeURIComponent(j.id)+'&secret='+encodeURIComponent(j.secret));pollFailures=0;if(s.status==='approved'){finishPair('Approved. Checking your Mac connection…');await init();return}if(s.status==='delivered'){const state=await request('/api/state');if(state.paired){finishPair('Approved.');await init();return}finishPair('Approval response was lost. On the Mac revoke this request, type code, and pair again.');return}if(s.status==='denied'||s.status==='expired'){finishPair('Not approved ('+s.status+'). On the Mac type code to retry.');return}$('pairMsg').textContent='Waiting for approval on the Mac… type: approve '+j.id}catch(e){pollFailures++;if(e.message==='unknown_request'){finishPair('Request no longer exists; the helper may have restarted. On the Mac type code.');return}$('pairMsg').textContent='Approval check interrupted. Retrying the same request… '+e.message}if(Date.now()>=deadline){finishPair('Approval timed out. On the Mac type code and try again.');return}pollTimer=setTimeout(poll,Math.min(10000,1500*2**Math.min(pollFailures,3)))};void poll()};
 document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>send(JSON.parse('"'+b.dataset.k+'"')));
-function sendLine(text){const lines=text.split('\n');if(lines.some(l=>DANGER.test(l))&&!confirm('This looks destructive or privileged:\n\n'+text+'\n\nRun it on your Mac?'))return false;send(text.replace(/\n/g,'\r')+'\r');return true}
+function sendLine(text){const lines=text.split('\n');if(lines.some(l=>DANGER.test(l))&&!confirm('This looks destructive or privileged:\n\n'+text+'\n\nRun it on your Mac?'))return false;return send(text.replace(/\r\n?/g,'\n').replace(/\n/g,'\r')+'\r')}
 $('send').onclick=()=>{if(sendLine($('line').value))$('line').value=''};
 $('line').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('send').click()}});
 $('term').addEventListener('keydown',e=>{const map={Enter:'\r',Backspace:'\x7f',Tab:'\t',Escape:'\x1b',ArrowUp:'\x1b[A',ArrowDown:'\x1b[B',ArrowRight:'\x1b[C',ArrowLeft:'\x1b[D'};let d=null;
  if(e.metaKey)return;if(e.ctrlKey&&e.key.length===1)d=String.fromCharCode(e.key.toUpperCase().charCodeAt(0)-64);else if(map[e.key])d=map[e.key];else if(e.key.length===1)d=e.key;if(d!==null){e.preventDefault();send(d)}});
-$('term').addEventListener('paste',e=>{e.preventDefault();const t=e.clipboardData.getData('text');if(t)sendLine(t)});
-$('copySel').onclick=async()=>{const t=String(getSelection());if(!t){$('testMsg').textContent='Select text in the output first.';return}await navigator.clipboard.writeText(t);$('testMsg').textContent='Copied selection.'};
-$('copyAll').onclick=async()=>{await navigator.clipboard.writeText(buf);$('testMsg').textContent='Copied output.'};
-$('paste').onclick=async()=>{try{const t=await navigator.clipboard.readText();if(t)sendLine(t)}catch{$('testMsg').textContent='Paste blocked by browser — long-press the output area and choose Paste.'}};
-$('test').onclick=async()=>{$('testMsg').textContent='Running harmless echo on the Mac…';const r=await fetch('/api/test',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});const j=await r.json();$('testMsg').textContent=r.ok?('Host '+j.host+' replied: '+j.output):'Failed: '+j.error};
-$('forget').onclick=async()=>{if(!confirm('Unpair and end this device\'s shell?'))return;stopped=true;await fetch('/api/forget',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});location.reload()};
-addEventListener('online',()=>{if(!ws||ws.readyState>1){retry=0;connect()}});addEventListener('offline',()=>status('Offline — no network','bad'));addEventListener('resize',size);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(!ws||ws.readyState>1)&&!stopped){retry=0;connect()}});
+function pasteDraft(t){const line=$('line');line.setRangeText(t.replace(/\r\n?/g,'\n'),line.selectionStart,line.selectionEnd,'end');line.focus();$('testMsg').textContent='Pasted into command draft — review, then Send.'}
+$('term').addEventListener('paste',e=>{e.preventDefault();const t=e.clipboardData.getData('text');if(t)pasteDraft(t)});
+async function copyText(t){try{await navigator.clipboard.writeText(t);$('testMsg').textContent='Copied.'}catch{$('testMsg').textContent='Copy blocked. Select output and use the native Copy menu.'}}
+$('copySel').onclick=()=>{const t=String(getSelection());if(!t){$('testMsg').textContent='Select text in the output first.';return}void copyText(t)};
+$('copyAll').onclick=()=>void copyText(buf);
+$('paste').onclick=async()=>{try{const t=await navigator.clipboard.readText();if(t)pasteDraft(t);else $('testMsg').textContent='Clipboard is empty.'}catch{$('line').focus();$('testMsg').textContent='Paste blocked by browser — long-press the command field and choose Paste.'}};
+$('test').onclick=async()=>{$('testMsg').textContent='Running harmless echo on the Mac…';try{const j=await request('/api/test',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});$('testMsg').textContent='Host '+j.host+' replied: '+j.output}catch(e){$('testMsg').textContent='Test failed: '+e.message}};
+$('forget').onclick=async()=>{if(!confirm('Unpair and end this device\'s shell?'))return;try{await request('/api/forget',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});stopped=true;clearRetry();if(ws)ws.close();location.reload()}catch(e){$('testMsg').textContent='Unpair not confirmed: '+e.message+'. Revoke on the Mac if this device is offline.'}};
+addEventListener('online',()=>{retry=0;if(paired)connect();else if(!pairBusy)void init()});addEventListener('offline',()=>{clearRetry();status('Offline — no network','bad');if(ws)ws.close()});addEventListener('resize',size);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!stopped){if(ws&&ws.readyState===1){if(Date.now()-lastPong>35000){status('Checking resumed connection…');ws.close()}else ws.send(JSON.stringify({t:'ping'}))}else if(paired){retry=0;connect()}else if(!pairBusy)void init()}});
 init();
 
 let pending=null,MAX=25*1024*1024;
-async function loadDest(){try{const j=await (await fetch('/api/files/destinations',{cache:'no-store'})).json();MAX=j.max||MAX;$('dest').innerHTML='';(j.destinations||[]).forEach(d=>{const o=document.createElement('option');o.value=o.textContent=d;$('dest').appendChild(o)})}catch{$('fileMsg').textContent='Could not load folders — Mac unreachable.'}}
+async function loadDest(){try{const j=await request('/api/files/destinations');MAX=j.max||MAX;$('dest').innerHTML='';(j.destinations||[]).forEach(d=>{const o=document.createElement('option');o.value=o.textContent=d;$('dest').appendChild(o)});review()}catch(e){$('fileMsg').textContent='Could not load folders: '+e.message}}
 function fmt(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(1)+' MB'}
 function review(){const t=$('ptext').value;if($('pick').files[0])pending=$('pick').files[0];else if(t)pending=new Blob([t],{type:'text/plain'});else pending=null;
  if(!pending){$('review').textContent='Nothing selected.';$('save').disabled=true;return}
@@ -108,7 +113,7 @@ $('drop').addEventListener('dragover',e=>e.preventDefault());
 $('drop').addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);$('pick').files=dt.files;$('fname').value='';review()}});
 $('clearF').onclick=()=>{$('pick').value='';$('ptext').value='';$('fname').value='';$('fileMsg').textContent='';review()};
 $('save').onclick=()=>{if(!pending)return;if(!navigator.onLine){$('fileMsg').textContent='Offline — not sent.';return}
- const x=new XMLHttpRequest();x.open('POST','/api/files?dest='+encodeURIComponent($('dest').value)+'&name='+encodeURIComponent($('fname').value));
+ const x=new XMLHttpRequest();x.open('POST','/api/files?dest='+encodeURIComponent($('dest').value)+'&name='+encodeURIComponent($('fname').value));x.timeout=120000;x.ontimeout=()=>{$('save').disabled=false;$('fileMsg').textContent='Save timed out; outcome unknown. Check the Inbox on the Mac before retrying.'};
  $('prog').classList.remove('hidden');$('prog').value=0;$('save').disabled=true;x.upload.onprogress=e=>{if(e.lengthComputable)$('prog').value=100*e.loaded/e.total};
  x.onload=()=>{let j={};try{j=JSON.parse(x.responseText)}catch{}$('save').disabled=false;
   if(x.status===200){$('prog').value=100;$('fileMsg').textContent='Saved on Mac as “'+j.saved+'” in '+$('dest').value+' ('+fmt(j.bytes)+').'}
