@@ -11,7 +11,8 @@ export type DestinationPath =
   | "/instructions"
   | "/install"
   | "/workspace"
-  | "/account";
+  | "/account"
+  | "/downloads";
 
 export interface Destination {
   to: DestinationPath;
@@ -44,6 +45,12 @@ export const DESTINATIONS: Destination[] = [
     label: "File transfer",
     hint: "Selected files between approved devices",
     keywords: ["file", "transfer", "upload"],
+  },
+  {
+    to: "/downloads",
+    label: "Downloads",
+    hint: "Approved repos and CLI packages to this device",
+    keywords: ["download", "github", "release", "cli", "install", "package", "checksum"],
   },
   {
     to: "/account",
