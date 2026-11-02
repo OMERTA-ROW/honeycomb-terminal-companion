@@ -526,6 +526,42 @@ export type Database = {
           },
         ]
       }
+      hc_workspace_audit: {
+        Row: {
+          action: string
+          created_at: string
+          detail: string
+          id: string
+          outcome: string
+          owner_id: string
+          provider: string
+          target: string
+          write: boolean
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          detail?: string
+          id?: string
+          outcome: string
+          owner_id?: string
+          provider: string
+          target?: string
+          write?: boolean
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          detail?: string
+          id?: string
+          outcome?: string
+          owner_id?: string
+          provider?: string
+          target?: string
+          write?: boolean
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           display_name: string

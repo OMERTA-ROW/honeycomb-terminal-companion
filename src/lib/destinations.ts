@@ -12,7 +12,8 @@ export type DestinationPath =
   | "/install"
   | "/workspace"
   | "/account"
-  | "/downloads";
+  | "/downloads"
+  | "/workspace-shell";
 
 export interface Destination {
   to: DestinationPath;
@@ -45,6 +46,12 @@ export const DESTINATIONS: Destination[] = [
     label: "File transfer",
     hint: "Selected files between approved devices",
     keywords: ["file", "transfer", "upload"],
+  },
+  {
+    to: "/workspace-shell",
+    label: "Dev workspace",
+    hint: "GitHub, Codex and Claude without pairing",
+    keywords: ["github", "git", "repo", "codex", "claude", "dev", "workspace", "audit"],
   },
   {
     to: "/downloads",

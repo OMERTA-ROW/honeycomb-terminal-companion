@@ -92,6 +92,13 @@
       "when": 1793507775251,
       "tag": "0012_serialize_host_link_code_issuance",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793592537301,
+      "tag": "0013_workspace_audit",
+      "breakpoints": true
     }
   ]
 }
