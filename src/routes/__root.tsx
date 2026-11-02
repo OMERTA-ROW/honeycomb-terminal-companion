@@ -124,7 +124,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
-  useEffect(() => { void import("../lib/pwa").then((m) => m.initPwa()); }, []);
+  useEffect(() => { void import("../lib/pwa").then((m) => { m.recoverFromStaleChunks(); return m.initPwa(); }); }, []);
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') window.dispatchEvent(new Event('honeycomb-password-recovery'));

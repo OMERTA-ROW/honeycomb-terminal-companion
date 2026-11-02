@@ -45,3 +45,16 @@ export async function initPwa() {
 
 /** Only called after explicit user consent; reloads the page. */
 export function reloadWithUpdate() { return applyUpdate?.(); }
+
+/** After a new publish, an open tab can request page code that no longer exists. Reload once to fetch the current version instead of showing a blank screen; a second failure in the same tab is left to the error page so it can never loop. */
+export function recoverFromStaleChunks() {
+  if (typeof window === "undefined") return;
+  window.addEventListener("vite:preloadError", (event) => {
+    const key = "hc-stale-chunk-reload";
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, String(Date.now()));
+    event.preventDefault();
+    window.location.reload();
+  });
+  window.setTimeout(() => sessionStorage.removeItem("hc-stale-chunk-reload"), 10_000);
+}
