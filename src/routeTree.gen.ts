@@ -25,6 +25,7 @@ import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDownloadsRouteImport } from './routes/_authenticated/downloads'
+import { Route as ApiAgentStreamRouteImport } from './routes/api/agent-stream'
 import { Route as ApiDownloadRouteImport } from './routes/api/download'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as TerminalIndexRouteImport } from './routes/terminal.index'
@@ -110,6 +111,11 @@ const AuthenticatedDownloadsRoute = AuthenticatedDownloadsRouteImport.update({
   path: '/downloads',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiAgentStreamRoute = ApiAgentStreamRouteImport.update({
+  id: '/api/agent-stream',
+  path: '/api/agent-stream',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDownloadRoute = ApiDownloadRouteImport.update({
   id: '/api/download',
   path: '/api/download',
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/workspace': typeof WorkspaceRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/downloads': typeof AuthenticatedDownloadsRoute
+  '/api/agent-stream': typeof ApiAgentStreamRoute
   '/api/download': typeof ApiDownloadRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/workspace': typeof WorkspaceRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/downloads': typeof AuthenticatedDownloadsRoute
+  '/api/agent-stream': typeof ApiAgentStreamRoute
   '/api/download': typeof ApiDownloadRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/workspace': typeof WorkspaceRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/downloads': typeof AuthenticatedDownloadsRoute
+  '/api/agent-stream': typeof ApiAgentStreamRoute
   '/api/download': typeof ApiDownloadRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
@@ -222,6 +231,7 @@ export interface FileRouteTypes {
     | '/workspace'
     | '/dashboard'
     | '/downloads'
+    | '/api/agent-stream'
     | '/api/download'
     | '/api/transcribe'
     | '/terminal/$hostId'
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
     | '/workspace'
     | '/dashboard'
     | '/downloads'
+    | '/api/agent-stream'
     | '/api/download'
     | '/api/transcribe'
     | '/terminal/$hostId'
@@ -267,6 +278,7 @@ export interface FileRouteTypes {
     | '/workspace'
     | '/_authenticated/dashboard'
     | '/_authenticated/downloads'
+    | '/api/agent-stream'
     | '/api/download'
     | '/api/transcribe'
     | '/terminal/$hostId'
@@ -289,6 +301,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TransferRoute: typeof TransferRoute
   WorkspaceRoute: typeof WorkspaceRoute
+  ApiAgentStreamRoute: typeof ApiAgentStreamRoute
   ApiDownloadRoute: typeof ApiDownloadRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
   TerminalHostIdRoute: typeof TerminalHostIdRoute
@@ -410,6 +423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDownloadsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/agent-stream': {
+      id: '/api/agent-stream'
+      path: '/api/agent-stream'
+      fullPath: '/api/agent-stream'
+      preLoaderRoute: typeof ApiAgentStreamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/download': {
       id: '/api/download'
       path: '/api/download'
@@ -476,6 +496,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TransferRoute: TransferRoute,
   WorkspaceRoute: WorkspaceRoute,
+  ApiAgentStreamRoute: ApiAgentStreamRoute,
   ApiDownloadRoute: ApiDownloadRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
   TerminalHostIdRoute: TerminalHostIdRoute,
