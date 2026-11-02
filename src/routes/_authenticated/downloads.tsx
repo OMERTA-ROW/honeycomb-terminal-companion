@@ -41,7 +41,7 @@ async function token() {
 async function proxy(url: string, init: HeadersInit = {}, signal?: AbortSignal) {
   const h = new Headers(init);
   h.set("authorization", `Bearer ${await token()}`);
-  return fetch(`/api/download?url=${encodeURIComponent(url)}`, { headers: h, signal });
+  return fetch(`/api/download?url=${encodeURIComponent(url)}`, { headers: h, signal: signal ?? null });
 }
 async function proxyError(r: Response) {
   const j = (await r.json().catch(() => null)) as { error?: string } | null;
