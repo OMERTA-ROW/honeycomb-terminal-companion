@@ -24,6 +24,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDownloadsRouteImport } from './routes/_authenticated/downloads'
 import { Route as ApiDownloadRouteImport } from './routes/api/download'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as TerminalIndexRouteImport } from './routes/terminal.index'
@@ -104,6 +105,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDownloadsRoute = AuthenticatedDownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiDownloadRoute = ApiDownloadRouteImport.update({
   id: '/api/download',
   path: '/api/download',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/downloads': typeof AuthenticatedDownloadsRoute
   '/api/download': typeof ApiDownloadRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/downloads': typeof AuthenticatedDownloadsRoute
   '/api/download': typeof ApiDownloadRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/downloads': typeof AuthenticatedDownloadsRoute
   '/api/download': typeof ApiDownloadRoute
   '/api/transcribe': typeof ApiTranscribeRoute
   '/terminal/$hostId': typeof TerminalHostIdRoute
@@ -212,6 +221,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/dashboard'
+    | '/downloads'
     | '/api/download'
     | '/api/transcribe'
     | '/terminal/$hostId'
@@ -233,6 +243,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/dashboard'
+    | '/downloads'
     | '/api/download'
     | '/api/transcribe'
     | '/terminal/$hostId'
@@ -255,6 +266,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/_authenticated/dashboard'
+    | '/_authenticated/downloads'
     | '/api/download'
     | '/api/transcribe'
     | '/terminal/$hostId'
@@ -391,6 +403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/downloads': {
+      id: '/_authenticated/downloads'
+      path: '/downloads'
+      fullPath: '/downloads'
+      preLoaderRoute: typeof AuthenticatedDownloadsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/download': {
       id: '/api/download'
       path: '/api/download'
@@ -431,10 +450,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDownloadsRoute: typeof AuthenticatedDownloadsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDownloadsRoute: AuthenticatedDownloadsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
