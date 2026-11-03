@@ -23,6 +23,7 @@ import { Route as PairRouteImport } from './routes/pair'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
+import { Route as AuthenticatedAgentSessionRouteImport } from './routes/_authenticated/agent-session'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDownloadsRouteImport } from './routes/_authenticated/downloads'
 import { Route as AuthenticatedWorkspaceShellRouteImport } from './routes/_authenticated/workspace-shell'
@@ -102,6 +103,12 @@ const WorkspaceRoute = WorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAgentSessionRoute =
+  AuthenticatedAgentSessionRouteImport.update({
+    id: '/agent-session',
+    path: '/agent-session',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -163,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
+  '/agent-session': typeof AuthenticatedAgentSessionRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/downloads': typeof AuthenticatedDownloadsRoute
   '/workspace-shell': typeof AuthenticatedWorkspaceShellRoute
@@ -187,6 +195,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
+  '/agent-session': typeof AuthenticatedAgentSessionRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/downloads': typeof AuthenticatedDownloadsRoute
   '/workspace-shell': typeof AuthenticatedWorkspaceShellRoute
@@ -213,6 +222,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
+  '/_authenticated/agent-session': typeof AuthenticatedAgentSessionRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/downloads': typeof AuthenticatedDownloadsRoute
   '/_authenticated/workspace-shell': typeof AuthenticatedWorkspaceShellRoute
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/transfer'
     | '/workspace'
+    | '/agent-session'
     | '/dashboard'
     | '/downloads'
     | '/workspace-shell'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/transfer'
     | '/workspace'
+    | '/agent-session'
     | '/dashboard'
     | '/downloads'
     | '/workspace-shell'
@@ -288,6 +300,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/transfer'
     | '/workspace'
+    | '/_authenticated/agent-session'
     | '/_authenticated/dashboard'
     | '/_authenticated/downloads'
     | '/_authenticated/workspace-shell'
@@ -422,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/agent-session': {
+      id: '/_authenticated/agent-session'
+      path: '/agent-session'
+      fullPath: '/agent-session'
+      preLoaderRoute: typeof AuthenticatedAgentSessionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -489,12 +509,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAgentSessionRoute: typeof AuthenticatedAgentSessionRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDownloadsRoute: typeof AuthenticatedDownloadsRoute
   AuthenticatedWorkspaceShellRoute: typeof AuthenticatedWorkspaceShellRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAgentSessionRoute: AuthenticatedAgentSessionRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDownloadsRoute: AuthenticatedDownloadsRoute,
   AuthenticatedWorkspaceShellRoute: AuthenticatedWorkspaceShellRoute,
