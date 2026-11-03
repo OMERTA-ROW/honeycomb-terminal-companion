@@ -13,7 +13,8 @@ export type DestinationPath =
   | "/workspace"
   | "/account"
   | "/downloads"
-  | "/workspace-shell";
+  | "/workspace-shell"
+  | "/agent-session";
 
 export interface Destination {
   to: DestinationPath;
@@ -52,6 +53,12 @@ export const DESTINATIONS: Destination[] = [
     label: "Dev workspace",
     hint: "GitHub, Codex and Claude without pairing",
     keywords: ["github", "git", "repo", "codex", "claude", "dev", "workspace", "audit"],
+  },
+  {
+    to: "/agent-session",
+    label: "Agent session",
+    hint: "Codex, Claude and OMNI together",
+    keywords: ["agents", "multi", "session", "voice", "codex", "claude", "omni", "handoff"],
   },
   {
     to: "/downloads",
