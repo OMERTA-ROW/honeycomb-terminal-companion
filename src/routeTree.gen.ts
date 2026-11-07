@@ -27,6 +27,7 @@ import { Route as AuthenticatedAgentSessionRouteImport } from './routes/_authent
 import { Route as AuthenticatedAutonomyRouteImport } from './routes/_authenticated/autonomy'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDownloadsRouteImport } from './routes/_authenticated/downloads'
+import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedWorkspaceShellRouteImport } from './routes/_authenticated/workspace-shell'
 import { Route as ApiAgentStreamRouteImport } from './routes/api/agent-stream'
 import { Route as ApiDownloadRouteImport } from './routes/api/download'
@@ -125,6 +126,11 @@ const AuthenticatedDownloadsRoute = AuthenticatedDownloadsRouteImport.update({
   path: '/downloads',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedWorkspaceShellRoute =
   AuthenticatedWorkspaceShellRouteImport.update({
     id: '/workspace-shell',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/autonomy': typeof AuthenticatedAutonomyRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/downloads': typeof AuthenticatedDownloadsRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/workspace-shell': typeof AuthenticatedWorkspaceShellRoute
   '/api/agent-stream': typeof ApiAgentStreamRoute
   '/api/download': typeof ApiDownloadRoute
@@ -206,6 +213,7 @@ export interface FileRoutesByTo {
   '/autonomy': typeof AuthenticatedAutonomyRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/downloads': typeof AuthenticatedDownloadsRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/workspace-shell': typeof AuthenticatedWorkspaceShellRoute
   '/api/agent-stream': typeof ApiAgentStreamRoute
   '/api/download': typeof ApiDownloadRoute
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/_authenticated/autonomy': typeof AuthenticatedAutonomyRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/downloads': typeof AuthenticatedDownloadsRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/workspace-shell': typeof AuthenticatedWorkspaceShellRoute
   '/api/agent-stream': typeof ApiAgentStreamRoute
   '/api/download': typeof ApiDownloadRoute
@@ -262,6 +271,7 @@ export interface FileRouteTypes {
     | '/autonomy'
     | '/dashboard'
     | '/downloads'
+    | '/home'
     | '/workspace-shell'
     | '/api/agent-stream'
     | '/api/download'
@@ -288,6 +298,7 @@ export interface FileRouteTypes {
     | '/autonomy'
     | '/dashboard'
     | '/downloads'
+    | '/home'
     | '/workspace-shell'
     | '/api/agent-stream'
     | '/api/download'
@@ -315,6 +326,7 @@ export interface FileRouteTypes {
     | '/_authenticated/autonomy'
     | '/_authenticated/dashboard'
     | '/_authenticated/downloads'
+    | '/_authenticated/home'
     | '/_authenticated/workspace-shell'
     | '/api/agent-stream'
     | '/api/download'
@@ -475,6 +487,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDownloadsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/workspace-shell': {
       id: '/_authenticated/workspace-shell'
       path: '/workspace-shell'
@@ -532,6 +551,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAutonomyRoute: typeof AuthenticatedAutonomyRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDownloadsRoute: typeof AuthenticatedDownloadsRoute
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedWorkspaceShellRoute: typeof AuthenticatedWorkspaceShellRoute
 }
 
@@ -540,6 +560,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAutonomyRoute: AuthenticatedAutonomyRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDownloadsRoute: AuthenticatedDownloadsRoute,
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedWorkspaceShellRoute: AuthenticatedWorkspaceShellRoute,
 }
 

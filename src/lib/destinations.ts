@@ -15,7 +15,8 @@ export type DestinationPath =
   | "/downloads"
   | "/workspace-shell"
   | "/agent-session"
-  | "/autonomy";
+  | "/autonomy"
+  | "/home";
 
 export interface Destination {
   to: DestinationPath;
@@ -30,6 +31,12 @@ export const DESTINATIONS: Destination[] = [
     label: "Terminal",
     hint: "Honeycomb full-screen shell",
     keywords: ["terminal", "shell", "honeycomb", "command"],
+  },
+  {
+    to: "/home",
+    label: "Home",
+    hint: "Honeycomb, powered by OMNI",
+    keywords: ["home", "omni", "self-test", "snippets", "stop", "lock"],
   },
   {
     to: "/dashboard",
