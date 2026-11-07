@@ -51,3 +51,9 @@ Demo (simulated hosts, /pair) is never counted in this log.
 | Connectors statuses: Works in Terminal (Gemini, Claude API, OpenAI API, MCP test, API test) / Needs authorization (Perplexity) / Not built (Codex, Claude Code, Gemini CLIs) / Unsupported (websites); cards open Terminal with command typed, never auto-run | Sandbox | Playwright: statuses read back; "Open in Terminal" → /terminal/sandbox?cmd=ask+gemini+; signed-out ask refused. Gateway: Claude Sonnet 5 → CLAUDE-OK, GPT-6 Astra → GPT-OK, Gemini → HONEYCOMB-OK (direct server-side calls, same request bodies) |
 | Hosted PTY sandbox | BLOCKED | Server runtime cannot start processes; needs an owner-approved external sandbox service (paid) or the Mac companion |
 | Voice actions (mic → transcript → intent → run/confirm) | Sandbox | Gateway transcription of spoken WAV returned "Run pwd in sandbox." → parser maps to `pwd` (read); browser: mic denied shows clear message; mic allowed records then server rejects the test sign-in (no session id) — real sign-ins not yet tried; signed-out POST → 401 |
+
+## 2026-11-07 — Autonomous modes (owner controls, OFF)
+- Added /autonomy (signed-in): independent Local and OMNI remote switches, permissions, job budget, Emergency Stop, fail-closed gates (src/lib/autonomy.ts, 10 tests).
+- Neither mode can become Active: no OMNI Docking Bay endpoint is configured and no verified executor exists; Test connection always reports FAILED and records nothing.
+- Fixed 4 stale checks (Terminal first in search, Connectors label, connect codex/claude navigation). 209/209 app tests pass.
+- Unverified: owner sign-in run of the page, real Mac+iPad pairing/pwd/ls/reconnect/revoke acceptance, OMNI dispatch/logs/cancel.

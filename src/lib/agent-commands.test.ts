@@ -4,8 +4,8 @@ import { parseAgentCommand, safeProbeUrl } from "./agent-commands";
 describe("in-terminal agent commands", () => {
   it("ask gemini carries the question", () => expect(parseAgentCommand("ask gemini what is 2+2")).toEqual({ kind: "ask", provider: "gemini", prompt: "what is 2+2" }));
   it("ask without a question is refused locally", () => expect(parseAgentCommand("ask perplexity").kind).toBe("text"));
-  it("Codex and Claude report BLOCKED, never connected", () => {
-    for (const p of ["codex", "claude"]) { const r = parseAgentCommand(`connect ${p}`); expect(r.kind).toBe("text"); expect(r.kind === "text" && r.output).toContain("BLOCKED"); }
+  it("connect Codex/Claude opens the Mac page and never claims a run", () => {
+    for (const p of ["codex", "claude"]) { const r = parseAgentCommand(`connect ${p}`); expect(r.kind).toBe("navigate"); expect(r.kind === "navigate" && r.to).toBe("/terminal"); expect(r.kind === "navigate" && r.output).toContain("No agent command has run"); }
   });
   it("connect mcp with URL probes", () => expect(parseAgentCommand("connect mcp https://x.example/mcp")).toEqual({ kind: "probe", provider: "mcp", url: "https://x.example/mcp" }));
   it("run is an alias and claude/openai are API models", () => {

@@ -24,6 +24,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TransferRouteImport } from './routes/transfer'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as AuthenticatedAgentSessionRouteImport } from './routes/_authenticated/agent-session'
+import { Route as AuthenticatedAutonomyRouteImport } from './routes/_authenticated/autonomy'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDownloadsRouteImport } from './routes/_authenticated/downloads'
 import { Route as AuthenticatedWorkspaceShellRouteImport } from './routes/_authenticated/workspace-shell'
@@ -109,6 +110,11 @@ const AuthenticatedAgentSessionRoute =
     path: '/agent-session',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAutonomyRoute = AuthenticatedAutonomyRouteImport.update({
+  id: '/autonomy',
+  path: '/autonomy',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/agent-session': typeof AuthenticatedAgentSessionRoute
+  '/autonomy': typeof AuthenticatedAutonomyRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/downloads': typeof AuthenticatedDownloadsRoute
   '/workspace-shell': typeof AuthenticatedWorkspaceShellRoute
@@ -196,6 +203,7 @@ export interface FileRoutesByTo {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/agent-session': typeof AuthenticatedAgentSessionRoute
+  '/autonomy': typeof AuthenticatedAutonomyRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/downloads': typeof AuthenticatedDownloadsRoute
   '/workspace-shell': typeof AuthenticatedWorkspaceShellRoute
@@ -223,6 +231,7 @@ export interface FileRoutesById {
   '/transfer': typeof TransferRoute
   '/workspace': typeof WorkspaceRoute
   '/_authenticated/agent-session': typeof AuthenticatedAgentSessionRoute
+  '/_authenticated/autonomy': typeof AuthenticatedAutonomyRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/downloads': typeof AuthenticatedDownloadsRoute
   '/_authenticated/workspace-shell': typeof AuthenticatedWorkspaceShellRoute
@@ -250,6 +259,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/agent-session'
+    | '/autonomy'
     | '/dashboard'
     | '/downloads'
     | '/workspace-shell'
@@ -275,6 +285,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/agent-session'
+    | '/autonomy'
     | '/dashboard'
     | '/downloads'
     | '/workspace-shell'
@@ -301,6 +312,7 @@ export interface FileRouteTypes {
     | '/transfer'
     | '/workspace'
     | '/_authenticated/agent-session'
+    | '/_authenticated/autonomy'
     | '/_authenticated/dashboard'
     | '/_authenticated/downloads'
     | '/_authenticated/workspace-shell'
@@ -442,6 +454,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgentSessionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/autonomy': {
+      id: '/_authenticated/autonomy'
+      path: '/autonomy'
+      fullPath: '/autonomy'
+      preLoaderRoute: typeof AuthenticatedAutonomyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -510,6 +529,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgentSessionRoute: typeof AuthenticatedAgentSessionRoute
+  AuthenticatedAutonomyRoute: typeof AuthenticatedAutonomyRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDownloadsRoute: typeof AuthenticatedDownloadsRoute
   AuthenticatedWorkspaceShellRoute: typeof AuthenticatedWorkspaceShellRoute
@@ -517,6 +537,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgentSessionRoute: AuthenticatedAgentSessionRoute,
+  AuthenticatedAutonomyRoute: AuthenticatedAutonomyRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDownloadsRoute: AuthenticatedDownloadsRoute,
   AuthenticatedWorkspaceShellRoute: AuthenticatedWorkspaceShellRoute,

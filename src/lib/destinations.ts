@@ -14,7 +14,8 @@ export type DestinationPath =
   | "/account"
   | "/downloads"
   | "/workspace-shell"
-  | "/agent-session";
+  | "/agent-session"
+  | "/autonomy";
 
 export interface Destination {
   to: DestinationPath;
@@ -24,6 +25,12 @@ export interface Destination {
 }
 
 export const DESTINATIONS: Destination[] = [
+  {
+    to: "/terminal/sandbox",
+    label: "Terminal",
+    hint: "Honeycomb full-screen shell",
+    keywords: ["terminal", "shell", "honeycomb", "command"],
+  },
   {
     to: "/dashboard",
     label: "Dashboard",
@@ -38,9 +45,9 @@ export const DESTINATIONS: Destination[] = [
   },
   {
     to: "/connectors",
-    label: "Agents & web",
-    hint: "Agent and website tools",
-    keywords: ["agents", "codex", "claude", "gemini", "api", "mcp", "web"],
+    label: "Connectors",
+    hint: "Agents, MCP and website tools",
+    keywords: ["connectors", "agents", "codex", "claude", "gemini", "api", "mcp", "web"],
   },
   {
     to: "/transfer",
@@ -59,6 +66,12 @@ export const DESTINATIONS: Destination[] = [
     label: "Agent session",
     hint: "Codex, Claude and OMNI together",
     keywords: ["agents", "multi", "session", "voice", "codex", "claude", "omni", "handoff"],
+  },
+  {
+    to: "/autonomy",
+    label: "Autonomous modes",
+    hint: "Owner switches and Emergency Stop (off)",
+    keywords: ["autonomous", "autonomy", "omni", "docking", "emergency", "stop", "auto"],
   },
   {
     to: "/downloads",
